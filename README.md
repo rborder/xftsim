@@ -1,3 +1,1 @@
-# xftsim
-![xftsim](./xftsimlogo.svg)
-<img src="./xftsimlogo.svg" width="25%" >
+# <img src="./xftsimlogo.svg" width="20%" > eXtensible Forward Time SIMulator
