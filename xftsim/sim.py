@@ -18,7 +18,7 @@ class Simulation():
     """docstring for Simulation"""
     def __init__(self, 
                  founder_haplotypes: xr.DataArray,
-                 mating_regime: xft.mate.MateAssignment,
+                 mating_regime: xft.mate.MatingRegime,
                  recombination_map: xft.reproduce.RecombinationMap,
                  architecture: xft.arch.Architecture,
                  statistics: Iterable = [],
