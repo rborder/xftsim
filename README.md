@@ -1,4 +1,5 @@
-# <img src="./xftsimlogo.svg" width="20%" > eXtensible Forward Time SIMulator
+# <img src="./xftsimlogo.svg" width="20%">
+# eXtensible Forward Time SIMulator
 
 
 `xftsim` simulates complex phenotype/genotype data with an emphasis on short timescale phenomena. `xftsim` is designed with two primary goals:
