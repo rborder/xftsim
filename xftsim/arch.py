@@ -216,8 +216,8 @@ class AdditiveGeneticComponent(ArchitectureComponent):
 # additive architecture with no parental effects
 class AdditiveNoiseComponent(ArchitectureComponent):
     def __init__(self,
-                 variances: NDArray[Shape["*"], Float64] = None,
-                 sds: NDArray[Shape["*"], Float64] = None,
+                 variances: Iterable = None,
+                 sds: Iterable = None,
                  phenotype_name: Iterable = None
                  ):
         assert (variances is None) ^ (
@@ -225,9 +225,9 @@ class AdditiveNoiseComponent(ArchitectureComponent):
         self.variances = variances
         self.sds = sds
         if variances is None:
-            self.variances = sds**2
+            self.variances = np.array(sds)**2
         if sds is None:
-            self.sds = variances**.5
+            self.sds = np.array(variances)**.5
         input_phenotypes = xft.index.ComponentIndex_from_product([],[],[])
         output_phenotypes = xft.index.ComponentIndex_from_product(
                                                                  np.array(phenotype_name),
