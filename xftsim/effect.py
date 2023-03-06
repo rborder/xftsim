@@ -50,7 +50,7 @@ class AdditiveEffects:
     @cached_property
     def m_causal(self): ## if not provided set to number of non-zero betas per phenotype
         if self._m_causal is None:
-            return(np.sum(self.beta == 0, axis = 0))
+            return(np.sum(self._beta == 0, axis = 0))
         else:
             return self._m_causal
 
