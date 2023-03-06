@@ -65,7 +65,9 @@ class GaussianFounderInitialization(FounderInitialization):
                  ):
         assert (sds is not None) ^ (variances is not None)
         if variances is not None:
-            sds = np.sqrt(variances)
+            sds = np.sqrt(np.array(variances))
+        else:
+            sds = np.array(sds)
         if means is None:
             means=np.zeros_like(sds)
         self.sds = np.array(sds)
