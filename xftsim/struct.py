@@ -388,65 +388,6 @@ class XftAccessor:
 
 
 
-    # def assign_phenotype_components(self,
-    #                                 data: NDArray,
-    #                                 component_indexer: xft.index.ComponentIndex = None, 
-    #                                 sample_indexer: xft.index.ComponentIndex = None,
-    #                                 ) -> None:
-    #     if self._col_dim != 'component': raise NotImplementedError
-        # if component_indexer is not None:
-        #     # phenotype_name,component_name,vorigin_relative = [
-        #     #                       component_indexer.phenotype_name,
-        #     #                       component_indexer.component_name,
-        #     #                       component_indexer.vorigin_relative,
-        #     #                       ]
-        #     column_inds = component_indexer.unique_identifier#self._obj.xft.component_mindex.get_locs([phenotype_name,component_name,vorigin_relative])
-        # else:
-        #     column_inds = slice(None)#phenotypes.indexes['component']#np.arange(self._obj.shape[1])
-        # if sample_indexer is not None:
-        #     # iid,fid,sex = [
-        #     #                sample_indexer.iid,
-        #     #                sample_indexer.fid,
-        #     #                sample_indexer.sex,
-        #     #                ]
-        #     row_inds = sample_indexer.unique_identifier#self._obj.xft.sample_mindex.get_locs([iid,fid,sex])
-        # else:
-        #     row_inds = slice(None)#phenotypes.indexes['sample']#np.arange(self._obj.shape[0])
-        # print(sample_indexer)
-        # print(component_indexer)
-        # print(data.shape)
-        # self._obj.loc[row_inds, column_inds] = data
-        # self._obj.xft[sample_indexer, component_indexer] = data
-
-    # def access_phenotype_components(self, ## TODO: reimplement to take advantage of __get_item__
-    #                                 component_indexer: xft.index.ComponentIndex = None, 
-    #                                 sample_indexer: xft.index.ComponentIndex = None,
-    #                                 ) -> None:
-    #     if self._col_dim != 'component': raise NotImplementedError
-    #     # if component_indexer is not None:
-    #     #     phenotype_name,component_name,vorigin_relative = [
-    #     #                           component_indexer.phenotype_name,
-    #     #                           component_indexer.component_name,
-    #     #                           component_indexer.vorigin_relative,
-    #     #                           ]
-    #     #     column_inds = self._obj.xft.component_mindex.get_locs([phenotype_name,component_name,vorigin_relative])
-    #     # else:
-    #     #     column_inds = np.arange(self._obj.shape[1])
-    #     # if sample_indexer is not None:
-    #     #     iid,fid,sex = [
-    #     #                    sample_indexer.iid,
-    #     #                    sample_indexer.fid,
-    #     #                    sample_indexer.sex,
-    #     #                    ]
-    #     #     row_inds = self._obj.xft.sample_mindex.get_locs([iid,fid,sex])
-    #     # else:
-    #     #     row_inds = np.arange(self._obj.shape[0])
-    #     # return self._obj[row_inds, column_inds]
-    #     # return self._obj.xft[sample_indexer, component_indexer]
-
-
-
-
 def haplotypeArray(
              haplotypes: NDArray[Shape["*, *"], Int8] = None, ## n x 2m array of binary haplotypes
              variant_indexer: xft.index.HaploidVariantIndex = None,
