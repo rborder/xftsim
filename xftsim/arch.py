@@ -89,16 +89,24 @@ class GaussianFounderInitialization(FounderInitialization):
 class ArchitectureComponent:
     def __init__(self,
                  compute_component: Callable = None,
-                 input_phenotypes: xft.index.ComponentIndex = None,
-                 output_phenotypes: xft.index.ComponentIndex = None,
+                 input_cindex: xft.index.ComponentIndex = None,
+                 output_cindex: xft.index.ComponentIndex = None,
                  input_haplotypes: Union[Bool, xft.index.HaploidVariantIndex] = False,
                  founder_initialization: Callable = None
                  ):
         self._compute_component = compute_component
         self.input_haplotypes = input_haplotypes
-        self.input_phenotypes = input_phenotypes
-        self.output_phenotypes = output_phenotypes
+        self.input_cindex = input_cindex
+        self.output_cindex = output_cindex
         self.founder_initialization = founder_initialization
+
+    @staticmethod
+    def default_input_cindex(*args, **kwargs):
+        pass
+
+    @staticmethod
+    def default_output_cindex(*args, **kwargs):
+        pass
 
     ## function that accesses haplotypes and/or phenotypes and modifies phenotypes by reference
     def compute_component(self,
@@ -116,32 +124,32 @@ class ArchitectureComponent:
 
     @property
     def merged_phenotype_indexer(self):
-        return xft.index.XftIndex.reduce_merge([self.input_phenotypes, 
-                                                self.output_phenotypes])
+        return xft.index.XftIndex.reduce_merge([self.input_cindex, 
+                                                self.output_cindex])
 
     @property
     def input_phenotype_name(self):
-        return np.array(self.input_phenotypes.phenotype_name)
+        return np.array(self.input_cindex.phenotype_name)
 
     @property
     def input_component_name(self):
-        return np.array(self.input_phenotypes.component_name)
+        return np.array(self.input_cindex.component_name)
 
     @property
     def input_vorigin_relative(self):
-        return np.array(self.input_phenotypes.vorigin_relative)
+        return np.array(self.input_cindex.vorigin_relative)
 
     @property
     def output_phenotype_name(self):
-        return np.array(self.output_phenotypes.phenotype_name)
+        return np.array(self.output_cindex.phenotype_name)
 
     @property
     def output_component_name(self):
-        return np.array(self.output_phenotypes.component_name)
+        return np.array(self.output_cindex.component_name)
 
     @property
     def output_vorigin_relative(self):
-        return np.array(self.output_phenotypes.vorigin_relative)
+        return np.array(self.output_cindex.vorigin_relative)
 
     @property
     def phenotype_name(self):
@@ -155,25 +163,17 @@ class ArchitectureComponent:
     def vorigin_relative(self):
         return self.merged_phenotype_indexer.vorigin_relative
 
-    # @property
-    # def merged_phenotype_indexer(self):
-    #     return xft.index.ComponentIndex(phenotype_name=self.phenotype_name,
-    #                                    component_name=self.component_name,
-    #                                    vorigin_relative=self.vorigin_relative)
-
-
 
 #### Functions / classes for creating phenogenetic architectures
-
 class PlaceholderComponent(ArchitectureComponent):
     def __init__(self,
                  components: xft.index.ComponentIndex = None,
                  metadata: Dict = dict(),
                  ):
-        input_phenotypes = components
-        output_phenotypes = components
-        super().__init__(input_phenotypes=input_phenotypes,
-                         output_phenotypes=output_phenotypes,
+        input_cindex = components
+        output_cindex = components
+        super().__init__(input_cindex=input_cindex,
+                         output_cindex=output_cindex,
                          input_haplotypes=False,
                          )
 
@@ -186,14 +186,14 @@ class AdditiveGeneticComponent(ArchitectureComponent):
                  metadata: Dict = dict(),
                  ):
         self.effects = beta
-        input_phenotypes = xft.index.ComponentIndex_from_product([],[],[])
-        output_phenotypes = xft.index.ComponentIndex_from_product(
+        input_cindex = xft.index.ComponentIndex_from_product([],[],[])
+        output_cindex = xft.index.ComponentIndex_from_product(
                                                                  beta.phenotype_name,
                                                                  ['additiveGenetic'],
                                                                  [-1],
                                                                  )
-        super().__init__(input_phenotypes=input_phenotypes,
-                         output_phenotypes=output_phenotypes,
+        super().__init__(input_cindex=input_cindex,
+                         output_cindex=output_cindex,
                          input_haplotypes=True,
                          )
 
@@ -202,7 +202,7 @@ class AdditiveGeneticComponent(ArchitectureComponent):
                           phenotypes: xr.DataArray) -> None:
         n = haplotypes.shape[0]
         heritable_components = (haplotypes.data @ self.effects.beta_raw_haploid) + np.tile(self.effects.offset, (n,1))
-        phenotypes.loc[:,self.output_phenotypes.unique_identifier] = heritable_components
+        phenotypes.loc[:,self.output_cindex.unique_identifier] = heritable_components
 
     @property
     def true_rho_beta(self):
@@ -228,14 +228,14 @@ class AdditiveNoiseComponent(ArchitectureComponent):
             self.variances = np.array(sds)**2
         if sds is None:
             self.sds = np.array(variances)**.5
-        input_phenotypes = xft.index.ComponentIndex_from_product([],[],[])
-        output_phenotypes = xft.index.ComponentIndex_from_product(
+        input_cindex = xft.index.ComponentIndex_from_product([],[],[])
+        output_cindex = xft.index.ComponentIndex_from_product(
                                                                  np.array(phenotype_name),
                                                                  ['additiveNoise'],
                                                                  [-1],
                                                                  )
-        super().__init__(input_phenotypes=input_phenotypes,
-                         output_phenotypes=output_phenotypes,
+        super().__init__(input_cindex=input_cindex,
+                         output_cindex=output_cindex,
                          input_haplotypes=False,
                          )
 
@@ -244,7 +244,7 @@ class AdditiveNoiseComponent(ArchitectureComponent):
                           phenotypes: xr.DataArray):
         n = phenotypes.shape[0]
         noise = np.hstack([np.random.normal(0, scale, (n,1)) for scale in self.sds])
-        phenotypes.loc[:,self.output_phenotypes.unique_identifier] = noise
+        phenotypes.loc[:,self.output_cindex.unique_identifier] = noise
 
 
 
@@ -252,39 +252,33 @@ class AdditiveNoiseComponent(ArchitectureComponent):
 
 class LinearTransformationComponent(ArchitectureComponent):
     def __init__(self,
-                 input_phenotypes: xft.index.ComponentIndex = None,
-                 output_phenotypes: xft.index.ComponentIndex = None,
+                 input_cindex: xft.index.ComponentIndex = None,
+                 output_cindex: xft.index.ComponentIndex = None,
                  coefficient_matrix: NDArray=None,
-                 # transformation_array: xr.DataArray = None,
                  normalize: bool = True,
                  founder_initialization: FounderInitialization = None,
                  ):
-        self.v_input_dimension = input_phenotypes.k_total
-        self.v_output_dimension = output_phenotypes.k_total
+        self.v_input_dimension = input_cindex.k_total
+        self.v_output_dimension = output_cindex.k_total
         self.normalize = normalize
-        # assert (coefficient_matrix is not None) ^ (transformation_array is not None), "provide coefficient_matrix with indexes XOR transformation_array"
-        # if coefficient_matrix is not None:
-        #     assert input_component_index is not None, "provide input_component_index"
-        #     assert output_component_index is not None, "provide output_component_index"
-        # else:
-        #     coefficient_matrix
+
         if coefficient_matrix is None:
             self.coefficient_matrix = np.zeros((self.v_output_dimension, 
                                                 self.v_input_dimension))
         self.coefficient_matrix = coefficient_matrix
 
-        super().__init__(input_phenotypes=input_phenotypes,
-                         output_phenotypes=output_phenotypes,
+        super().__init__(input_cindex=input_cindex,
+                         output_cindex=output_cindex,
                          founder_initialization=founder_initialization,
                          )
 
     @property
     def linear_transformation(self):
         ## ugly code
-        inputs = paste(self.input_phenotypes.coord_frame.iloc[:,1:].T.to_numpy(), sep=' ')
+        inputs = paste(self.input_cindex.coord_frame.iloc[:,1:].T.to_numpy(), sep=' ')
         if self.normalize:
             inputs = np.char.add('normalized_',inputs)
-        outputs = paste(self.output_phenotypes.coord_frame.iloc[:,1:].T.to_numpy())
+        outputs = paste(self.output_cindex.coord_frame.iloc[:,1:].T.to_numpy())
         return pd.DataFrame(self.coefficient_matrix,
                             columns=inputs,
                             index=outputs)
@@ -292,11 +286,11 @@ class LinearTransformationComponent(ArchitectureComponent):
     def compute_component(self,
                           haplotypes: xr.DataArray,
                           phenotypes: xr.DataArray):
-        y = phenotypes.loc[:,self.input_phenotypes.unique_identifier]
+        y = phenotypes.loc[:,self.input_cindex.unique_identifier]
         if self.normalize:
             y = np.apply_along_axis(lambda x: (x-np.mean(x))/np.std(x), 1, y)
         new_component = y @ self.coefficient_matrix
-        phenotypes.loc[:,self.output_phenotypes.unique_identifier] = new_component
+        phenotypes.loc[:,self.output_cindex.unique_identifier] = new_component
 
     def __repr__(self):
         ## ugly
@@ -304,8 +298,8 @@ class LinearTransformationComponent(ArchitectureComponent):
 
 class VerticalComponent(LinearTransformationComponent):
     def __init__(self,
-                 input_component_index: xft.index.ComponentIndex = None,
-                 output_component_index: xft.index.ComponentIndex = None,
+                 input_cindex: xft.index.ComponentIndex = None,
+                 output_cindex: xft.index.ComponentIndex = None,
                  coefficient_matrix: NDArray=None,
                  normalize: bool = True,
                  founder_variances: Iterable = None,
@@ -313,102 +307,33 @@ class VerticalComponent(LinearTransformationComponent):
                  ):
         assert (founder_variances is None) ^ (founder_initialization is None), "provide founder_initialization XOR founder_variances"
         if founder_initialization is None:
-            founder_initialization = GaussianFounderInitialization(input_component_index,
+            founder_initialization = GaussianFounderInitialization(input_cindex,
                                                                    variances=founder_variances)
-        super().__init__(input_phenotypes=input_component_index,
-                         output_phenotypes=output_component_index,
+        super().__init__(input_cindex=input_cindex,
+                         output_cindex=output_cindex,
                          founder_initialization=founder_initialization,
                          coefficient_matrix = coefficient_matrix,
                          normalize= normalize,
                          )
 
-# class MaternalVerticalComponent(LinearTransformationComponent):
-#     def __init__(self,
-#                  phenotype_name: Iterable,
-#                  component_name: Iterable,
-#                  output_phenotypes: Iterable,
-#                  coefficient_matrix: NDArray=None,
-#                  output_component = 'maternalVertical',
-#                  normalize: bool = True,
-#                  ):
-#         super().__init__(phenotype_name=phenotype_name,
-#                        component_name=component_name,
-#                        vorigin_relative=0,
-#                        output_phenotypes=output_phenotypes,
-#                        coefficient_matrix=coefficient_matrix,
-#                        output_component = output_component,
-#                        normalize=normalize
-#                        )
-
-# class PaternalVerticalComponent(LinearTransformationComponent):
-#     def __init__(self,
-#                  phenotype_name: Iterable,
-#                  component_name: Iterable,
-#                  output_phenotypes: Iterable,
-#                  coefficient_matrix: NDArray=None,
-#                  output_component = 'paternalVertical',
-#                  normalize: bool = True,
-#                  ):
-#         super().__init__(phenotype_name=phenotype_name,
-#                        component_name=component_name,
-#                        vorigin_relative=1,
-#                        output_phenotypes=output_phenotypes,
-#                        coefficient_matrix=coefficient_matrix,
-#                        output_component = output_component,
-#                        normalize=normalize
-#                        )
-
-# class MeanVerticalComponent(LinearTransformationComponent):
-#     def __init__(self,
-#                  phenotype_name: Iterable,
-#                  component_name: Iterable,
-#                  output_phenotypes: Iterable,
-#                  coefficient_matrix: NDArray=None,
-#                  output_component = 'MeanVertical',
-#                  normalize: bool = True,
-#                  ):
-#         vorigin_relative = np.tile([0,1], len(component_name))
-#         phenotype_name = np.repeat(phenotype_name, 2)
-#         component_name = np.repeat(component_name, 2)
-#         print(vorigin_relative)
-
-#         super().__init__(phenotype_name=phenotype_name,
-#                        component_name=component_name,
-#                        vorigin_relative=vorigin_relative,
-#                        output_phenotypes=output_phenotypes,
-#                        coefficient_matrix=np.hstack([coefficient_matrix,coefficient_matrix]),
-#                        output_component = output_component,
-#                        normalize=normalize,
-#                        multiplier=.5
-#                        )
-
 class HorizontalComponent(LinearTransformationComponent):
     def __init__(self,
-                 phenotype_name: Iterable,
-                 component_name: Iterable,
+                 input_cindex: xft.index.ComponentIndex,
+                 output_cindex: xft.index.ComponentIndex,
                  coefficient_matrix: NDArray=None,
                  normalize: bool = True,
-                 output_component = 'Horizontal',
                  ):
-        vorigin_relative = -1
 
-        super().__init__(phenotype_name=phenotype_name,
-                       component_name=component_name,
-                       vorigin_relative=vorigin_relative,
-                       output_phenotypes=phenotype_name,
-                       coefficient_matrix=coefficient_matrix,
-                       output_component = output_component,
-                       normalize=normalize,
-                       multiplier=1,
-                       )
-
+        super().__init__(input_cindex=input_cindex,
+                         output_cindex=output_cindex,
+                         coefficient_matrix=coefficient_matrix,
+                         normalize=normalize,
+                         )
 
 class SumComponent(ArchitectureComponent):
     def __init__(self,
-                 phenotype_name: Iterable,
-                 sum_components: Iterable = ['additiveGenetic','additiveNoise'],
-                 vorigin_relative: Iterable = [-1],
-                 output_component: str = 'phenotype',
+                 input_cindex: xft.index.ComponentIndex,
+                 output_cindex: xft.index.ComponentIndex,
                  ):
         input_frame = xft.index.ComponentIndex_from_product(phenotype_name, 
                                                            sum_components,
@@ -417,18 +342,50 @@ class SumComponent(ArchitectureComponent):
         output_frame['component_name'] = output_component
         
         self.input_haplotypes = False
-        self.input_phenotypes = xft.index.ComponentIndex_from_frame(input_frame)
-        self.output_phenotypes = xft.index.ComponentIndex_from_frame(output_frame)
-        self._vorigin_relative = vorigin_relative
-        self._phenotype_name = phenotype_name
+        self.input_cindex = input_cindex
+        self.output_cindex = output_cindex
         self.founder_initialization = None
         ## need to finish
+
+    @staticmethod
+    def construct_input_cindex(phenotype_name: Iterable,
+                               sum_components: Iterable = ['additiveGenetic','additiveNoise'],
+                               vorigin_relative: Iterable = [-1],
+                               ):
+        return xft.index.ComponentIndex_from_product(phenotype_names, 
+                                                     sum_components,
+                                                     vorigin_relative)
+    @staticmethod
+    def construct_output_cindex(phenotype_name: Iterable,
+                                sum_components: Iterable = ['additiveGenetic','additiveNoise'],
+                                vorigin_relative: Iterable = [-1],
+                                output_name = 'phenotype'):
+        input_frame = SumComponent.construct_input_cindex(*args, **kwargs).coord_frame
+        output_frame = input_frame.copy().loc[~input_frame[['phenotype_name','vorigin_relative']].duplicated()]
+        output_frame['component_name'] = output_name
+        return xft.index.ComponentIndex_from_frame(output_frame)
+
+    @staticmethod
+    def construct_cindexes(phenotype_name: Iterable,
+                           sum_components: Iterable = ['additiveGenetic','additiveNoise'],
+                           vorigin_relative: Iterable = [-1],
+                           output_component: str = 'phenotype',
+                           ):
+        input_cindex = SumComponent.construct_input_cindex(phenotype_name,
+                                                           sum_components,
+                                                           vorigin_relative)
+        output_cindex = SumComponent.construct_output_cindex(phenotype_name,
+                                                             sum_components,
+                                                             vorigin_relative,
+                                                             output_component)
+        return (input_cindex, output_cindex)
+    
     def compute_component(self,
         haplotypes: xr.DataArray,
         phenotypes: xr.DataArray):
         ## TODO make faster later, UGLY atm
-        inputs = self.input_phenotypes.coord_frame
-        outputs = self.output_phenotypes.coord_frame
+        inputs = self.input_cindex.coord_frame
+        outputs = self.output_cindex.coord_frame
         outputs.set_index('phenotype_name', inplace=True, drop=False)
         ## iterate over vorigin 
         for vo in np.unique(self._vorigin_relative):
@@ -440,9 +397,11 @@ class SumComponent(ArchitectureComponent):
 
 
 
-class BinarizingComponent(ArchitectureComponent):
+class BinarizingTransformation(ArchitectureComponent):
     def __init__(self,
                  thresholds: Iterable,
+                 input_cindex: xft.index.ComponentIndex,
+                 output_cindex: xft.index.ComponentIndex,
                  phenotype_name: Iterable,
                  liability_component: str = 'phenotype',
                  vorigin_relative: Iterable = [-1], ## TODO: make consistent with providing index
@@ -459,32 +418,48 @@ class BinarizingComponent(ArchitectureComponent):
         output_frame['component_name'] = output_component
         
         self.input_haplotypes = False
-        self.input_phenotypes = xft.index.ComponentIndex_from_frame(input_frame)
-        self.output_phenotypes = xft.index.ComponentIndex_from_frame(output_frame)
-        self._vorigin_relative = vorigin_relative
-        self._phenotype_name = phenotype_name
+        self.input_cindex = xft.index.ComponentIndex_from_frame(input_frame)
+        self.output_cindex = xft.index.ComponentIndex_from_frame(output_frame)
         self.founder_initialization = None
-        ## need to finish
+
+    @staticmethod
+    def construct_input_cindex(phenotype_name: Iterable,
+                               liability_component: str = 'phenotype',
+                               vorigin_relative: Iterable = [-1],)
+        return xft.index.ComponentIndex_from_product(phenotype_names, 
+                                                     [liability_component],
+                                                     vorigin_relative)
+
+    @staticmethod
+    def construct_output_cindex(phenotype_name: Iterable,
+                                output_component: str = 'binary_phenotype',
+                                vorigin_relative: Iterable = [-1],
+                                )
+        return xft.index.ComponentIndex_from_product(phenotype_names, 
+                                                     [output_component],
+                                                     vorigin_relative)
+    
+    @staticmethod
+    def construct_cindexes(phenotype_name: Iterable,
+                           liability_component: str = 'phenotype',
+                           output_component: str = 'binary_phenotype',
+                           vorigin_relative: Iterable = [-1],
+                           ):
+        input_cindex = SumComponent.construct_input_cindex(phenotype_name,
+                                                           liability_component,
+                                                           vorigin_relative)
+        output_cindex = SumComponent.construct_output_cindex(phenotype_name,
+                                                             output_component,
+                                                             vorigin_relative)
+        return (input_cindex, output_cindex)
+    
     def compute_component(self,
         haplotypes: xr.DataArray,
         phenotypes: xr.DataArray):
         ## TODO make faster later, UGLY atm
-        y = phenotypes.loc[:,self.input_phenotypes.unique_identifier].data
+        y = phenotypes.loc[:,self.input_cindex.unique_identifier].data
         new_component = (y>self.thresholds).astype(int) 
-        phenotypes.loc[:,self.output_phenotypes.unique_identifier] = new_component
-
-
-
-# class PhenotypicTransformationComponent(ArchitectureComponent):
-#     def __init__(self,
-#                  compute_component: Callable = None,
-#                  phenotypes: xft.index.ComponentIndex = None,
-#                  ):
-#         self._compute_component = compute_component
-#         self.input_haplotypes = False
-#         self.input_phenotypes = phenotypes
-#         self.output_phenotypes = phenotypes
-
+        phenotypes.loc[:,self.output_cindex.unique_identifier] = new_component
 
 
 
@@ -548,27 +523,6 @@ class Architecture:
 
                                            
 
-    # def initialize_next_generation(self, 
-    #                                haplotypes: xr.DataArray = None,
-    #                                mating: xft.mate.MateAssignment = None,
-    #                                phenotypeHistory: Dict = None,
-    #                                ) -> xr.DataArray:
-    #     assert haplotypes.xft._is_haplotypeArray()
-    # #     if self._initialize_next_generation is None:
-    # #         raise NotImplementedError
-    # #     else:
-    # #         self._initialize_next_generation(haplotypes, mating, phenotypeHistory)
-
-    # def initialize_founder_generation(self, 
-    #                                   haplotypes: xr.DataArray = None,
-    #                                   ) -> xr.DataArray:
-    #     assert haplotypes.xft._is_haplotypeArray()
-    #     if self._initialize_founder_generation is None:
-    #         self._initialize_next_generation(haplotypes, mating=None, phenotypes_previous=None)
-    #     else:
-    #         self._initialize_founder_generation(haplotypes)
-
-
     def compute_phenotypes(self,
                            haplotypes: xr.DataArray = None,
                            phenotypes: xr.DataArray = None,
@@ -588,4 +542,65 @@ class InfinitessimalArchitecture:
 class SpikeSlabArchitecture:
     def __init__(self):
         NotImplementedError ## TODO
+
+
+# class MaternalVerticalComponent(LinearTransformationComponent):
+#     def __init__(self,
+#                  phenotype_name: Iterable,
+#                  component_name: Iterable,
+#                  output_cindex: Iterable,
+#                  coefficient_matrix: NDArray=None,
+#                  output_component = 'maternalVertical',
+#                  normalize: bool = True,
+#                  ):
+#         super().__init__(phenotype_name=phenotype_name,
+#                        component_name=component_name,
+#                        vorigin_relative=0,
+#                        output_cindex=output_cindex,
+#                        coefficient_matrix=coefficient_matrix,
+#                        output_component = output_component,
+#                        normalize=normalize
+#                        )
+
+# class PaternalVerticalComponent(LinearTransformationComponent):
+#     def __init__(self,
+#                  phenotype_name: Iterable,
+#                  component_name: Iterable,
+#                  output_cindex: Iterable,
+#                  coefficient_matrix: NDArray=None,
+#                  output_component = 'paternalVertical',
+#                  normalize: bool = True,
+#                  ):
+#         super().__init__(phenotype_name=phenotype_name,
+#                        component_name=component_name,
+#                        vorigin_relative=1,
+#                        output_cindex=output_cindex,
+#                        coefficient_matrix=coefficient_matrix,
+#                        output_component = output_component,
+#                        normalize=normalize
+#                        )
+
+# class MeanVerticalComponent(LinearTransformationComponent):
+#     def __init__(self,
+#                  phenotype_name: Iterable,
+#                  component_name: Iterable,
+#                  output_cindex: Iterable,
+#                  coefficient_matrix: NDArray=None,
+#                  output_component = 'MeanVertical',
+#                  normalize: bool = True,
+#                  ):
+#         vorigin_relative = np.tile([0,1], len(component_name))
+#         phenotype_name = np.repeat(phenotype_name, 2)
+#         component_name = np.repeat(component_name, 2)
+#         print(vorigin_relative)
+
+#         super().__init__(phenotype_name=phenotype_name,
+#                        component_name=component_name,
+#                        vorigin_relative=vorigin_relative,
+#                        output_cindex=output_cindex,
+#                        coefficient_matrix=np.hstack([coefficient_matrix,coefficient_matrix]),
+#                        output_component = output_component,
+#                        normalize=normalize,
+#                        multiplier=.5
+#                        )
 
