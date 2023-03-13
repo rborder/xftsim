@@ -330,29 +330,23 @@ class HorizontalComponent(LinearTransformationComponent):
                          normalize=normalize,
                          )
 
-class SumComponent(ArchitectureComponent):
+class SumTransformation(ArchitectureComponent):
     def __init__(self,
                  input_cindex: xft.index.ComponentIndex,
                  output_cindex: xft.index.ComponentIndex,
                  ):
-        input_frame = xft.index.ComponentIndex_from_product(phenotype_name, 
-                                                           sum_components,
-                                                           vorigin_relative).coord_frame
-        output_frame = input_frame.copy().loc[~input_frame[['phenotype_name','vorigin_relative']].duplicated()]
-        output_frame['component_name'] = output_component
-        
+
         self.input_haplotypes = False
         self.input_cindex = input_cindex
         self.output_cindex = output_cindex
         self.founder_initialization = None
-        ## need to finish
 
     @staticmethod
     def construct_input_cindex(phenotype_name: Iterable,
                                sum_components: Iterable = ['additiveGenetic','additiveNoise'],
                                vorigin_relative: Iterable = [-1],
                                ):
-        return xft.index.ComponentIndex_from_product(phenotype_names, 
+        return xft.index.ComponentIndex_from_product(phenotype_name, 
                                                      sum_components,
                                                      vorigin_relative)
     @staticmethod
@@ -360,7 +354,9 @@ class SumComponent(ArchitectureComponent):
                                 sum_components: Iterable = ['additiveGenetic','additiveNoise'],
                                 vorigin_relative: Iterable = [-1],
                                 output_name = 'phenotype'):
-        input_frame = SumComponent.construct_input_cindex(*args, **kwargs).coord_frame
+        input_frame = SumTransformation.construct_input_cindex(phenotype_name,
+                                                               sum_components,
+                                                               vorigin_relative).coord_frame
         output_frame = input_frame.copy().loc[~input_frame[['phenotype_name','vorigin_relative']].duplicated()]
         output_frame['component_name'] = output_name
         return xft.index.ComponentIndex_from_frame(output_frame)
@@ -371,10 +367,10 @@ class SumComponent(ArchitectureComponent):
                            vorigin_relative: Iterable = [-1],
                            output_component: str = 'phenotype',
                            ):
-        input_cindex = SumComponent.construct_input_cindex(phenotype_name,
+        input_cindex = SumTransformation.construct_input_cindex(phenotype_name,
                                                            sum_components,
                                                            vorigin_relative)
-        output_cindex = SumComponent.construct_output_cindex(phenotype_name,
+        output_cindex = SumTransformation.construct_output_cindex(phenotype_name,
                                                              sum_components,
                                                              vorigin_relative,
                                                              output_component)
@@ -388,7 +384,7 @@ class SumComponent(ArchitectureComponent):
         outputs = self.output_cindex.coord_frame
         outputs.set_index('phenotype_name', inplace=True, drop=False)
         ## iterate over vorigin 
-        for vo in np.unique(self._vorigin_relative):
+        for vo in np.unique(self.input_cindex.vorigin_relative.values):
             input_index = inputs.loc[inputs.vorigin_relative.values==vo,:]
             output_index = outputs.loc[outputs.vorigin_relative.values==vo,:]
             new_data = phenotypes.loc[:,inputs.component.values].groupby('phenotype_name').sum(skipna=False)
@@ -411,22 +407,17 @@ class BinarizingTransformation(ArchitectureComponent):
         self.thresholds=np.array(thresholds).ravel()
         # if not isinstance(thresholds, dict):
             # thresholds = {pheno:threshold for (pheno,threshold) in zip (phenotype_name,thresholds)}
-        input_frame = xft.index.ComponentIndex_from_product(phenotype_name, 
-                                                            [liability_component],
-                                                            vorigin_relative).coord_frame
-        output_frame = input_frame.copy().loc[~input_frame[['phenotype_name','vorigin_relative']].duplicated()]
-        output_frame['component_name'] = output_component
         
         self.input_haplotypes = False
-        self.input_cindex = xft.index.ComponentIndex_from_frame(input_frame)
-        self.output_cindex = xft.index.ComponentIndex_from_frame(output_frame)
+        self.input_cindex = input_cindex
+        self.output_cindex = output_cindex
         self.founder_initialization = None
 
     @staticmethod
     def construct_input_cindex(phenotype_name: Iterable,
                                liability_component: str = 'phenotype',
-                               vorigin_relative: Iterable = [-1],)
-        return xft.index.ComponentIndex_from_product(phenotype_names, 
+                               vorigin_relative: Iterable = [-1],):
+        return xft.index.ComponentIndex_from_product(phenotype_name, 
                                                      [liability_component],
                                                      vorigin_relative)
 
@@ -434,8 +425,8 @@ class BinarizingTransformation(ArchitectureComponent):
     def construct_output_cindex(phenotype_name: Iterable,
                                 output_component: str = 'binary_phenotype',
                                 vorigin_relative: Iterable = [-1],
-                                )
-        return xft.index.ComponentIndex_from_product(phenotype_names, 
+                                ):
+        return xft.index.ComponentIndex_from_product(phenotype_name, 
                                                      [output_component],
                                                      vorigin_relative)
     
