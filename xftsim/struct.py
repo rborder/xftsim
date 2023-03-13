@@ -488,7 +488,7 @@ def phenotypeArray_from_product(
     elif bool_h:
         generation = haplotypes.xft.generation
         sample_indexer = haplotypes.xft.get_sample_indexer()
-    component_indexer = xft.index.ComponentIndex_from_product(phenotype_name, component_name, vorigin_relative)
+    component_indexer = xft.index.ComponentIndex.from_product(phenotype_name, component_name, vorigin_relative)
     return phenotypeArray(
                           components = components,
                           component_indexer = component_indexer,

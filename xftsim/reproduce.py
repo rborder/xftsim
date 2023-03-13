@@ -105,12 +105,12 @@ def transmit_parental_phenotypes(
     #     ## columns of parent components of current generation in parent phenotype array
     #     parent_gen_mat_component_frame = offspring_gen_mat_component.frame
     #     parent_gen_mat_component_frame.vorigin_relative = 0
-    #     parent_gen_mat_component = xft.index.ComponentIndex_from_frame(parent_gen_mat_component_frame)
+    #     parent_gen_mat_component = xft.index.ComponentIndex.from_frame(parent_gen_mat_component_frame)
     #     parent_gen_mat_uid = parent_gen_mat_component.unique_identifier
 
     #     parent_gen_pat_component_frame = offspring_gen_pat_component.frame
     #     parent_gen_pat_component_frame.vorigin_relative = 1
-    #     parent_gen_pat_component = xft.index.ComponentIndex_from_frame(parent_gen_pat_component_frame)
+    #     parent_gen_pat_component = xft.index.ComponentIndex.from_frame(parent_gen_pat_component_frame)
     #     parent_gen_pat_uid = parent_gen_pat_component.unique_identifier
 
     #     ## transmit maternal phenotypes if necessary

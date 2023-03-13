@@ -110,7 +110,7 @@ class KAssortativeMatingRegime(xft.mate.MatingRegime):
 
 
 kamr = KAssortativeMatingRegime(cross_corr = np.ones((3,3))*.1,
-                                             component_index = xft.index.ComponentIndex_from_product(['height','weight','bmi'],
+                                             component_index = xft.index.ComponentIndex.from_product(['height','weight','bmi'],
                                               ['phenotype'],
                                               [-1]),
                                              offspring_per_pair=xft.utils.ZeroTruncatedPoissonCount(1.6))

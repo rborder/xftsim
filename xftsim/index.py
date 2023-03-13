@@ -518,7 +518,7 @@ class ComponentIndex(XftIndex):
     def to_vorigin(self, origin):
         frame = self.frame_copy()
         frame.vorigin_relative = origin
-        return ComponentIndex_from_frame(frame)
+        return ComponentIndex.from_frame(frame)
 
     def to_proband(self):
         if len(np.unique(self.vorigin_relative)) > 1 or np.any(self.vorigin_relative==-1):
@@ -527,7 +527,7 @@ class ComponentIndex(XftIndex):
             return self.to_vorigin(-1)
             # frame = self.frame_copy()
             # frame.vorigin_relative = -1
-            # return ComponentIndex_from_frame(frame)
+            # return ComponentIndex.from_frame(frame)
             
     @property
     def phenotype_name(self):
@@ -604,26 +604,29 @@ class ComponentIndex(XftIndex):
     def __eq__(self, other):
         return np.all(self.coord_frame == other.coord_frame)
 
-def ComponentIndex_from_frame(df: pd.DataFrame):
-    phenotype_name = df.phenotype_name.values
-    component_name = df.component_name.values
-    vorigin_relative = df.vorigin_relative.values
-    return ComponentIndex(phenotype_name, component_name, vorigin_relative)
+    @staticmethod
+    def from_frame(df: pd.DataFrame):
+        phenotype_name = df.phenotype_name.values
+        component_name = df.component_name.values
+        vorigin_relative = df.vorigin_relative.values
+        return ComponentIndex(phenotype_name, component_name, vorigin_relative)
 
-def ComponentIndex_from_arrays(phenotype_name: Iterable,
-                               component_name: Iterable,
-                               vorigin_relative: Iterable,
-                               ):
-    return ComponentIndex(phenotype_name, component_name, vorigin_relative)
+    @staticmethod
+    def from_arrays(phenotype_name: Iterable,
+                                   component_name: Iterable,
+                                   vorigin_relative: Iterable,
+                                   ):
+        return ComponentIndex(phenotype_name, component_name, vorigin_relative)
 
-def ComponentIndex_from_product(phenotype_name: Iterable,
-                                component_name: Iterable,
-                                vorigin_relative: Iterable,
-                               ):
-    phenotype_name, component_name, vorigin_relative = cartesian_product(phenotype_name, 
-                                                                           component_name, 
-                                                                           vorigin_relative)
-    return ComponentIndex(phenotype_name, component_name, vorigin_relative)
+    @staticmethod
+    def from_product(phenotype_name: Iterable,
+                                    component_name: Iterable,
+                                    vorigin_relative: Iterable,
+                                   ):
+        phenotype_name, component_name, vorigin_relative = cartesian_product(phenotype_name, 
+                                                                               component_name, 
+                                                                               vorigin_relative)
+        return ComponentIndex(phenotype_name, component_name, vorigin_relative)
 
 ## TODO
 def sampleIndex_from_plink():
@@ -671,10 +674,10 @@ def _test_HaploidVariantIndex():
 def _test_ComponentIndex():
     pass
 
-def _test_ComponentIndex_from_arrays():
+def _test_ComponentIndex.from_arrays():
     pass
 
-def _test_ComponentIndex_from_product():
+def _test_ComponentIndex.from_product():
     pass
 
 def _test_sampleIndex_from_plink():

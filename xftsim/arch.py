@@ -186,8 +186,8 @@ class AdditiveGeneticComponent(ArchitectureComponent):
                  metadata: Dict = dict(),
                  ):
         self.effects = beta
-        input_cindex = xft.index.ComponentIndex_from_product([],[],[])
-        output_cindex = xft.index.ComponentIndex_from_product(
+        input_cindex = xft.index.ComponentIndex.from_product([],[],[])
+        output_cindex = xft.index.ComponentIndex.from_product(
                                                                  beta.phenotype_name,
                                                                  ['additiveGenetic'],
                                                                  [-1],
@@ -228,8 +228,8 @@ class AdditiveNoiseComponent(ArchitectureComponent):
             self.variances = np.array(sds)**2
         if sds is None:
             self.sds = np.array(variances)**.5
-        input_cindex = xft.index.ComponentIndex_from_product([],[],[])
-        output_cindex = xft.index.ComponentIndex_from_product(
+        input_cindex = xft.index.ComponentIndex.from_product([],[],[])
+        output_cindex = xft.index.ComponentIndex.from_product(
                                                                  np.array(phenotype_name),
                                                                  ['additiveNoise'],
                                                                  [-1],
@@ -346,7 +346,7 @@ class SumTransformation(ArchitectureComponent):
                                sum_components: Iterable = ['additiveGenetic','additiveNoise'],
                                vorigin_relative: Iterable = [-1],
                                ):
-        return xft.index.ComponentIndex_from_product(phenotype_name, 
+        return xft.index.ComponentIndex.from_product(phenotype_name, 
                                                      sum_components,
                                                      vorigin_relative)
     @staticmethod
@@ -359,7 +359,7 @@ class SumTransformation(ArchitectureComponent):
                                                                vorigin_relative).coord_frame
         output_frame = input_frame.copy().loc[~input_frame[['phenotype_name','vorigin_relative']].duplicated()]
         output_frame['component_name'] = output_name
-        return xft.index.ComponentIndex_from_frame(output_frame)
+        return xft.index.ComponentIndex.from_frame(output_frame)
 
     @staticmethod
     def construct_cindexes(phenotype_name: Iterable,
@@ -417,7 +417,7 @@ class BinarizingTransformation(ArchitectureComponent):
     def construct_input_cindex(phenotype_name: Iterable,
                                liability_component: str = 'phenotype',
                                vorigin_relative: Iterable = [-1],):
-        return xft.index.ComponentIndex_from_product(phenotype_name, 
+        return xft.index.ComponentIndex.from_product(phenotype_name, 
                                                      [liability_component],
                                                      vorigin_relative)
 
@@ -426,7 +426,7 @@ class BinarizingTransformation(ArchitectureComponent):
                                 output_component: str = 'binary_phenotype',
                                 vorigin_relative: Iterable = [-1],
                                 ):
-        return xft.index.ComponentIndex_from_product(phenotype_name, 
+        return xft.index.ComponentIndex.from_product(phenotype_name, 
                                                      [output_component],
                                                      vorigin_relative)
     
@@ -489,7 +489,7 @@ class Architecture:
             phenotype_name = np.unique(merged.phenotype_name)
             component_name = np.unique(merged.component_name)
             vorigin_relative = np.unique(merged.vorigin_relative)
-            return xft.index.ComponentIndex_from_product(phenotype_name,
+            return xft.index.ComponentIndex.from_product(phenotype_name,
                                                          component_name,
                                                          vorigin_relative)
 
