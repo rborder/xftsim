@@ -1,0 +1,66 @@
+
+
+* major features
+    - [ ] support CV_only + tskit
+    - [ ] spatial_module
+* features
+** arch [0/3]
+    - [ ] common index api
+    - [ ] LDAK model
+    - [ ] GCTA model
+    - [X] binary
+    - [ ] binary + ruleout
+    - [ ] GxG
+    - [ ] GxE
+** effect [0/1]
+    - [ ] common index api
+    - [ ] look into m_causal bug
+** founders [0/6]
+    - [ ] common index api
+    - [ ] from_maf function
+    - [ ] from_numpy
+    - [ ] from_vcf
+    - [ ] from_dask
+    - [ ] from_zarr
+** index [0/2]
+    - [ ] type field for components 
+    - [ ] cleaner index creation
+** ped [0/1]
+    - [ ] update from mating
+** io [0/4]
+    - [ ] common index api
+    - [ ] from_vcf
+    - [ ] from_dask
+    - [ ] from_zarr
+** lsmate [0/1]
+    - [ ] common index api
+** mate [0/1]
+    - [ ] common index api
+** proc [0/1]
+    - [ ] to_disk
+** reproduce [0/3]
+    - [ ] common index api
+    - [ ] rmap from cM
+    - [ ] rmap from hapmap
+** mate [1/6]
+    - [ ] common index api
+    - [X] random
+    - [X] linear
+    - [X] general xAM
+    - [X] batched
+    - [ ] spatial
+** lsmate [0/1]
+    - [ ] common index api
+** stats [0/9]
+    - [ ] common index api
+    - [X] sample
+    - [X] mating
+    - [X] HE regression
+    - [ ] GWAS sumstats
+    - [ ] LD scores
+    - [ ] cross validation wrapper
+    - [ ] PGS
+    - [ ] REML
+  
+
+
