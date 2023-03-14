@@ -408,6 +408,11 @@ class HaplotypeArray:
         ## populate variant_indexer if missing
         if variant_indexer is None:
             variant_indexer = xft.index.DiploidVariantIndex(m=m, n_chrom=np.min([22,m])).to_haploid()
+            if haplotypes is not None:
+                warnings.warn('Using empirical allele frequencies as variant_indexer not provided')
+                tmp = np.mean(haplotypes,0)
+                variant_indexer.af = np.repeat((tmp[0::2] + tmp[1::2]) * .5,2)
+
         ## populate sample_indexer if missing
         if sample_indexer is None:
             sample_indexer = xft.index.SampleIndex(n=n, generation = generation)

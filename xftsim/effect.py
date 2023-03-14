@@ -14,45 +14,38 @@ import xftsim as xft
 ## simple additive effects that are standardized and/or scaled
 class AdditiveEffects:
     def __init__(self,
-        beta: NDArray[Any, Any] = None, ## effects matrix or vector
-        vid: NDArray[Shape["*"], Any] = None, ## variant id
-        AF: NDArray[Any, Any] = None,
-        phenotype_name: NDArray[Shape["*"], Any] = None,
-        standardized: bool = False,
-        scaled: bool = False,
-        m_causal: NDArray[Shape["*"], Int64] = None, 
+        beta: NDArray[Any, Any], ## effects matrix or vector
+        variant_indexer: xft.index.HaploidVariantIndex = None,
+        component_indexer: xft.index.ComponentIndex = None,
+        standardized: bool = False, ## have the effects been divided by variant SD under HWE?
+        scaled: bool = False, ## have the effects been divided by the number of causal variants per column?
+
         ):
         
-        self.phenotype_name = phenotype_name
-        self.AF = xft.utils.ensure2D(AF)
-        self._tiledAF = np.tile(self.AF, 2)
-        self.vid = vid
+        self.component_indexer = component_indexer
+        self.variant_indexer = variant_indexer
+
+        self._tiledAF = xft.utils.ensure2D(self.variant_indexer.af)
+        self.AF = xft.utils.ensure2D(self.variant_indexer.af)[::2,:]
+        if np.any(np.isnan(self.AF)):
+            raise RuntimeError('Must provided allele frequencies')
+        # self._tiledAF = np.tile(self.AF, 2)
 
         ## ensure shape
-        if beta is None:
-            self._beta = None
-            self.m = None
-            self.c = None
-            self._standardized = False
-            self._scaled = False
-            self._m_causal = None
-            warnings.warn("Effects not provided")
-        else:
-            self._beta = xft.utils.ensure2D(beta)
-            self.m, self.c = beta.shape
-            self._standardized = standardized
-            self._scaled = scaled
-            self._m_causal = m_causal
+        self._beta = xft.utils.ensure2D(beta)   
+        self.m, self.c = beta.shape
+        self._standardized = standardized
+        self._scaled = scaled
 
-        if phenotype_name is None:
-            self.phenotype_name = np.arange(self.c).astype(str)
+        if component_indexer is None:
+            self.component_indexer = xft.index.ComponentIndex.range_index(c)
 
-    @cached_property
+    @property
     def m_causal(self): ## if not provided set to number of non-zero betas per phenotype
-        if self._m_causal is None:
-            return(np.sum(self._beta == 0, axis = 0))
-        else:
-            return self._m_causal
+        # if self._m_causal is None:
+        return(np.sum(self._beta != 0, axis = 0))
+        # else:
+        # return self._m_causal
 
     @cached_property
     def beta_standardized_scaled_diploid(self): ## multiply against standardized (0,1,2)/sqrt(m) genotypes
@@ -67,7 +60,7 @@ class AdditiveEffects:
             return self._beta * np.sqrt(2*self.AF*(1-self.AF)*self.m_causal)
 
     @cached_property
-    def beta_standardized_scaled_haploid(self): #TODO#
+    def beta_standardized_scaled_haploid(self): 
         return self.beta_standardized_scaled_diploid.repeat(2,axis=0)
 
     @cached_property

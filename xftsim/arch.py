@@ -187,11 +187,7 @@ class AdditiveGeneticComponent(ArchitectureComponent):
                  ):
         self.effects = beta
         input_cindex = xft.index.ComponentIndex.from_product([],[],[])
-        output_cindex = xft.index.ComponentIndex.from_product(
-                                                                 beta.phenotype_name,
-                                                                 ['additiveGenetic'],
-                                                                 [-1],
-                                                                 )
+        output_cindex = beta.component_indexer
         super().__init__(input_cindex=input_cindex,
                          output_cindex=output_cindex,
                          input_haplotypes=True,

@@ -353,9 +353,9 @@ class DiploidVariantIndex(XftIndex):
     @property
     def af(self):
         return self.frame['af'].values
-    # @af.setter
-    # def af(self, value):
-        # self._frame['af'] = value
+    @af.setter
+    def af(self, value):
+        self._frame['af'] = value
     
     @property
     def pos_bp(self):
@@ -628,6 +628,14 @@ class ComponentIndex(XftIndex):
                                                                                vorigin_relative)
         return ComponentIndex(phenotype_name, component_name, vorigin_relative)
 
+    @staticmethod
+    def range_index(c: int,
+                    component_name: Iterable = ['generic'],
+                    vorigin_relative: Iterable = [-1],
+                    prefix: str = 'phenotype',):
+        phenotype_name = np.char.add(prefix, np.arange(c).astype(str))
+        return ComponentIndex.from_product(phenotype_name, component_name, vorigin_relative)
+
 ## TODO
 def sampleIndex_from_plink():
     raise NotImplementedError
@@ -691,3 +699,4 @@ def _test_variantIndex_from_plink():
 
 def _test_variantIndex_from_VCF():
     pass
+
