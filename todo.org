@@ -1,58 +1,76 @@
 
-
+* tutorials
+    - [ ] quickstart
+    - [ ] random mating
+    - [ ] assortative mating
+    - [ ] transmission / causal dependences
 * major features
     - [ ] support CV_only + tskit
     - [ ] spatial_module
 * features
-** arch [0/3]
-    - [ ] common index api
+** arch [2/11]
+    - [X] common index api
+    - [ ] DOCUMENT
     - [ ] LDAK model
     - [ ] GCTA model
+    - [ ] implement component types
+    - [ ] auto add sum
     - [X] binary
     - [ ] binary + ruleout
+    - [ ] misdiagnosis
     - [ ] GxG
     - [ ] GxE
-** effect [0/1]
+** effect [0/3]
     - [ ] common index api
+    - [ ] DOCUMENT
     - [ ] look into m_causal bug
-** founders [0/6]
+** founders [0/7]
     - [ ] common index api
+    - [ ] DOCUMENT
     - [ ] from_maf function
     - [ ] from_numpy
     - [ ] from_vcf
     - [ ] from_dask
     - [ ] from_zarr
-** index [0/2]
+** index [1/5]
+    - [ ] DOCUMENT
     - [ ] type field for components 
     - [ ] cleaner index creation
-** ped [0/1]
-    - [ ] update from mating
-** io [0/4]
+    - [X] make from_product etc staticmethods
+    - [ ] allow vorigin specification via string
+** ped [0/3]
     - [ ] common index api
+    - [ ] DOCUMENT
+    - [ ] update from mating
+** io [0/6]
+    - [ ] remove from gitignore
+    - [ ] common index api
+    - [ ] DOCUMENT
     - [ ] from_vcf
     - [ ] from_dask
     - [ ] from_zarr
-** lsmate [0/1]
-    - [ ] common index api
-** mate [0/1]
-    - [ ] common index api
-** proc [0/1]
+** proc [0/2]
+    - [ ] DOCUMENT
     - [ ] to_disk
-** reproduce [0/3]
+** reproduce [0/4]
     - [ ] common index api
+    - [ ] DOCUMENT
     - [ ] rmap from cM
     - [ ] rmap from hapmap
-** mate [1/6]
+** mate [4/7]
     - [ ] common index api
+    - [ ] DOCUMENT
     - [X] random
     - [X] linear
     - [X] general xAM
     - [X] batched
     - [ ] spatial
-** lsmate [0/1]
+** lsmate [0/2]
     - [ ] common index api
-** stats [0/9]
+    - [ ] DOCUMENT
+** stats [3/10]
     - [ ] common index api
+    - [ ] DOCUMENT
     - [X] sample
     - [X] mating
     - [X] HE regression
@@ -61,6 +79,7 @@
     - [ ] cross validation wrapper
     - [ ] PGS
     - [ ] REML
-  
-
-
+** struct [0/3]
+    - [ ] common index api
+    - [X] constructors -> staticmethods 
+    - [ ] DOCUMENT
