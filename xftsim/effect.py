@@ -82,3 +82,21 @@ class AdditiveEffects:
     @cached_property
     def offset(self): ## add to raw multiple against raw (0,1,2) 
         return np.sum(-2*self.AF * self.beta_raw_diploid, axis = 0)
+
+
+
+class GCTAEffects(AdditiveEffects:
+    def __init__(self,
+        vg: NDArray, ## either genetic variances or genetic variance/covariance matrix
+        variant_indexer: xft.index.HaploidVariantIndex,
+        component_indexer: xft.index.ComponentIndex,
+        ):
+        vg = np.array(vg)
+        if len(vg.shape) == 1:
+            vg = np.diag(vg)
+        m = variant_indexer.m
+        k = component_indexer.k_phenotypes
+        beta = np.random.multivariate_normal(np.zeros(k), vg, m)
+
+
+
