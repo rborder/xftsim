@@ -218,7 +218,7 @@ class Meiosis:
                                        parental_haplotypes.sample.values)
         paternal_inds = xft.utils.match(mating.reproducing_paternal_index.unique_identifier, 
                                        parental_haplotypes.sample.values)
-        return xft.struct.haplotypeArray(meiosis(parental_haplotypes.data,
+        return xft.struct.HaplotypeArray(meiosis(parental_haplotypes.data,
                                                 recombination_p,
                                                 maternal_inds,
                                                 paternal_inds,

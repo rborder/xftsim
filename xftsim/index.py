@@ -674,10 +674,10 @@ def _test_HaploidVariantIndex():
 def _test_ComponentIndex():
     pass
 
-def _test_ComponentIndex.from_arrays():
+def _test_ComponentIndex_from_arrays():
     pass
 
-def _test_ComponentIndex.from_product():
+def _test_ComponentIndex_from_product():
     pass
 
 def _test_sampleIndex_from_plink():

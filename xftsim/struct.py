@@ -19,7 +19,7 @@ class XftAccessor:
         self._obj = xarray_obj
         ## haplotype array 
         if self._obj.dims == ('sample', 'variant'):
-            self._array_type = 'haplotypeArray'
+            self._array_type = 'HaplotypeArray'
             self._non_annotation_vars = ['variant', 'vid', 'chrom', 'zero_allele', 'one_allele', 'af', 'hcopy', 'pos_bp', 'pos_cM']
             self._variant_vars = ['vid', 'chrom', 'zero_allele', 'one_allele', 'af']
             self._sample_vars = ['iid', 'fid', 'sex']
@@ -89,7 +89,7 @@ class XftAccessor:
 
     def reindex_components(self, value):
         ## ugly as hell, works for now
-        return phenotypeArray(self._obj.data,
+        return PhenotypeArray(self._obj.data,
                               component_indexer = value,
                               sample_indexer = self.get_sample_indexer(),
                               )
@@ -157,7 +157,7 @@ class XftAccessor:
         return out
 
 
-    ############ haplotypeArray properties ############
+    ############ HaplotypeArray properties ############
     @property
     def diploid_vid(self):
         if self._col_dim != 'variant': raise TypeError
@@ -388,7 +388,9 @@ class XftAccessor:
 
 
 
-def haplotypeArray(
+
+class HaplotypeArray:
+    def __new__(cls,
              haplotypes: NDArray[Shape["*, *"], Int8] = None, ## n x 2m array of binary haplotypes
              variant_indexer: xft.index.HaploidVariantIndex = None,
              sample_indexer: xft.index.SampleIndex = None,
@@ -396,114 +398,116 @@ def haplotypeArray(
              n: int = None,
              m: int = None,
              ):
-    ## obtain n,m if missing
-    # assert (variant_indexer is not None) ^ (m is not None) ^ (h)), "provide variant_indexer OR m"
-    # assert (sample_indexer is not None) ^ (n is not None), "provide sample_indexer OR n"
-    if haplotypes is not None:
-        assert haplotypes.shape[1]%2==0
-        n,m = haplotypes.shape
-        m = m // 2
-    ## populate variant_indexer if missing
-    if variant_indexer is None:
-        variant_indexer = xft.index.DiploidVariantIndex(m=m, n_chrom=np.min([22,m])).to_haploid()
-    ## populate sample_indexer if missing
-    if sample_indexer is None:
-        sample_indexer = xft.index.SampleIndex(n=n, generation = generation)
-    ## populate haplotypes with NaN if not provided
-    if haplotypes is None:
-        warnings.warn('Defaulting allele counts to -1', stacklevel=2)
-        data = np.full((sample_indexer.n, variant_indexer.m*2),
-                             fill_value=-1, dtype=np.int8)
-    else:
-        assert type(haplotypes) is np.ndarray, "haplotypes must be ndarray"
-        data = haplotypes.astype(np.int8)
+        ## obtain n,m if missing
+        # assert (variant_indexer is not None) ^ (m is not None) ^ (h)), "provide variant_indexer OR m"
+        # assert (sample_indexer is not None) ^ (n is not None), "provide sample_indexer OR n"
+        if haplotypes is not None:
+            assert haplotypes.shape[1]%2==0
+            n,m = haplotypes.shape
+            m = m // 2
+        ## populate variant_indexer if missing
+        if variant_indexer is None:
+            variant_indexer = xft.index.DiploidVariantIndex(m=m, n_chrom=np.min([22,m])).to_haploid()
+        ## populate sample_indexer if missing
+        if sample_indexer is None:
+            sample_indexer = xft.index.SampleIndex(n=n, generation = generation)
+        ## populate haplotypes with NaN if not provided
+        if haplotypes is None:
+            warnings.warn('Defaulting allele counts to -1', stacklevel=2)
+            data = np.full((sample_indexer.n, variant_indexer.m*2),
+                                 fill_value=-1, dtype=np.int8)
+        else:
+            assert type(haplotypes) is np.ndarray, "haplotypes must be ndarray"
+            data = haplotypes.astype(np.int8)
 
-    coord_dict = sample_indexer.coord_dict.copy()
-    coord_dict.update(variant_indexer.coord_dict)
-    return xr.DataArray(data=data,
-                        dims=['sample','variant'],
-                        coords=coord_dict,
-                        name='HaplotypeArray',
-                        attrs={
-                               'generation':generation,
-                               })
-
-
-def phenotypeArray(
-             components: NDArray[Shape["*, *"], Float] = None, ## n x 2m array of binary haplotypes
-             component_indexer: xft.index.ComponentIndex = None,
-             sample_indexer: xft.index.SampleIndex = None,
-             generation: int = 0,
-             n: int = None,
-             k_total: int = None,
-             ):
-    ## ensure components is conformable with indexers
-    if components is not None:
-        assert n is None, "Provide n OR components"
-        assert k_total is None, "Provide k_total OR components"
-        components = np.array(components) ## todo verify this doesn't induce copy
-        if sample_indexer is not None:
-            assert components.shape[0] == sample_indexer.n, "Noncomformable sample_indexer"
-        if component_indexer is not None:
-            assert components.shape[1] == component_indexer.k_total, "Noncomformable component_indexer"           
-    ## obtain dimensions if necessary
-    if k_total is not None:
-        assert component_indexer is None, "Provide k_total OR component_indexer"
-        component_indexer = xft.index.ComponentIndex(k_total=k_total)
-    if n is not None:
-        assert sample_indexer is None, "Provide n OR sample_indexer"
-        sample_indexer = xft.index.SampleIndex(n=n)
-    k_total, n = component_indexer.k_total, sample_indexer.n
-    ## initialize component array if necessary 
-    if components is None:
-        components = np.full((n, k_total), fill_value=np.NaN)
-
-    coord_dict = sample_indexer.coord_dict.copy()
-    coord_dict.update(component_indexer.coord_dict)
-    return xr.DataArray(data=components,
-                        dims=['sample','component'],
-                        coords=coord_dict,
-                        name='PhenotypeArray',
-                        attrs={
-                               'generation':generation,
-                               })
-
-def phenotypeArray_from_product(
-                                phenotype_name: Iterable,
-                                component_name: Iterable,
-                                vorigin_relative: Iterable,
-                                components: xr.DataArray = None,
-                                sample_indexer: xft.index.SampleIndex = None,
-                                generation: int = None,
-                                haplotypes: xr.DataArray = None,
-                                n: int = None,
-                                ) -> xr.DataArray:
-    ## use either haplotypes xOR sample_indexer/generation xOR n/generation
-    bool_gsi = bool(generation is not None and sample_indexer is not None)
-    bool_h = bool(haplotypes is not None)
-    bool_n = bool(n is not None and generation is not None)
-    assert bool_gsi ^ bool_h ^ bool_n
-    if bool_n:
-        sample_indexer = xft.index.SampleIndex(n=n,generation=generation)
-    elif bool_h:
-        generation = haplotypes.xft.generation
-        sample_indexer = haplotypes.xft.get_sample_indexer()
-    component_indexer = xft.index.ComponentIndex.from_product(phenotype_name, component_name, vorigin_relative)
-    return phenotypeArray(
-                          components = components,
-                          component_indexer = component_indexer,
-                          sample_indexer = sample_indexer,
-                          generation = generation,
-                          )
+        coord_dict = sample_indexer.coord_dict.copy()
+        coord_dict.update(variant_indexer.coord_dict)
+        return xr.DataArray(data=data,
+                            dims=['sample','variant'],
+                            coords=coord_dict,
+                            name='HaplotypeArray',
+                            attrs={
+                                   'generation':generation,
+                                   })
 
 
-def _test_haplotypeArray():
-    generation = 0
-    n=3
-    m=10
-    n_chrom=10
-    haplotypes=np.full((n,m*2), fill_value=-1, dtype=np.int8)
-    variant_indexer= xft.index.DiploidVariantIndex(m=m, n_chrom=n_chrom).to_haploid()
-    sample_indexer= xft.index.SampleIndex(n=n, generation=generation)
-    haplotypeArray(haplotypes, generation=generation)
+class PhenotypeArray:
+    def __new__(cls,
+                components: NDArray[Shape["*, *"], Float] = None, ## n x 2m array of binary haplotypes
+                component_indexer: xft.index.ComponentIndex = None,
+                sample_indexer: xft.index.SampleIndex = None,
+                generation: int = 0,
+                n: int = None,
+                k_total: int = None,
+                ):
+        ## ensure components is conformable with indexers
+        if components is not None:
+            assert n is None, "Provide n OR components"
+            assert k_total is None, "Provide k_total OR components"
+            components = np.array(components) ## todo verify this doesn't induce copy
+            if sample_indexer is not None:
+                assert components.shape[0] == sample_indexer.n, "Noncomformable sample_indexer"
+            if component_indexer is not None:
+                assert components.shape[1] == component_indexer.k_total, "Noncomformable component_indexer"           
+        ## obtain dimensions if necessary
+        if k_total is not None:
+            assert component_indexer is None, "Provide k_total OR component_indexer"
+            component_indexer = xft.index.ComponentIndex(k_total=k_total)
+        if n is not None:
+            assert sample_indexer is None, "Provide n OR sample_indexer"
+            sample_indexer = xft.index.SampleIndex(n=n)
+        k_total, n = component_indexer.k_total, sample_indexer.n
+        ## initialize component array if necessary 
+        if components is None:
+            components = np.full((n, k_total), fill_value=np.NaN)
+
+        coord_dict = sample_indexer.coord_dict.copy()
+        coord_dict.update(component_indexer.coord_dict)
+        return xr.DataArray(data=components,
+                            dims=['sample','component'],
+                            coords=coord_dict,
+                            name='PhenotypeArray',
+                            attrs={
+                                   'generation':generation,
+                                   })
+    @staticmethod
+    def from_product(
+                     phenotype_name: Iterable,
+                     component_name: Iterable,
+                     vorigin_relative: Iterable,
+                     components: xr.DataArray = None,
+                     sample_indexer: xft.index.SampleIndex = None,
+                     generation: int = None,
+                     haplotypes: xr.DataArray = None,
+                     n: int = None,
+                     ) -> xr.DataArray:
+        ## use either haplotypes xOR sample_indexer/generation xOR n/generation
+        bool_gsi = bool(generation is not None and sample_indexer is not None)
+        bool_h = bool(haplotypes is not None)
+        bool_n = bool(n is not None and generation is not None)
+        assert bool_gsi ^ bool_h ^ bool_n
+        if bool_n:
+            sample_indexer = xft.index.SampleIndex(n=n,generation=generation)
+        elif bool_h:
+            generation = haplotypes.xft.generation
+            sample_indexer = haplotypes.xft.get_sample_indexer()
+        component_indexer = xft.index.ComponentIndex.from_product(phenotype_name, component_name, vorigin_relative)
+        return PhenotypeArray(
+                              components = components,
+                              component_indexer = component_indexer,
+                              sample_indexer = sample_indexer,
+                              generation = generation,
+                              )
+
+    @staticmethod
+    def _test():
+        generation = 0
+        n=3
+        m=10
+        n_chrom=10
+        haplotypes=np.full((n,m*2), fill_value=-1, dtype=np.int8)
+        variant_indexer= xft.index.DiploidVariantIndex(m=m, n_chrom=n_chrom).to_haploid()
+        sample_indexer= xft.index.SampleIndex(n=n, generation=generation)
+        HaplotypeArray(haplotypes, generation=generation)
+
 

@@ -499,7 +499,7 @@ class Architecture:
                                    control: dict = None,
                                    ) -> xr.DataArray:
         sample_indexer = haplotypes.xft.get_sample_indexer()
-        return xft.struct.phenotypeArray(component_indexer = self.merged_component_indexer,
+        return xft.struct.PhenotypeArray(component_indexer = self.merged_component_indexer,
                                         sample_indexer = haplotypes.xft.get_sample_indexer(),
                                         generation = haplotypes.attrs['generation'])
 

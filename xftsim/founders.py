@@ -23,7 +23,7 @@ def founder_haplotypes_from_AFs(n: int,
                                                     n_chrom=np.min([22,m]),
                                                     af = afs[::2,:].ravel()).to_haploid()
 
-    return xft.struct.haplotypeArray(haplotypes, variant_indexer=variant_indexer)
+    return xft.struct.HaplotypeArray(haplotypes, variant_indexer=variant_indexer)
 
 def founder_haplotypes_uniform_AFs(n: int, 
                                    m: int,
