@@ -1,14 +1,15 @@
 
-* tutorials
+* tutorials [0/4]
     - [ ] quickstart
     - [ ] random mating
     - [ ] assortative mating
     - [ ] transmission / causal dependences
-* major features
+* major features [0/3]
     - [ ] support CV_only + tskit
     - [ ] spatial_module
-* features
-** arch [2/11]
+    - [ ] causal graph
+* features [0/12]
+** ☐ arch [2/12]
     - [X] common index api
     - [ ] DOCUMENT
     - [ ] LDAK model
@@ -20,11 +21,14 @@
     - [ ] misdiagnosis
     - [ ] GxG
     - [ ] GxE
-** effect [0/3]
-    - [ ] common index api
+    - [ ] causal graph methods
+    - [ ] prettify __repr__
+** ☐ [#A] effect [0/3]
+    - [X] common index api
     - [ ] DOCUMENT
-    - [ ] look into m_causal bug
-** founders [0/7]
+    - [X] look into m_causal bug
+    - [ ] prettify __repr__
+** ☐ [#A] founders [0/7]
     - [ ] common index api
     - [ ] DOCUMENT
     - [ ] from_maf function
@@ -32,32 +36,39 @@
     - [ ] from_vcf
     - [ ] from_dask
     - [ ] from_zarr
-** index [1/5]
+    - [ ] prettify __repr__
+** ☐ index [1/5]
     - [ ] DOCUMENT
-    - [ ] type field for components 
+    - ~ unify VariantIndex
+    - [ ] type field for components
     - [ ] cleaner index creation
     - [X] make from_product etc staticmethods
     - [ ] allow vorigin specification via string
-** ped [0/3]
+    - [ ] prettify __repr__
+** ☐ [#A] ped [0/3]
     - [ ] common index api
     - [ ] DOCUMENT
     - [ ] update from mating
-** io [0/6]
+    - [ ] prettify __repr__
+** ☐ io [0/6]
     - [ ] remove from gitignore
     - [ ] common index api
     - [ ] DOCUMENT
     - [ ] from_vcf
     - [ ] from_dask
     - [ ] from_zarr
-** proc [0/2]
+    - [ ] prettify __repr__
+** ☐ proc [0/2]
     - [ ] DOCUMENT
     - [ ] to_disk
-** reproduce [0/4]
+    - [ ] prettify __repr__
+** ☐ [#A] reproduce [0/4]
     - [ ] common index api
     - [ ] DOCUMENT
     - [ ] rmap from cM
     - [ ] rmap from hapmap
-** mate [4/7]
+    - [ ] prettify __repr__
+** ☐ [#A] mate [4/7]
     - [ ] common index api
     - [ ] DOCUMENT
     - [X] random
@@ -65,12 +76,15 @@
     - [X] general xAM
     - [X] batched
     - [ ] spatial
-** lsmate [0/2]
+    - [ ] prettify __repr__
+** ☐ [#A] lsmate [0/2]
     - [ ] common index api
     - [ ] DOCUMENT
-** stats [3/10]
+    - [ ] prettify __repr__
+** ☐ [#A] stats [3/10]
     - [ ] common index api
     - [ ] DOCUMENT
+    - [ ] PCA
     - [X] sample
     - [X] mating
     - [X] HE regression
@@ -79,7 +93,9 @@
     - [ ] cross validation wrapper
     - [ ] PGS
     - [ ] REML
-** struct [0/3]
-    - [ ] common index api
-    - [X] constructors -> staticmethods 
+    - [ ] prettify __repr__
+** ☐ struct [2/3]
+    - [X] common index api
+    - [X] constructors -> staticmethods
     - [ ] DOCUMENT
+    - [ ] prettify __repr__
