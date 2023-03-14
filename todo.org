@@ -27,6 +27,7 @@
     - [X] common index api
     - [ ] DOCUMENT
     - [X] look into m_causal bug
+    - [ ] make scaled / standardized language intelligible/fix doc
     - [ ] prettify __repr__
 ** ☐ [#A] founders [0/7]
     - [ ] common index api
