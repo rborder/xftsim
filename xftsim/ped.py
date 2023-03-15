@@ -13,25 +13,27 @@ import xftsim as xft
 
 
 class Pedigree:
-    def __init__(self, 
-        founder_sample_index: xft.index.SampleIndex,
-        founder_generation = 0,
-        ):
+    def __init__(self,
+                 founder_sample_index: xft.index.SampleIndex,
+                 founder_generation=0,
+                 ):
         self.G = nx.DiGraph()
         self.G.add_nodes_from(founder_iids)
-        self._generation = {node:founder_generation for node in founder_sample_index.unique_identifier}
+        self._generation = {
+            node: founder_generation for node in founder_sample_index.unique_identifier}
         # self._parents = }{
         if founder_fids is not None:
-            self._fid = {node:fid for (node,fid) in zip(founder_iids,founder_fids)}
+            self._fid = {node: fid for (node, fid) in zip(
+                founder_iids, founder_fids)}
         else:
             self._fid = {}
         self._generational_depth = founder_generation
 
     def generation(self, K: int):
-        return nx.subgraph_view(ped.G, filter_node= lambda x: ped._generation[x] == K)
+        return nx.subgraph_view(ped.G, filter_node=lambda x: ped._generation[x] == K)
 
     def generations(self, gens):
-        return nx.subgraph_view(ped.G, filter_node= lambda x: ped._generation[x] in gens)
+        return nx.subgraph_view(ped.G, filter_node=lambda x: ped._generation[x] in gens)
 
     def current_generation(self, K):
         return self.generation(self._generational_depth)
@@ -42,20 +44,24 @@ class Pedigree:
     def _add_edges_from_arrays(self, x, y):
         self.G.add_edges_from([(xx, yy) for (xx, yy) in zip(x, y)])
 
-    def add_offspring(self, 
-        mating: xft.mate.MateAssignment, 
-        ):
+    def add_offspring(self,
+                      mating: xft.mate.MateAssignment,
+                      ):
 
         self.G.add_nodes_from(mating.offspring_iids)
-        self._generation.update({node:mating.generation for node in mating.offspring_iids})
-        self._fid.update({node:fid for (node,fid) in zip(mating.offspring_iids, mating.offspring_fids)})
-        self._add_edges_from_arrays(mating.maternal_iids, mating.offspring_iids)
-        self._add_edges_from_arrays(mating.paternal_iids, mating.offspring_iids)
+        self._generation.update(
+            {node: mating.generation for node in mating.offspring_iids})
+        self._fid.update({node: fid for (node, fid) in zip(
+            mating.offspring_iids, mating.offspring_fids)})
+        self._add_edges_from_arrays(
+            mating.maternal_iids, mating.offspring_iids)
+        self._add_edges_from_arrays(
+            mating.paternal_iids, mating.offspring_iids)
         if mating.generation + 1 > self._generational_depth:
             self._generational_depth = mating.generation + 1
 
     def _get_trios(self):
-        pass ## TODO
+        pass  # TODO
 
 
 # NN=100

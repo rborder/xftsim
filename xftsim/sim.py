@@ -11,12 +11,12 @@ from nptyping import NDArray, Int8, Int64, Float64, Bool, Shape
 from typing import Any, Hashable, List, Iterable, Callable, Union, Dict, final
 from numpy.typing import ArrayLike
 from functools import cached_property
-       
 
 
 class Simulation():
     """docstring for Simulation"""
-    def __init__(self, 
+
+    def __init__(self,
                  founder_haplotypes: xr.DataArray,
                  mating_regime: xft.mate.MatingRegime,
                  recombination_map: xft.reproduce.RecombinationMap,
@@ -25,32 +25,34 @@ class Simulation():
                  post_processors: Iterable = [],
                  generation: int = -1,
                  control={},
-                 reproduction_method = xft.reproduce.Meiosis,
+                 reproduction_method=xft.reproduce.Meiosis,
                  ):
-        ## attributes
+        # attributes
         self.mating_regime = mating_regime
         self.recombination_map = recombination_map
         self.architecture = architecture
         self.statistics = statistics
         self.post_processors = post_processors
         self.reproduction_method = reproduction_method
-        self.reproduction_regime =  self.reproduction_method(self.recombination_map)
-        ## default control parameters:
+        self.reproduction_regime = self.reproduction_method(
+            self.recombination_map)
+        # default control parameters:
         ctrl = Simulation._default_control()
         ctrl.update(control)
         self.control = ctrl
-        ## properties
+        # properties
         self._generation = generation
-        ## initialize data stores
-        self.haplotype_store = {np.max([generation,0]):founder_haplotypes} ## for proper initialization
+        # initialize data stores
+        # for proper initialization
+        self.haplotype_store = {np.max([generation, 0]): founder_haplotypes}
         self.phenotype_store = {}
         self.mating_store = {}
         self.results_store = {}
-        self.pedigree = None ## TODO
+        self.pedigree = None  # TODO
 
         #### generation specific cached properties ####
-        ## computed once per generation, deleted next generation
-        ## by call to increment_generation
+        # computed once per generation, deleted next generation
+        # by call to increment_generation
         self._current_afs_empirical = None
         self._current_std_genotypes = None
         self._current_std_phenotypes = None
@@ -58,6 +60,7 @@ class Simulation():
     @property
     def control(self):
         return self._control
+
     @control.setter
     def control(self, value):
         self._control = value
@@ -66,14 +69,14 @@ class Simulation():
     @staticmethod
     def _default_control():
         return dict(
-                    standardization='hardy_weinberg_empirical',
-                    )
+            standardization='hardy_weinberg_empirical',
+        )
 
     def _validate_control(self):
         if self._control['standardization'] not in [
-            'hardy_weinberg_empirical', 
+            'hardy_weinberg_empirical',
             # 'hardy_weinberg_reference',
-            ]:
+        ]:
             raise RuntimeError()
 
     def run(self, n_generations: int):
@@ -87,20 +90,25 @@ class Simulation():
             self.process()
 
     def compute_phenotypes(self):
-        ## generation zero
+        # generation zero
         if self.generation == 0:
-            self.phenotypes = self.architecture.initialize_founder_phenotype_array(self.haplotypes, self.control)
-            self.architecture.compute_phenotypes(self.haplotypes, self.phenotypes, self.control)
+            self.phenotypes = self.architecture.initialize_founder_phenotype_array(
+                self.haplotypes, self.control)
+            self.architecture.compute_phenotypes(
+                self.haplotypes, self.phenotypes, self.control)
         elif self.generation >= 1:
-            self.phenotypes = self.architecture.initialize_phenotype_array(self.haplotypes, self.control)
+            self.phenotypes = self.architecture.initialize_phenotype_array(
+                self.haplotypes, self.control)
             xft.reproduce.transmit_parental_phenotypes(self.parent_mating,
-                                                self.parent_phenotypes,
-                                                self.phenotypes,
-                                                self.control)
-            self.architecture.compute_phenotypes(self.haplotypes, self.phenotypes, self.control)
+                                                       self.parent_phenotypes,
+                                                       self.phenotypes,
+                                                       self.control)
+            self.architecture.compute_phenotypes(
+                self.haplotypes, self.phenotypes, self.control)
 
     def mate(self):
-            self.mating = self.mating_regime.mate(self.haplotypes, self.phenotypes, self.control)
+        self.mating = self.mating_regime.mate(
+            self.haplotypes, self.phenotypes, self.control)
 
     def reproduce(self):
         if self.generation == 0:
@@ -109,40 +117,43 @@ class Simulation():
             self.haplotypes = self.reproduction_regime.reproduce(self.parent_haplotypes,
                                                                  self.parent_mating,
                                                                  self.control)
+
     def estimate_statistics(self):
         for stat in self.statistics:
             stat.estimate(self)
 
     def process(self):
-        for ind,proc in enumerate(self.post_processors):
-            ## allow callables that map xft.Simulation -> None
+        for ind, proc in enumerate(self.post_processors):
+            # allow callables that map xft.Simulation -> None
             if isinstance(proc, Callable):
-                proc = xft.proc.PostProcessor(proc, ' '.join(['process', str(ind)]))
+                proc = xft.proc.PostProcessor(
+                    proc, ' '.join(['process', str(ind)]))
             proc.process(self)
 
     def update_pedigree(self):
-        pass ## TODO
+        pass  # TODO
 
-    ## generation is immutable except through Simulation().increment_generation()
+    # generation is immutable except through Simulation().increment_generation()
     @property
     def generation(self):
         return self._generation
 
-    ## erase current-generation specific cached properties
+    # erase current-generation specific cached properties
     def increment_generation(self):
         self._current_afs_empirical = None
         self._current_std_genotypes = None
         self._current_std_haplotypes = None
         self._generation += 1
 
-    @property 
+    @property
     def haplotypes(self):
         if self.generation in self.haplotype_store.keys():
             return self.haplotype_store[self.generation]
         else:
             return None
+
     @haplotypes.setter
-    def haplotypes(self,value):
+    def haplotypes(self, value):
         self.haplotype_store[self.generation] = value
 
     @property
@@ -151,16 +162,18 @@ class Simulation():
             return self.phenotype_store[self.generation]
         else:
             return None
+
     @phenotypes.setter
-    def phenotypes(self,value):
+    def phenotypes(self, value):
         self.phenotype_store[self.generation] = value
-        
+
     @property
     def mating(self):
         if self.generation in self.mating_store.keys():
             return self.mating_store[self.generation]
         else:
             return None
+
     @mating.setter
     def mating(self, value):
         self.mating_store[self.generation] = value
@@ -168,20 +181,21 @@ class Simulation():
     @property
     def parent_mating(self):
         if (self.generation - 1) in self.mating_store.keys():
-            return self.mating_store[(self.generation-1)]
+            return self.mating_store[(self.generation - 1)]
         else:
             return None
 
-    @property 
+    @property
     def parent_haplotypes(self):
-        if (self.generation-1) in self.haplotype_store.keys():
-            return self.haplotype_store[(self.generation-1)]
+        if (self.generation - 1) in self.haplotype_store.keys():
+            return self.haplotype_store[(self.generation - 1)]
         else:
             return None
-    @property 
+
+    @property
     def parent_phenotypes(self):
-        if (self.generation-1) in self.phenotype_store.keys():
-            return self.phenotype_store[(self.generation-1)]
+        if (self.generation - 1) in self.phenotype_store.keys():
+            return self.phenotype_store[(self.generation - 1)]
         else:
             return None
 
@@ -195,21 +209,21 @@ class Simulation():
         else:
             return None
 
-    ## generation specific properties that are overwritten 
-    ## by increment_generation()
+    # generation specific properties that are overwritten
+    # by increment_generation()
     @property
     def current_afs_empirical(self):
         if self._current_afs_empirical is None:
             return self.haplotypes.xft.af_empirical
         else:
             return self._current_afs_empirical
-   
+
     @property
     def current_std_genotypes(self):
         if self._current_std_genotypes is None:
             if self.control['standardization'] == 'hardy_weinberg_empirical':
-                return self.haplotypes.xft.to_diploid_standardized(af = self.current_afs_empirical,
-                                                                   scale = False)
+                return self.haplotypes.xft.to_diploid_standardized(af=self.current_afs_empirical,
+                                                                   scale=False)
             else:
                 raise NotImplementedError()
         else:
@@ -221,7 +235,6 @@ class Simulation():
             return self.phenotypes.xft.standardize()
         else:
             return self._current_std_phenotypes
-    
+
     # def __repr__(self):
         # pass
-
