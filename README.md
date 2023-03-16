@@ -46,7 +46,7 @@ arch_sum = xft.arch.SumComponent(pnames, sum_components=['additiveGenetic', 'add
 
 
 amr = xft.mate.LinearAssortativeMatingRegime(r = .3, 
-                                             component_index = xft.index.ComponentIndex.from_product(pnames,
+                                             component_index = xft.index.ComponentIndex_from_product(pnames,
                                               ['phenotype'],
                                               [-1]),
                                              offspring_per_pair=xft.utils.ZeroTruncatedPoissonCount(2))

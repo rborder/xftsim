@@ -8,10 +8,11 @@
     - [ ] support CV_only + tskit
     - [ ] spatial_module
     - [ ] causal graph
-* features [0/12]
-** ☐ arch [2/12]
+* features [0/0]
+** ☐ arch [2/14]
     - [X] common index api
     - [ ] DOCUMENT
+    - [ ] add get_annotations methods
     - [ ] LDAK model
     - [ ] GCTA model
     - [ ] implement component types
@@ -23,11 +24,12 @@
     - [ ] GxE
     - [ ] causal graph methods
     - [ ] prettify __repr__
-** ☐ [#A] effect [0/3]
+** ☐ [#A] effect [3/6]
     - [X] common index api
     - [ ] DOCUMENT
+    - [ ] add get_annotations methods
     - [X] look into m_causal bug
-    - [ ] make scaled / standardized language intelligible/fix doc
+    - [X] make scaled / standardized language intelligible/fix doc
     - [ ] prettify __repr__
 ** ☐ [#A] founders [0/7]
     - [ ] common index api
@@ -95,8 +97,10 @@
     - [ ] PGS
     - [ ] REML
     - [ ] prettify __repr__
-** ☐ struct [2/3]
+** ☐ struct [2/4]
     - [X] common index api
     - [X] constructors -> staticmethods
     - [ ] DOCUMENT
     - [ ] prettify __repr__
+** ☐ utils [0/1]
+    - [ ] DOCUMENT
