@@ -324,3 +324,19 @@ def cov2cor(A):
         else:
             output = S @ A @ S
         return output
+
+
+def to_simplex(*args):
+    a = np.array(args).ravel()
+    if np.all(a <= 0): 
+        raise ValueError()
+    while np.any(a < 0):
+        a += np.min(a)
+    return a / sum(a)
+
+def to_proportions(*args):
+    simplex = to_simplex(args)
+    for i in range(simplex.shape[0]):
+        if np.any(simplex < 1):
+            simplex *= 1/np.min(simplex)
+    return simplex
