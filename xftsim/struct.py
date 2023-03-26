@@ -470,7 +470,7 @@ class HaplotypeArray:
             data = np.full((sample_indexer.n, variant_indexer.m * 2),
                            fill_value=-1, dtype=np.int8)
         else:
-            assert type(haplotypes) is np.ndarray, "haplotypes must be ndarray"
+            # assert type(haplotypes) is np.ndarray, "haplotypes must be ndarray"
             data = haplotypes.astype(np.int8)
 
         coord_dict = sample_indexer.coord_dict.copy()
