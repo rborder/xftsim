@@ -208,8 +208,7 @@ class AdditiveGeneticComponent(ArchitectureComponent):
                           haplotypes: xr.DataArray,
                           phenotypes: xr.DataArray) -> None:
         n = haplotypes.shape[0]
-        heritable_components = (
-            da.dot(haplotypes.data, self.effects.beta_raw_haploid) + np.tile(self.effects.offset, (n, 1))
+        heritable_components = da.dot(haplotypes.data, self.effects.beta_raw_haploid) + np.tile(self.effects.offset, (n, 1))
         phenotypes.loc[:,
                        self.output_cindex.unique_identifier] = heritable_components
 
