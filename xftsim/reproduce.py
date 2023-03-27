@@ -46,13 +46,37 @@ class RecombinationMap:  # diploid recombination map
             name='probabilities',
         )
 
+    @staticmethod
+    def constant_map_from_haplotypes(haplotypes=xr.DataArray,
+                                     p: np.float64 = .5,
+                                     ) -> RecombinationMap:
+        vi = haplotypes.xft.get_variant_indexer()
+        return RecombinationMap(p, vid=vi.vid, chrom=vi.chrom)
 
-def recombinationMapFromHaplotypes(
-    haplotypes=xr.DataArray,
-    p: np.float64 = .5,
-) -> RecombinationMap:
-    vi = haplotypes.xft.get_variant_indexer()
-    return RecombinationMap(p, vid=vi.vid, chrom=vi.chrom)
+    @staticmethod
+    def variable_map_from_haplotypes_with_cM(haplotypes=xr.DataArray,
+                                             ) -> RecombinationMap:
+        vi_dip = haplotypes.xft.get_variant_indexer().to_diploid()
+        if np.any(np.isnan(vi_dip.pos_cM)):
+            raise ValueError("Distance in centimorgans required"
+                             "Try interpolating with `interpolate_cM`")
+        d = np.diff(vi_dip.pos_cM)
+        pp = (1 - np.exp(-2*d/100)) / 2
+        pp[np.diff(vi_dip.chrom.astype(int))==1] = .5 
+        pp = np.concat([[.5], pp])
+        return RecombinationMap(pp, vid=vi_dip.vid, chrom=vi_dip.chrom)
+
+
+def interpolate_cM(haplotypes: xr.DataArray,
+                   rmap_df: pd.DataFrame = xft.data.get_ceu_map(),
+                   **kwargs):
+    chroms = np.unique(haplotypes.chrom.values.astype(int)).astype(str)
+    for chrom in chroms:  
+        rmap_chrom = rmap_df[rmap_df['Chromosome']=='chr'+chrom]
+        interpolator = interpolate.interp1d(x = rmap_chrom['Position(bp)'].values,
+                                            y = rmap_chrom['Map(cM)'].values,
+                                            **kwargs)
+        haplotypes.pos_cM[haplotypes.chrom==chrom] = interpolator(haplotypes.pos_bp[haplotypes.chrom==chrom])
 
 
 def transmit_parental_phenotypes(
