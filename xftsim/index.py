@@ -445,8 +445,6 @@ class DiploidVariantIndex(XftIndex):
     def annotate(self):
         raise NotImplementedError ## TODO
 
-
-
 class HaploidVariantIndex(DiploidVariantIndex):
     @property
     def ploidy(self):
