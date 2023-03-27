@@ -29,7 +29,7 @@ class RecombinationMap:  # diploid recombination map
             chrom = chrom[::2]
         self.m = vid.shape[0]
         self._chrom_boundary = np.concatenate(
-            [[0], np.where(np.diff(chrom) == 1)[0]])
+            [[0], np.where(chrom[1:] != chrom[:-1])[0]])
         if type(p) is float:
             assert p <= 1 and p >= 0, "Provide a valid probability"
             self._probabilities = np.ones(self.m) * p
@@ -62,8 +62,8 @@ class RecombinationMap:  # diploid recombination map
                              "Try interpolating with `xr.DataArray.xft.interpolate_cM`")
         d = np.diff(vi_dip.pos_cM)
         pp = (1 - np.exp(-2*d/100)) / 2
-        pp[np.diff(vi_dip.chrom.astype(int))==1] = .5 
-        pp = np.concat([[.5], pp])
+        pp[vi_dip.chrom[1:]!=vi_dip.chrom[:-1]] = .5 
+        pp = np.concatenate([[.5], pp])
         return RecombinationMap(pp, vid=vi_dip.vid, chrom=vi_dip.chrom)
 
 def transmit_parental_phenotypes(
