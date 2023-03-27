@@ -174,13 +174,13 @@ class XftAccessor:
                        **kwargs):
         if self._col_dim != 'variant':
             raise TypeError
-        chroms = np.unique(self.chrom.values.astype(int)).astype(str)
+        chroms = np.unique(self._obj.chrom.values.astype(int)).astype(str)
         for chrom in chroms:  
             rmap_chrom = rmap_df[rmap_df['Chromosome']=='chr'+chrom]
             interpolator = interpolate.interp1d(x = rmap_chrom['Position(bp)'].values,
                                                 y = rmap_chrom['Map(cM)'].values,
                                                 **kwargs)
-            self.pos_cM[haplotypes.chrom==chrom] = interpolator(self.pos_bp[self.chrom==chrom])
+            self.pos_cM[haplotypes.chrom==chrom] = interpolator(self._obj.pos_bp[self._obj.chrom==chrom])
 
 
     @property
