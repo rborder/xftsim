@@ -134,7 +134,7 @@ def haseman_elston(
                    dtype=np.float32,
                    ):
     Y = xft.utils.ensure2D(Y).astype(dtype)
-    G = np.array(G, dtype=dtype)
+    G = np.array(G)#, dtype=dtype)
     if np.isinf(n_probe):
         return _haseman_elston_deterministic(G, Y)
     else:
