@@ -8,6 +8,7 @@ from nptyping import NDArray, Int8, Int64, Float64, Bool, Shape
 from typing import Any, Hashable, List, Iterable, Callable, Union, Dict, final
 from numpy.typing import ArrayLike
 from functools import cached_property
+import dask.array as da
 
 import xftsim as xft
 
@@ -208,7 +209,7 @@ class AdditiveGeneticComponent(ArchitectureComponent):
                           phenotypes: xr.DataArray) -> None:
         n = haplotypes.shape[0]
         heritable_components = (
-            haplotypes.data @ self.effects.beta_raw_haploid) + np.tile(self.effects.offset, (n, 1))
+            da.dot(haplotypes.data, self.effects.beta_raw_haploid) + np.tile(self.effects.offset, (n, 1))
         phenotypes.loc[:,
                        self.output_cindex.unique_identifier] = heritable_components
 
