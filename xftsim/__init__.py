@@ -9,3 +9,4 @@ from . import founders    ## creation / import of founder haplotypes
 from . import sim         ## simulation object
 from . import stats       ## estimation
 from . import proc        ## post-processing
+from . import data        ## post-processing
