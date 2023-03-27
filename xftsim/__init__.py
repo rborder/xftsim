@@ -1,4 +1,4 @@
-from . import data        ## post-processing
+from . import data        ## download recombination maps etc
 from . import utils       ## utility functions   
 from . import index       ## indexing
 from . import struct      ## data structures
