@@ -98,6 +98,11 @@ def _rtrace_K2(X, l): ## (matrix, int) -> float
     W = probes.T @ (X @ (X.T @ (X @ (X.T @ probes))))
     return np.trace(W)/l
 
+def _rtrace_K2_dask(X, l): ## (matrix, int) -> float
+    probes = np.random.randn(X.shape[0], l)
+    W = da.dot(probes.T, da.dot(X, da.dot(X.T, da.dot(X, da.dot(X.T, probes)))))
+    return da.trace(W)/l
+
 @nb.jit(parallel=True)
 def _haseman_elston_randomized(
                     G, # (2D array) standardized (but not scaled) diploid genotypes
@@ -113,6 +118,21 @@ def _haseman_elston_randomized(
     cov_g_HE = (Y.T @ (Ky - Y)) / denom
     return cov_g_HE
 
+def _haseman_elston_randomized_dask(
+                    G, # (2D array) standardized (but not scaled) diploid genotypes
+                    Y, # (2D array) standardized phenotypes
+                    l, # (int) number of random probes for trace estimation
+                    ):
+    n,m = G.shape
+    Ky = da.dot(G, da.dot(G.T, Y))/m
+    trK2 = _rtrace_K2_dask(G/np.sqrt(m), l)
+    denom = trK2 - n
+
+    ## estimate genetic covariances
+    cov_g_HE = da.dot(Y.T, (Ky - Y)) / denom
+    return cov_g_HE.compute()
+
+
 @nb.jit(parallel=True)
 def _haseman_elston_deterministic(
                     G, # (2D array) standardized (but not scaled) diploid genotypes
@@ -127,16 +147,21 @@ def _haseman_elston_deterministic(
     cov_g_HE = (Y.T @ (Ky - Y)) / denom
     return cov_g_HE
 
+
+
 def haseman_elston(
                    G, # (2D array) standardized (but not scaled) diploid genotypes
                    Y, # (2D array) standardized phenotypes
                    n_probe = 500, # (int) number of random probes for trace estimator, inf -> deterministic
                    dtype=np.float32,
+                   dask: bool = False,
                    ):
     Y = xft.utils.ensure2D(Y).astype(dtype)
     G = np.array(G)#, dtype=dtype)
     if np.isinf(n_probe):
         return _haseman_elston_deterministic(G, Y)
+    elif dask:
+        return _haseman_elston_randomized_dask(G, Y, n_probe)
     else:
         return _haseman_elston_randomized(G, Y, n_probe)
 
