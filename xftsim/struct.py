@@ -182,6 +182,10 @@ class XftAccessor:
                                                 **kwargs)
             self._obj.pos_cM[self._obj.chrom==chrom] = interpolator(self._obj.pos_bp[self._obj.chrom==chrom])
 
+    def use_empirical_afs(self):
+        if self._col_dim != 'variant':
+            raise TypeError
+        self._obj['af'] = self.af_empirical
 
     @property
     def diploid_vid(self):
