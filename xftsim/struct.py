@@ -6,7 +6,7 @@ import xarray as xr
 from nptyping import NDArray, Int8, Int64, Float64, Bool, Shape, Float, Int
 from typing import Any, Hashable, List, Iterable, Callable, Union, Dict
 from functools import cached_property
-
+from scipy import interpolate
 
 import xftsim as xft
 
