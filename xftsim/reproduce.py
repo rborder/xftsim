@@ -59,7 +59,7 @@ class RecombinationMap:  # diploid recombination map
         vi_dip = haplotypes.xft.get_variant_indexer().to_diploid()
         if np.any(np.isnan(vi_dip.pos_cM)):
             raise ValueError("Distance in centimorgans required"
-                             "Try interpolating with `interpolate_cM`")
+                             "Try interpolating with `xr.DataArray.xft.interpolate_cM`")
         d = np.diff(vi_dip.pos_cM)
         pp = (1 - np.exp(-2*d/100)) / 2
         pp[np.diff(vi_dip.chrom.astype(int))==1] = .5 
@@ -71,7 +71,7 @@ def transmit_parental_phenotypes(
     parental_phenotypes: xr.DataArray,
     offspring_phenotypes: xr.DataArray,
     control: dict = None,
-) -> None:
+    ) -> None:
     # sample indexes (wrt to previous generation) for parents
     # of current generation
     parent_gen_mat_sample_ind = mating.reproducing_maternal_index
