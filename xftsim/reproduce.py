@@ -49,13 +49,13 @@ class RecombinationMap:  # diploid recombination map
     @staticmethod
     def constant_map_from_haplotypes(haplotypes=xr.DataArray,
                                      p: np.float64 = .5,
-                                     ) -> RecombinationMap:
+                                     ):
         vi = haplotypes.xft.get_variant_indexer()
         return RecombinationMap(p, vid=vi.vid, chrom=vi.chrom)
 
     @staticmethod
     def variable_map_from_haplotypes_with_cM(haplotypes=xr.DataArray,
-                                             ) -> RecombinationMap:
+                                             ):
         vi_dip = haplotypes.xft.get_variant_indexer().to_diploid()
         if np.any(np.isnan(vi_dip.pos_cM)):
             raise ValueError("Distance in centimorgans required"

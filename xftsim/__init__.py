@@ -1,5 +1,5 @@
-from . import data        ## download recombination maps etc
 from . import utils       ## utility functions   
+from . import data        ## download recombination maps etc
 from . import index       ## indexing
 from . import struct      ## data structures
 from . import effect      ## genetic effects
