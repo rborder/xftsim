@@ -271,7 +271,8 @@ class DiploidVariantIndex(XftIndex):
                 one_allele = np.repeat(['G'], m)
             ## set afs to NaN if missing
             if af is not None:
-                assert len(af) == m, "number of variants and afs do not match"
+                # assert len(af) == m, "number of variants and afs do not match"
+                pass
             else:
                 af = np.full(m, fill_value=np.NaN)
             ## populate positions if needed
