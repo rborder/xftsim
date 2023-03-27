@@ -180,7 +180,7 @@ class XftAccessor:
             interpolator = interpolate.interp1d(x = rmap_chrom['Position(bp)'].values,
                                                 y = rmap_chrom['Map(cM)'].values,
                                                 **kwargs)
-            self.pos_cM[haplotypes.chrom==chrom] = interpolator(self._obj.pos_bp[self._obj.chrom==chrom])
+            self._obj.pos_cM[self._obj.chrom==chrom] = interpolator(self._obj.pos_bp[self._obj.chrom==chrom])
 
 
     @property
