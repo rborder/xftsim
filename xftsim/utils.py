@@ -11,6 +11,7 @@ from functools import cached_property
 from dataclasses import dataclass, field
 import functools
 from numpy.typing import ArrayLike
+from scipy import stats
 
 
 # classes for indexing data structures
