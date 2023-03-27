@@ -185,7 +185,7 @@ class XftAccessor:
     def use_empirical_afs(self):
         if self._col_dim != 'variant':
             raise TypeError
-        self._obj['af'] = self.af_empirical
+        self._obj.af.values = np.repeat(self.af_empirical,2)
 
     @property
     def diploid_vid(self):
