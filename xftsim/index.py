@@ -612,15 +612,19 @@ class ComponentIndex(XftIndex):
     @staticmethod
     def from_arrays(phenotype_name: Iterable,
                                    component_name: Iterable,
-                                   vorigin_relative: Iterable,
+                                   vorigin_relative: Iterable = None,
                                    ):
+        if vorigin_relative is None:
+            vorigin_relative = [-1]
         return ComponentIndex(phenotype_name, component_name, vorigin_relative)
 
     @staticmethod
     def from_product(phenotype_name: Iterable,
                                     component_name: Iterable,
-                                    vorigin_relative: Iterable,
+                                    vorigin_relative: Iterable = None,
                                    ):
+        if vorigin_relative is None:
+            vorigin_relative = [-1]
         phenotype_name, component_name, vorigin_relative = cartesian_product(phenotype_name, 
                                                                                component_name, 
                                                                                vorigin_relative)
