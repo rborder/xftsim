@@ -169,6 +169,20 @@ class XftAccessor:
 
     ############ HaplotypeArray properties ############
 
+    def interpolate_cM(self,
+                       rmap_df: pd.DataFrame = xft.data.get_ceu_map(),
+                       **kwargs):
+        if self._col_dim != 'variant':
+            raise TypeError
+        chroms = np.unique(self.chrom.values.astype(int)).astype(str)
+        for chrom in chroms:  
+            rmap_chrom = rmap_df[rmap_df['Chromosome']=='chr'+chrom]
+            interpolator = interpolate.interp1d(x = rmap_chrom['Position(bp)'].values,
+                                                y = rmap_chrom['Map(cM)'].values,
+                                                **kwargs)
+            self.pos_cM[haplotypes.chrom==chrom] = interpolator(self.pos_bp[self.chrom==chrom])
+
+
     @property
     def diploid_vid(self):
         if self._col_dim != 'variant':

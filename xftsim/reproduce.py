@@ -66,19 +66,6 @@ class RecombinationMap:  # diploid recombination map
         pp = np.concat([[.5], pp])
         return RecombinationMap(pp, vid=vi_dip.vid, chrom=vi_dip.chrom)
 
-
-def interpolate_cM(haplotypes: xr.DataArray,
-                   rmap_df: pd.DataFrame = xft.data.get_ceu_map(),
-                   **kwargs):
-    chroms = np.unique(haplotypes.chrom.values.astype(int)).astype(str)
-    for chrom in chroms:  
-        rmap_chrom = rmap_df[rmap_df['Chromosome']=='chr'+chrom]
-        interpolator = interpolate.interp1d(x = rmap_chrom['Position(bp)'].values,
-                                            y = rmap_chrom['Map(cM)'].values,
-                                            **kwargs)
-        haplotypes.pos_cM[haplotypes.chrom==chrom] = interpolator(haplotypes.pos_bp[haplotypes.chrom==chrom])
-
-
 def transmit_parental_phenotypes(
     mating: MateAssignment,
     parental_phenotypes: xr.DataArray,
