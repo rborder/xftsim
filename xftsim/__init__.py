@@ -1,3 +1,7 @@
+class options:
+    nthreads = 4
+    print_level = 1
+
 from . import utils       ## utility functions   
 from . import data        ## download recombination maps etc
 from . import index       ## indexing
@@ -11,3 +15,4 @@ from . import sim         ## simulation object
 from . import stats       ## estimation
 from . import proc        ## post-processing
 from . import io          ## input/output
+
