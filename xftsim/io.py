@@ -45,7 +45,7 @@ def plink1_variant_index(ppxr: xr.DataArray) -> xft.index.DiploidVariantIndex:
                                          zero_allele = ppxr.a0.values,
                                          one_allele = ppxr.a1.values,
                                          pos_bp = ppxr.pos,
-                                         pos_cM = cm,
+                                         pos_cM = ppxr.cm,
                                          )
 
 def plink1_sample_index(ppxr: xr.DataArray, 
