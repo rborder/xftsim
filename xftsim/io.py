@@ -121,7 +121,7 @@ def write_to_plink1(hh: xr.DataArray, path: str, verbose: bool = True):
 
 
 def load_haplotype_zarr(path: str, 
-                        compute: bool = True
+                        compute: bool = True,
                         **kwargs,
                         ) -> xr.DataArray:
     if compute:
