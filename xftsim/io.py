@@ -121,14 +121,18 @@ def write_to_plink1(hh: xr.DataArray, path: str, verbose: bool = True):
 
 
 def load_haplotype_zarr(path: str, 
-                        compute: bool = True) -> xr.DataArray:
+                        compute: bool = True
+                        **kwargs,
+                        ) -> xr.DataArray:
     if compute:
         with ProgressBar():
-            return xr.open_dataset(path,engine='zarr').HaplotypeArray.compute()
+            return xr.open_dataset(path,engine='zarr', **kwargs).HaplotypeArray.compute()
     else:
-        return xr.open_dataset(path,engine='zarr').HaplotypeArray
+        return xr.open_dataset(path,engine='zarr', **kwargs).HaplotypeArray
 
 def save_haplotype_zarr(haplotypes: xr.DataArray,
                         path: str,
+                        **kwargs,
+
                         ) -> None:
-    haplotypes.to_dataset().to_zarr(path)
+    haplotypes.to_dataset().to_zarr(path, **kwargs)
