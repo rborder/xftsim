@@ -19,6 +19,7 @@ setup(
     "numba",
     "numpy",
     "pandas",
+    "pandas_plink",
     "scipy",
     "sgkit",
     "xarray",
