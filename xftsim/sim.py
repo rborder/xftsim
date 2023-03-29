@@ -11,6 +11,8 @@ from nptyping import NDArray, Int8, Int64, Float64, Bool, Shape
 from typing import Any, Hashable, List, Iterable, Callable, Union, Dict, final
 from numpy.typing import ArrayLike
 from functools import cached_property
+import funcy
+
 
 
 class Simulation():
@@ -79,16 +81,22 @@ class Simulation():
         ]:
             raise RuntimeError()
 
+    @xft.utils.profiled(level=0)
     def run(self, n_generations: int):
         for generation in range(n_generations):
-            self.increment_generation()
-            self.reproduce()
-            self.compute_phenotypes()
-            self.mate()
-            self.update_pedigree()
-            self.estimate_statistics()
-            self.process()
+            self.run_generation()
 
+    @xft.utils.profiled(level=0)
+    def run_generation(self):
+        self.increment_generation()
+        self.reproduce()
+        self.compute_phenotypes()
+        self.mate()
+        self.update_pedigree()
+        self.estimate_statistics()
+        self.process()
+
+    @xft.utils.profiled()
     def compute_phenotypes(self):
         # generation zero
         if self.generation == 0:
@@ -106,10 +114,12 @@ class Simulation():
             self.architecture.compute_phenotypes(
                 self.haplotypes, self.phenotypes, self.control)
 
+    @xft.utils.profiled()
     def mate(self):
         self.mating = self.mating_regime.mate(
             self.haplotypes, self.phenotypes, self.control)
 
+    @xft.utils.profiled()
     def reproduce(self):
         if self.generation == 0:
             pass
@@ -118,10 +128,12 @@ class Simulation():
                                                                  self.parent_mating,
                                                                  self.control)
 
+    @xft.utils.profiled()
     def estimate_statistics(self):
         for stat in self.statistics:
             stat.estimate(self)
 
+    @xft.utils.profiled()
     def process(self):
         for ind, proc in enumerate(self.post_processors):
             # allow callables that map xft.Simulation -> None
@@ -130,6 +142,7 @@ class Simulation():
                     proc, ' '.join(['process', str(ind)]))
             proc.process(self)
 
+    @xft.utils.profiled()
     def update_pedigree(self):
         pass  # TODO
 
@@ -139,6 +152,7 @@ class Simulation():
         return self._generation
 
     # erase current-generation specific cached properties
+    @xft.utils.profiled()
     def increment_generation(self):
         self._current_afs_empirical = None
         self._current_std_genotypes = None

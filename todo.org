@@ -9,6 +9,10 @@
     - [ ] spatial_module
     - [ ] causal graph
 * features [0/0]
+** ☐ logging / profiling [1/3]
+    - [X] basic timing
+    - [ ] cpu use
+    - [ ] memory use
 ** ☐ arch [2/14]
     - [X] common index api
     - [ ] DOCUMENT
@@ -31,7 +35,7 @@
     - [X] look into m_causal bug
     - [X] make scaled / standardized language intelligible/fix doc
     - [ ] prettify __repr__
-** ☐ [#A] founders [0/7]
+** ☐ [#A] founders [0/8]
     - [ ] common index api
     - [ ] DOCUMENT
     - [ ] from_maf function
@@ -48,18 +52,19 @@
     - [X] make from_product etc staticmethods
     - [ ] allow vorigin specification via string
     - [ ] prettify __repr__
-** ☐ [#A] ped [0/3]
+** ☐ [#A] ped [0/4]
     - [ ] common index api
     - [ ] DOCUMENT
     - [ ] update from mating
     - [ ] prettify __repr__
-** ☐ io [0/6]
-    - [ ] remove from gitignore
+** ☐ io [3/8]
+    - [X] remove from gitignore
     - [ ] common index api
     - [ ] DOCUMENT
     - [ ] from_vcf
-    - [ ] from_dask
-    - [ ] from_zarr
+    - [X] from_plink1
+    - [ ] from_plink2
+    - [X] from_zarr
     - [ ] prettify __repr__
 ** ☐ proc [0/2]
     - [ ] DOCUMENT

@@ -1,6 +1,19 @@
-class options:
-    nthreads = 4
-    print_level = 1
+import numpy as np
+
+class Config:
+    def __init__(self):
+        self.nthreads = 4
+        self.print_level = 2
+        self.print_durations_threshold = 0. #np.inf
+
+    def get_pdurations(self):
+        return self.print_durations_threshold
+
+    def get_plevel(self):
+        return self.print_level
+
+
+config = Config()
 
 from . import utils       ## utility functions   
 from . import data        ## download recombination maps etc

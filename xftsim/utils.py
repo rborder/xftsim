@@ -12,6 +12,21 @@ from dataclasses import dataclass, field
 import functools
 from numpy.typing import ArrayLike
 from scipy import stats
+import funcy
+
+import xftsim as xft
+
+@funcy.decorator
+def profiled(call, level: int = 1, message: str = None):
+    if message is not None:
+        msg = message
+    else:
+        msg = call._func.__name__
+    if level <= xft.config.get_plevel():
+        with funcy.print_durations(msg, threshold=xft.config.get_pdurations()):
+            return call()
+    else:
+        return call()
 
 
 # classes for indexing data structures

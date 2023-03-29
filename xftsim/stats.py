@@ -10,6 +10,7 @@ from nptyping import NDArray, Int8, Int64, Float64, Bool, Shape
 from typing import Any, Hashable, List, Iterable, Callable, Union, Dict, final
 from numpy.typing import ArrayLike
 from functools import cached_property
+import dask.array as da
 
 
 class Statistic:
@@ -52,6 +53,7 @@ class SampleStatistics(Statistic):
         self.corr = corr
         self.prettify = prettify
 
+    @xft.utils.profiled(level=2, message = "sample statistics")
     def estimator(self, sim: xft.sim.Simulation) -> Dict:
         output = dict()
         pheno_df = sim.phenotypes.xft.as_pd(prettify=self.prettify)
@@ -77,6 +79,7 @@ class MatingStatistics(Statistic):
         self.name = 'mating_statistics'
         self.component_index = component_index
 
+    @xft.utils.profiled(level=2, message = "mating statistics")
     def estimator(self, sim: xft.sim.Simulation) -> Dict:
         output = dict(
                       n_reproducing_pairs = sim.mating.n_reproducing_pairs,
@@ -173,6 +176,7 @@ class HasemanElstonEstimator(Statistic):
                  randomized: bool = True,
                  prettify: bool = True,
                  n_probe: int = 100,
+                 dask: bool = True,
                  ):
         self.name = 'HE_regression'
         self.component_index = component_index
@@ -180,7 +184,9 @@ class HasemanElstonEstimator(Statistic):
         self.randomized = randomized
         self.prettify = prettify
         self.n_probe = n_probe
+        self.dask = dask
 
+    @xft.utils.profiled(level=2, message = "haseman elston estimator")
     def estimator(self, sim: xft.sim.Simulation) -> Dict:
         ## look for "phenotype" components if component_index not provided
         if self.component_index is None:
@@ -193,6 +199,7 @@ class HasemanElstonEstimator(Statistic):
         he_out = haseman_elston(G = sim.current_std_genotypes,
                                 Y = Y,
                                 n_probe = self.n_probe,
+                                dask = self.dask,
                                 )
         output = dict()
         output['cov_HE'] = pd.DataFrame(he_out, index = Y.columns, columns = Y.columns)
