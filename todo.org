@@ -67,7 +67,7 @@
     - [X] from_zarr
     - [ ] prettify __repr__
 ** ☐ proc [0/2]
-    - [ ] DOCUMENT
+    - [X] DOCUMENT
     - [ ] to_disk
     - [ ] prettify __repr__
 ** ☐ [#A] reproduce [0/4]
@@ -105,7 +105,7 @@
 ** ☐ struct [2/4]
     - [X] common index api
     - [X] constructors -> staticmethods
-    - [ ] DOCUMENT
+    - [X] DOCUMENT
     - [ ] prettify __repr__
 ** ☐ utils [0/1]
     - [ ] DOCUMENT - variable count
