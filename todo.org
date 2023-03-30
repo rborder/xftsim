@@ -8,7 +8,21 @@
     - [ ] support CV_only + tskit
     - [ ] spatial_module
     - [ ] causal graph
-* features [0/0]
+* features [0/15]
+** ☐ module docstrings [0/13]
+    - [ ] arch
+    - [ ] data
+    - [ ] effect
+    - [ ] founders
+    - [ ] io
+    - [ ] lsmate
+    - [ ] mate
+    - [ ] ped
+    - [ ] proc
+    - [ ] reproduce
+    - [ ] sim
+    - [ ] stats
+    - [ ] utils
 ** ☐ logging / profiling [1/3]
     - [X] basic timing
     - [ ] cpu use
@@ -16,6 +30,7 @@
 ** ☐ arch [2/14]
     - [X] common index api
     - [ ] DOCUMENT
+    - [ ] add examples to documentation
     - [ ] add get_annotations methods
     - [ ] LDAK model
     - [ ] GCTA model

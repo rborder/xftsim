@@ -26,6 +26,87 @@ import sys
 from xftsim.utils import ensure2D, cartesian_product, ids_from_n_generation, paste, merge_duplicates
 ## superclass not to be used
 class XftIndex:
+    """
+    XftIndex is a class representing an index for the XftSim simulation model. Super class not for direct
+    use by the user.
+
+    Attributes:
+    -----------
+    _coord_variables: List[str]
+        List of names of the coordinate variables.
+    _index_variables: List[str]
+        List of names of the index variables.
+    _dimension: str
+        Name of the dimension variable.
+    _frame: pandas.DataFrame
+        Dataframe representing the index.
+
+    Methods:
+    --------
+    validate():
+        Validates the index by checking if the `_coord_variables`, `_index_variables`, and `_dimension` attributes are not None.
+        Raises an AssertionError if any of these attributes is None.
+
+    frame:
+        Property representing the `_frame` attribute.
+        Getter: Returns the `_frame` attribute.
+        Setter: Sets the `_frame` attribute and generates a new index using the `unique_identifier` property.
+    
+    frame_copy():
+        Returns a copy of the `_frame` attribute.
+
+    unique_identifier:
+        Property representing the unique identifier of the index.
+        Returns a string representing the concatenation of all index variables, separated by a period.
+    
+    coords:
+        Property representing the coordinates of the index.
+        Returns a dictionary where the keys are the coordinate variables and the values are the corresponding values in the `_frame` attribute.
+    
+    coord_dict:
+        Property representing the coordinate dictionary of the index.
+        Returns a dictionary where the keys are the variables and the values are tuples representing the `(dimension, value)` of each coordinate.
+    
+    coord_frame:
+        Property representing the coordinate frame of the index.
+        Returns a dataframe where the columns are the coordinate variables and the rows correspond to each row in the `_frame` attribute.
+    
+    coord_mindex:
+        Property representing the coordinate multi-index of the index.
+        Returns a multi-index where the levels correspond to the coordinate variables and the values correspond to the corresponding values in the `_frame` attribute.
+    
+    coord_index:
+        Property representing the coordinate index of the index.
+        Returns an index representing the unique identifier of the index.
+    
+    __getitem__(arg):
+        Returns a new instance of the XftIndex class, corresponding to a subset of the `_frame` attribute.
+        If `arg` is a dictionary, returns the rows where the values of the keys in the dictionary match the corresponding values in the `_frame` attribute.
+        If `arg` is an integer or slice, returns the row(s) at the corresponding index in the `_frame` attribute.
+
+    iloc(key):
+        Returns a new instance of the XftIndex class, corresponding to a subset of the `_frame` attribute.
+        Returns the row(s) at the corresponding index in the `_frame` attribute.
+
+    merge(other):
+        Merges the `_frame` attribute of the current instance with another instance of the XftIndex class.
+        If the two instances have a different `_dimension` attribute or a different class type, raises a TypeError.
+        Returns a new instance of the XftIndex class representing the merged index.
+
+    reduce_merge(args):
+        Static method that reduces the list of `args` by calling the `merge` method on each pair of consecutive elements.
+        Returns the final merged index.
+
+    stack(other):
+        Stacks the `_frame` attribute of the current instance with another instance of the XftIndex class.
+        If the two instances have a different `_dimension` attribute or a different class type, raises a TypeError.
+        Returns a new instance of the XftIndex class representing the stacked index.
+
+    at_most(n_new):
+        Downsamples the `_frame` attribute at random to contain at most `n_new` rows.
+        If the number of rows in the `_frame` attribute is already less than or equal to `n_new`, returns a copy of the current instance.
+        Returns a new instance of the XftIndex class representing the downsampled index.
+    """
     def validate(self):
         assert self._coord_variables is not None
         assert self._index_variables is not None
@@ -137,6 +218,42 @@ class XftIndex:
 
 
 class SampleIndex(XftIndex):
+    """Index for individual samples.
+
+    This class is used to keep track of information for individual samples.
+
+    Parameters
+    ----------
+    iid : Iterable, optional
+        Iterable of individual IDs.
+    fid : Iterable, optional
+        Iterable of family IDs.
+    sex : Iterable, optional
+        Iterable of biological sexes.
+    frame : pd.DataFrame, optional
+        Dataframe containing information for each sample.
+    n : int, optional
+        Number of samples to generate a random ID set for.
+    generation : int, optional
+        Generation number for samples.
+
+    Attributes
+    ----------
+    n : int
+        Number of individuals.
+    n_fam : int
+        Number of families.
+    n_female : int
+        Number of biological females.
+    n_male : int
+        Number of biological males.
+    iid : ndarray
+        Array of individual IDs.
+    fid : ndarray
+        Array of family IDs.
+    sex : ndarray
+        Array of biological sexes.
+    """
     def __init__(self,
                  iid: Iterable = None, ## individual id
                  fid: Iterable = None, ## family id
@@ -230,6 +347,80 @@ class SampleIndex(XftIndex):
 
 
 class DiploidVariantIndex(XftIndex):
+    """
+    This class is used to index diploid genetic variants. Variants are defined by a set of unique IDs and may have
+    additional annotations. Each variant is associated with two alleles, represented as strings.
+
+    Parameters
+    ----------
+    vid: NDArray[Shape["*"], Object], optional
+        Variant IDs, by default None.
+    chrom: NDArray[Shape["*"], Int], optional
+        Chromosome of variant, by default None.
+    zero_allele: NDArray[Shape["*"], Object], optional
+        First allele of variant, by default None.
+    one_allele: NDArray[Shape["*"], Object], optional
+        Second allele of variant, by default None.
+    af: Iterable, optional
+        Allele frequency of variant, by default None.
+    annotation_array: Union[NDArray, pd.DataFrame], optional
+        Additional variant annotations, by default None.
+    annotation_names: Iterable, optional
+        Names of the additional variant annotations, by default None.
+    frame: pd.DataFrame, optional
+        A pandas DataFrame containing variant information, by default None.
+    m: int, optional
+        The number of variants, by default None.
+    n_chrom: int, optional
+        The number of chromosomes, by default 1.
+    h_copy: NDArray[Shape["*"], Object], optional
+        A string indicating the haplotype of each variant, by default None.
+    pos_bp: Iterable, optional
+        Base-pair positions of the variant, by default None.
+    pos_cM: Iterable, optional
+        Centimorgan positions of the variant, by default None.
+
+    Attributes
+    ----------
+    vid: ndarray
+        Variant IDs.
+    chrom: ndarray
+        Chromosome of variant.
+    zero_allele: ndarray
+        First allele of variant.
+    one_allele: ndarray
+        Second allele of variant.
+    hcopy: ndarray
+        A string indicating the haplotype of each variant.
+    af: ndarray
+        Allele frequency of variant.
+    pos_bp: ndarray
+        Base-pair positions of the variant.
+    pos_cM: ndarray
+        Centimorgan positions of the variant.
+    ploidy: str
+        A string indicating the ploidy of the variant (always "Diploid" for this class).
+    annotation: pd.DataFrame
+        A pandas DataFrame containing additional variant annotations.
+    annotation_array: Union[ndarray, None]
+        A numpy array containing additional variant annotations.
+    annotation_names: ndarray
+        An array containing names of additional variant annotations.
+    m: int
+        The number of variants.
+    n_chrom: int
+        The number of chromosomes.
+    n_annotations: int
+        The number of additional variant annotations.
+    maf: ndarray
+        Minor allele frequency of variant.
+        
+    Raises
+    ------
+    AssertionError
+        If vid, m, or frame is not provided.
+        If both zero_allele and one_allele are not provided.
+    """
     def __init__(self,
                  vid: NDArray[Shape["*"], Object] = None, ## variant id
                  chrom: NDArray[Shape["*"], Int] = None, ## chromosome
@@ -447,6 +638,42 @@ class DiploidVariantIndex(XftIndex):
         raise NotImplementedError ## TODO
 
 class HaploidVariantIndex(DiploidVariantIndex):
+    """
+    A class representing a haploid variant index.
+
+
+    Attributes
+    ----------
+    vid : numpy.ndarray
+        Variant IDs.
+    chrom : numpy.ndarray
+        Chromosome numbers.
+    zero_allele : numpy.ndarray
+        Alleles with value zero.
+    one_allele : numpy.ndarray
+        Alleles with value one.
+    af : numpy.ndarray
+        Allele frequencies.
+    pos_bp : numpy.ndarray
+        Positions of variants in base pairs.
+    pos_cM : numpy.ndarray
+        Positions of variants in centiMorgans.
+    m : int
+        Number of unique variant IDs.
+    n_chrom : int
+        Number of unique chromosome numbers.
+    n_annotations : int
+        Number of annotations.
+    maf : numpy.ndarray
+        Minor allele frequencies.
+    ploidy : str
+        The ploidy of the variant index. In this case, "Haploid".
+
+    Methods
+    -------
+    to_diploid()
+        Converts the haploid variant index to diploid.
+    """
     @property
     def ploidy(self):
         return "Haploid"
@@ -472,6 +699,59 @@ class HaploidVariantIndex(DiploidVariantIndex):
 
 
 class ComponentIndex(XftIndex):
+    """
+    Index object for phenotype components, including origin relative to proband.
+
+    Parameters
+    ----------
+    phenotype_name : iterable, optional
+        Names of phenotypes. Either `phenotype_name`, `frame`, or `k_total` must be provided.
+    component_name : iterable, optional
+        Names of phenotype components.
+    vorigin_relative : iterable, optional
+        Relative origin of phenotype component. -1 for proband, 0 for mother, 1 for father.
+    frame : pandas.DataFrame, optional
+        Pre-existing frame to initialize index.
+    k_total : int, optional
+        Total number of phenotypes to generate generic names.
+
+    Attributes
+    ----------
+    phenotype_name : numpy.ndarray
+        Names of phenotypes.
+    component_name : numpy.ndarray
+        Names of phenotype components.
+    vorigin_relative : numpy.ndarray
+        Relative origin of phenotype component. -1 for proband, 0 for mother, 1 for father.
+    k_total : int
+        Total number of phenotypes.
+    k_phenotypes : int
+        Number of unique phenotypes.
+    k_components : int
+        Number of unique phenotype components.
+    k_relative : int
+        Number of unique relative origins.
+    depth : float
+        Generational depth from binary relative encoding.
+    unique_identifier : numpy.ndarray
+        Unique identifier for the index.
+
+    Methods
+    -------
+    to_vorigin(origin)
+        Returns a new ComponentIndex with all vorigin_relative set to `origin`.
+    to_proband()
+        Returns a new ComponentIndex with all vorigin_relative set to -1 (proband).
+    from_frame(df)
+        Returns a new ComponentIndex initialized from a Pandas DataFrame.
+    from_arrays(phenotype_name, component_name, vorigin_relative=None)
+        Returns a new ComponentIndex initialized from numpy arrays.
+    from_product(phenotype_name, component_name, vorigin_relative=None)
+        Returns a new ComponentIndex initialized from a Cartesian product of phenotype_name, component_name, and vorigin_relative.
+    range_index(c, component_name=['generic'], vorigin_relative=[-1], prefix='phenotype')
+        Returns a new ComponentIndex with generic phenotype names.
+
+    """
     def __init__(self,
                  phenotype_name: Iterable = None, # names of phenotypes
                  component_name: Iterable = None, # names of phenotype components

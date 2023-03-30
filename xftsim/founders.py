@@ -12,7 +12,24 @@ import xftsim as xft
 
 def founder_haplotypes_from_AFs(n: int,
                                 afs: Iterable,
-                                diploid: bool = True):
+                                diploid: bool = True) -> xft.struct.HaplotypeArray:
+    """
+    Generate founder haplotypes from specified allele frequencies.
+    
+    Parameters
+    ----------
+    n : int
+        Number of haplotypes to simulate.
+    afs : Iterable
+        Allele frequencies as an iterable of floats.
+    diploid : bool, optional
+        Flag indicating if the generated haplotypes should be diploid or haploid.
+        
+    Returns
+    -------
+    xft.struct.HaplotypeArray
+        An object representing a set of haplotypes generated from the given allele frequencies.
+    """
     if diploid:
         afs = np.repeat(afs, 2)
     afs = xft.utils.ensure2D(afs)
@@ -28,7 +45,24 @@ def founder_haplotypes_from_AFs(n: int,
 
 def founder_haplotypes_uniform_AFs(n: int,
                                    m: int,
-                                   minMAF: float = .1):
+                                   minMAF: float = .1) -> xft.struct.HaplotypeArray:
+    """
+    Generate founder haplotypes from uniform-distributed allele frequencies.
+    
+    Parameters
+    ----------
+    n : int
+        Number of haplotypes to simulate.
+    m : int
+        Number of variants.
+    minMAF : float, optional
+        Minimum minor allele frequency for generated haplotypes.
+        
+    Returns
+    -------
+    xft.struct.HaplotypeArray
+        An object representing a set of haplotypes generated with uniform allele frequencies.
+    """
     afs = np.random.uniform(minMAF, 1 - minMAF, m)
     return founder_haplotypes_from_AFs(n=n,
                                        afs=afs,

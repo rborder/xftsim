@@ -1,3 +1,21 @@
+"""
+This module contains functions and classes for implementing different mating regimes in the context of population genetics simulations.
+
+Functions:
+
+    _solve_qap_ls: Private function that solves the Quadratic Assignment Problem using LocalSolver.
+
+Classes:
+
+    MatingRegime: Base class for defining mating regimes.
+    RandomMatingRegime: A class for implementing random mating.
+    BalancedRandomMatingRegime: A class for implementing balanced random mating.
+    LinearAssortativeMatingRegime: A class for implementing linear assortative mating.
+    KAssortativeMatingRegime: A class for implementing k-assortative mating.
+    BatchedMatingRegime: A class for batching individuals to improve mating regime performance.
+"""
+
+
 import warnings
 import numpy as np
 import pandas as pd
@@ -15,6 +33,29 @@ import localsolver
 
 
 def _solve_qap_ls(Y, Z, R, nb_threads=6, time_limit=30, tolerance=1e-5):
+    """
+    Solves the Quadratic Assignment Problem (QAP) using the LocalSolver optimization solver.
+    
+    Parameters
+    ----------
+    Y : numpy.ndarray
+        The first set of mate phenotypes.
+    Z : numpy.ndarray
+        The second set of mate phenotypes.
+    R : numpy.ndarray
+        The target cross-correlation matrix.
+    nb_threads : int, optional
+        The number of threads to be used for the optimization.
+    time_limit : int, optional
+        The amount of time (in seconds) to run the optimization.
+    tolerance : float, optional
+        The minimum threshold for the objective function to terminate optimization.
+
+    Returns
+    -------
+    P : numpy.ndarray
+        A permutation matrix.
+    """
     n = Y.shape[0]
     # for later use as initial value
     tmp = np.argsort(np.apply_along_axis(np.mean, 1, Y))[
@@ -59,6 +100,42 @@ def _solve_qap_ls(Y, Z, R, nb_threads=6, time_limit=30, tolerance=1e-5):
 
 
 class KAssortativeMatingRegime(xft.mate.MatingRegime):
+    """
+    A class that implements the K-assortative mating regime. I.e., matches two sets of individuals with
+    K phenotypes to achieve an arbitrary K x K cross-mate cross-correlation structure.
+
+    Parameters
+    ----------
+    component_index : xft.index.ComponentIndex
+        An object containing information about the components.
+    cross_corr : ndarray
+        The cross-correlation matrix of size K x K.
+    offspring_per_pair : Union[int, xft.utils.VariableCount], optional
+        The number of offspring per mating pair. Default is 1.
+    mates_per_female : Union[int, xft.utils.VariableCount], optional
+        The number of mates for each female. Default is 1.
+    female_offspring_per_pair : Union[str, int, xft.utils.VariableCount], optional
+        The number of offspring per mating pair for females. Default is 'balanced'.
+    sex_aware : bool, optional
+        Whether to consider sex in mating pairs. Default is False.
+    exhaustive : bool, optional
+        Whether to enumerate all possible pairs. Default is True.
+
+    Attributes
+    ----------
+    cross_corr : ndarray
+        The cross-correlation matrix of size K x K.
+    component_index : xft.index.ComponentIndex
+        An object containing information about the components.
+    K : int
+        The total number of components.
+
+    Methods
+    -------
+    mate(haplotypes: xr.DataArray = None, phenotypes: xr.DataArray = None, control: dict = None) -> xft.mate.MateAssignment:
+        Mate haplotypes and phenotypes based on the K-assortative mating regime.
+    """
+
     def __init__(self,
                  component_index: xft.index.ComponentIndex,
                  cross_corr: NDArray,
@@ -89,6 +166,23 @@ class KAssortativeMatingRegime(xft.mate.MatingRegime):
              phenotypes: xr.DataArray = None,
              control: dict = None,
              ):
+        """
+        Mate haplotypes and phenotypes based on the K-assortative mating regime.
+
+        Parameters
+        ----------
+        haplotypes : xr.DataArray, optional
+            The haplotype data to be mated. Default is None.
+        phenotypes : xr.DataArray, optional
+            The phenotype data to be mated. Default is None.
+        control : dict, optional
+            A dictionary of control parameters for mating. Default is None.
+
+        Returns
+        -------
+        assignment : xft.mate.MateAssignment
+            The assignment of haplotypes to parents.
+        """
         female_indices, male_indices = self.get_potential_mates(
             haplotypes, phenotypes)
 
@@ -116,11 +210,11 @@ class KAssortativeMatingRegime(xft.mate.MatingRegime):
                                          )
 
 
-kamr = KAssortativeMatingRegime(cross_corr=np.ones((3, 3)) * .1,
-                                component_index=xft.index.ComponentIndex.from_product(['height', 'weight', 'bmi'],
-                                                                                      ['phenotype'],
-                                                                                      [-1]),
-                                offspring_per_pair=xft.utils.ZeroTruncatedPoissonCount(1.6))
+# kamr = KAssortativeMatingRegime(cross_corr=np.ones((3, 3)) * .1,
+#                                 component_index=xft.index.ComponentIndex.from_product(['height', 'weight', 'bmi'],
+#                                                                                       ['phenotype'],
+#                                                                                       [-1]),
+#                                 offspring_per_pair=xft.utils.ZeroTruncatedPoissonCount(1.6))
 
 
 # bkamr=

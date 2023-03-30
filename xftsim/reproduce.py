@@ -18,6 +18,22 @@ from xftsim.mate import MateAssignment
 
 
 class RecombinationMap:  # diploid recombination map
+    """
+    A class to represent a diploid recombination map.
+    In the future, will require XftIndex object instead of vid and chrom.
+
+
+    Parameters
+    ----------
+    p : float or numpy.ndarray, optional
+        Probabilities, either a float or a numpy.ndarray, default is None. A single value
+        results in an exchangle map, an array corresponds to probabilities of recombination
+        between specified loci
+    vid : NDArray[Shape["*"], Any], optional
+        Variant IDs, default is None.
+    chrom : NDArray[Shape["*"], Int64], optional
+        Chromosomes, default is None.
+    """
     def __init__(self,
                  p=None,  # probabilities numpy.ndarray or float
                  vid: NDArray[Shape["*"], Any] = None,  # variant id,
@@ -49,13 +65,46 @@ class RecombinationMap:  # diploid recombination map
     @staticmethod
     def constant_map_from_haplotypes(haplotypes=xr.DataArray,
                                      p: np.float64 = .5,
-                                     ):
+                                     ) -> "RecombinationMap":
+        """
+        Create a constant recombination map from haplotypes.
+        
+        Parameters
+        ----------
+        haplotypes : xr.DataArray
+            Haplotypes data array.
+        p : np.float64, optional
+            Probability, default is 0.5.
+        
+        Returns
+        -------
+        RecombinationMap
+            A constant recombination map.
+        """
         vi = haplotypes.xft.get_variant_indexer()
         return RecombinationMap(p, vid=vi.vid, chrom=vi.chrom)
 
     @staticmethod
     def variable_map_from_haplotypes_with_cM(haplotypes=xr.DataArray,
-                                             ):
+                                             ) -> "RecombinationMap":
+        """
+        Create a variable recombination map from haplotypes with centimorgan distances.
+        
+        Parameters
+        ----------
+        haplotypes : xr.DataArray
+            Haplotypes data array.
+        
+        Returns
+        -------
+        RecombinationMap
+            A variable recombination map.
+        
+        Raises
+        ------
+        ValueError
+            If distance in centimorgans is required and not present in the input.
+        """
         vi_dip = haplotypes.xft.get_variant_indexer().to_diploid()
         if np.any(np.isnan(vi_dip.pos_cM)):
             raise ValueError("Distance in centimorgans required"
@@ -72,6 +121,24 @@ def transmit_parental_phenotypes(
     offspring_phenotypes: xr.DataArray,
     control: dict = None,
     ) -> None:
+    """
+    Transmits parental phenotypes to offspring.
+    
+    Parameters
+    ----------
+    mating : MateAssignment
+        An object representing mating assignments.
+    parental_phenotypes : xr.DataArray
+        A data array containing parental phenotypes.
+    offspring_phenotypes : xr.DataArray
+        A data array containing offspring phenotypes.
+    control : dict, optional
+        A dictionary containing additional control parameters, default is None.
+
+    Returns
+    -------
+    None
+    """
     # sample indexes (wrt to previous generation) for parents
     # of current generation
     parent_gen_mat_sample_ind = mating.reproducing_maternal_index
@@ -155,6 +222,19 @@ def transmit_parental_phenotypes(
 # maps recombination probabilities to haploid indicies
 @nb.njit("int64[:](float64[:])")
 def _meiosis_i(p):
+    """
+    Maps recombination probabilities to haploid indices.
+
+    Parameters
+    ----------
+    p : numpy.ndarray[float64]
+        An array of recombination probabilities.
+
+    Returns
+    -------
+    numpy.ndarray[int64]
+        An array of haploid indices.
+    """
     m = p.shape[0]
     output = np.empty(m, dtype=np.int64)
     for j in range(m):
@@ -177,6 +257,35 @@ def _meiosis(parental_haplotypes,
              m_meiosis_ii_inds,
              p_meiosis_ii_inds,
              ):
+    """
+    Performs meiosis I and II.
+
+    Parameters
+    ----------
+    parental_haplotypes : numpy.ndarray[int8]
+        An array of parental haplotypes.
+    offspring_haplotypes : numpy.ndarray[int8]
+        An array of offspring haplotypes.
+    n : int64
+        The number of offspring.
+    m_hap : int64
+        The number of haploid chromosomes.
+    recombination_p : numpy.ndarray[float64]
+        An array of recombination probabilities.
+    maternal_inds : numpy.ndarray[int64]
+        An array of maternal indices.
+    paternal_inds : numpy.ndarray[int64]
+        An array of paternal indices.
+    m_meiosis_ii_inds : numpy.ndarray[int64]
+        An array of maternal meiosis II indices.
+    p_meiosis_ii_inds : numpy.ndarray[int64]
+        An array of paternal meiosis II indices.
+
+    Returns
+    -------
+    numpy.ndarray[int8]
+        An array of offspring haplotypes.
+    """
     for i in nb.prange(n):
         # maternal copies:
         m_meiosis_i_inds = _meiosis_i(recombination_p)
@@ -194,6 +303,25 @@ def meiosis(parental_haplotypes: npt.NDArray[npt.Shape["*,*"], npt.Int8],
             maternal_inds: npt.NDArray[npt.Shape["*,*"], npt.Int64],
             paternal_inds: npt.NDArray[npt.Shape["*,*"], npt.Int64],
             ) -> npt.NDArray[npt.Shape["*,*"], npt.Int8]:
+    """
+    Performs meiosis on parental haplotypes.
+
+    Parameters
+    ----------
+    parental_haplotypes : numpy.ndarray[int8]
+        An array of parental haplotypes.
+    recombination_p : numpy.ndarray[float64]
+        An array of recombination probabilities.
+    maternal_inds : numpy.ndarray[int64]
+        An array of maternal indices.
+    paternal_inds : numpy.ndarray[int64]
+        An array of paternal indices.
+
+    Returns
+    -------
+    numpy.ndarray[int8]
+        An array of offspring haplotypes.
+    """
     assert (parental_haplotypes.shape[1] //
             2) == recombination_p.shape[0], "incompatable arg dimension"
     assert paternal_inds.shape[0] == maternal_inds.shape[0], "incompatable arg dimension"
@@ -223,18 +351,49 @@ def meiosis(parental_haplotypes: npt.NDArray[npt.Shape["*,*"], npt.Int8],
 
 
 class Meiosis:
+    """
+    A class representing the process of meiosis.
+
+    Attributes
+    ----------
+    recombinationMap : RecombinationMap, optional
+        A pre-defined recombination map.
+    p : float, optional
+        A probability used when generating an exchangable recombination map on the fly.
+
+    Methods
+    -------
+    get_recombination_map(haplotypes):
+        Returns the recombination map, either pre-defined or generated on the fly.
+    reproduce(parental_haplotypes=None, mating=None, control=None):
+        Returns a HaplotypeArray representing the offspring after meiosis.
+    """
     def __init__(self,
                  rmap: RecombinationMap = None,
                  p: float = None):
+
         assert (p is not None) ^ (rmap is not None)
         self.recombinationMap = rmap
         self._p = p
 
     def get_recombination_map(self, haplotypes):
+        """
+        Get the recombination map, either pre-defined or generated on the fly.
+
+        Parameters
+        ----------
+        haplotypes : xr.DataArray
+            The haplotype data.
+
+        Returns
+        -------
+        RecombinationMap
+            The recombination map.
+        """
         if self.recombinationMap is not None:
             return self.recombinationMap
         else:  # generate recombinationmap on the fly if necessary
-            return recombinationMapFromHaplotypes(haplotypes, p=self._p)
+            return RecombinationMap.constant_map_from_haplotypes(haplotypes, p=self._p)
 
     # TODO make sure recombination probability indices agree
     def reproduce(self,
@@ -242,6 +401,23 @@ class Meiosis:
                   mating: MateAssignment = None,
                   control: dict = None,
                   ):
+        """
+        Return a HaplotypeArray representing the offspring after meiosis.
+
+        Parameters
+        ----------
+        parental_haplotypes : xr.DataArray, optional
+            The parental haplotype data.
+        mating : MateAssignment, optional
+            The mate assignment object.
+        control : dict, optional
+            A dictionary containing control parameters.
+
+        Returns
+        -------
+        HaplotypeArray
+            The HaplotypeArray representing the offspring after meiosis.
+        """
         rmap = self.get_recombination_map(parental_haplotypes)
         recombination_p = rmap.probabilities.values
         maternal_inds = xft.utils.match(mating.reproducing_maternal_index.unique_identifier,
