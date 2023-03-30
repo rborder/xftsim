@@ -1,15 +1,47 @@
 import numpy as np
 
 class Config:
+    """
+    A class to store configuration settings. Instantiated as xftsim.config when package is loaded
+
+    Attributes
+    ----------
+    nthreads : int
+        Number of threads to use for parallel execution.
+    print_level : int
+        Verbosity level for print statements.
+    print_durations_threshold : float
+        Threshold for printing durations.
+    """
+
     def __init__(self):
+        """
+        Initialize the Config object with default settings.
+        """
         self.nthreads = 4
         self.print_level = 2
         self.print_durations_threshold = 0. #np.inf
 
     def get_pdurations(self):
+        """
+        Get the current print durations threshold.
+
+        Returns
+        -------
+        float
+            The print durations threshold.
+        """
         return self.print_durations_threshold
 
     def get_plevel(self):
+        """
+        Get the current print level.
+
+        Returns
+        -------
+        int
+            The print level.
+        """
         return self.print_level
 
 
