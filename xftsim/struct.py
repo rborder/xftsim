@@ -421,8 +421,10 @@ class XftAccessor:
         Sets allele frequencies to the empirical frequencies.
         Specific to HaplotypeArray objects.
         
-        Raises:
-        TypeError: If `_col_dim` is not 'variant'.
+        Raises
+        ------
+        TypeError
+            If `_col_dim` is not 'variant'.
         """
         if self._col_dim != 'variant':
             raise TypeError
@@ -433,12 +435,16 @@ class XftAccessor:
         """
         Diploid variant ID.
         Specific to HaplotypeArray objects.
-
-        Returns:
-        numpy.ndarray: Diploid variant IDs.
         
-        Raises:
-        TypeError: If `_col_dim` is not 'variant'.
+        Returns
+        -------
+        numpy.ndarray
+            Diploid variant IDs.
+        
+        Raises
+        ------
+        TypeError
+            If `_col_dim` is not 'variant'.
         """
         if self._col_dim != 'variant':
             raise TypeError
@@ -449,12 +455,16 @@ class XftAccessor:
         """
         Diploid chromosome numbers.
         Specific to HaplotypeArray objects.
-
-        Returns:
-        numpy.ndarray: Diploid chromosome numbers.
         
-        Raises:
-        TypeError: If `_col_dim` is not 'variant'.
+        Returns
+        -------
+        numpy.ndarray
+            Diploid chromosome numbers.
+        
+        Raises
+        ------
+        TypeError
+            If `_col_dim` is not 'variant'.
         """
         if self._col_dim != 'variant':
             raise TypeError
@@ -465,12 +475,16 @@ class XftAccessor:
         """
         Generation of the data.
         Specific to HaplotypeArray objects.
-
-        Returns:
-        int: Generation attribute.
         
-        Raises:
-        TypeError: If `_col_dim` is not 'variant'.
+        Returns
+        -------
+        int
+            Generation attribute.
+        
+        Raises
+        ------
+        TypeError
+            If `_col_dim` is not 'variant'.
         """
         if self._col_dim != 'variant':
             raise TypeError
@@ -481,12 +495,16 @@ class XftAccessor:
         """
         Empirical allele frequencies.
         Specific to HaplotypeArray objects.
-
-        Returns:
-        numpy.ndarray: Empirical allele frequencies.
         
-        Raises:
-        TypeError: If `_col_dim` is not 'variant'.
+        Returns
+        -------
+        numpy.ndarray
+            Empirical allele frequencies.
+        
+        Raises
+        ------
+        TypeError
+            If `_col_dim` is not 'variant'.
         """
         if self._col_dim != 'variant':
             raise TypeError
@@ -499,12 +517,16 @@ class XftAccessor:
         """
         Empirical minor allele frequencies.
         Specific to HaplotypeArray objects.
-
-        Returns:
-        numpy.ndarray: Empirical minor allele frequencies.
         
-        Raises:
-        TypeError: If `_col_dim` is not 'variant'.
+        Returns
+        -------
+        numpy.ndarray
+            Empirical minor allele frequencies.
+        
+        Raises
+        ------
+        TypeError
+            If `_col_dim` is not 'variant'.
         """
         if self._col_dim != 'variant':
             raise TypeError
@@ -749,12 +771,12 @@ class XftAccessor:
         """
         Returns the number of unique origin relative values.
         Specific to PhenotypeArray objects.
-
+        
         Returns
         -------
         int
             The number of unique origin relative values.
-
+        
         Raises
         ------
         TypeError
@@ -788,12 +810,16 @@ class XftAccessor:
     def k_current(self) -> int:
         """Returns the number of all current-gen specific components.
         Specific to PhenotypeArray objects.
-
-        Raises:
-            TypeError: If the column dimension is not 'component'.
-            
-        Returns:
-            int: The number of all current-gen specific components.
+        
+        Raises
+        ------
+        TypeError
+            If the column dimension is not 'component'.
+        
+        Returns
+        -------
+        int
+            The number of all current-gen specific components.
         """
         if self._col_dim != 'component':
             raise TypeError
@@ -821,11 +847,15 @@ class XftAccessor:
         """Returns the generational depth from binary relative encoding.
         Specific to PhenotypeArray objects.
         
-        Raises:
-            TypeError: If the column dimension is not 'component'.
-            
-        Returns:
-            Union[float, np.nan]: The generational depth from binary relative encoding, or NaN if the relative origin is empty.
+        Raises
+        ------
+        TypeError
+            If the column dimension is not 'component'.
+        
+        Returns
+        -------
+        Union[float, np.nan]
+            The generational depth from binary relative encoding, or NaN if the relative origin is empty.
         """
         if self._col_dim != 'component':
             raise TypeError
@@ -838,11 +868,15 @@ class XftAccessor:
         """Splits the data by phenotype name.
         Specific to PhenotypeArray objects.
         
-        Raises:
-            TypeError: If the column dimension is not 'component'.
-            
-        Returns:
-            Dict[str, pd.DataFrame]: A dictionary of dataframes, where the keys are the unique phenotype names and the values are dataframes containing the data for each phenotype.
+        Raises
+        ------
+        TypeError
+            If the column dimension is not 'component'.
+        
+        Returns
+        -------
+        Dict[str, pd.DataFrame]
+            A dictionary of dataframes, where the keys are the unique phenotype names and the values are dataframes containing the data for each phenotype.
         """
         if self._col_dim != 'component':
             raise TypeError
@@ -852,11 +886,15 @@ class XftAccessor:
         """Splits the data by component name.
         Specific to PhenotypeArray objects.
         
-        Raises:
-            TypeError: If the column dimension is not 'component'.
-            
-        Returns:
-            Dict[str, pd.DataFrame]: A dictionary of dataframes, where the keys are the unique component names and the values are dataframes containing the data for each component.
+        Raises
+        ------
+        TypeError
+            If the column dimension is not 'component'.
+        
+        Returns
+        -------
+        Dict[str, pd.DataFrame]
+            A dictionary of dataframes, where the keys are the unique component names and the values are dataframes containing the data for each component.
         """
         if self._col_dim != 'component':
             raise TypeError
@@ -866,11 +904,15 @@ class XftAccessor:
         """Splits the data by relative origin.
         Specific to PhenotypeArray objects.
         
-        Raises:
-            TypeError: If the column dimension is not 'component'.
-            
-        Returns:
-            Dict[int, pd.DataFrame]: A dictionary of dataframes, where the keys are the unique relative origins and the values are dataframes containing the data for each relative origin.
+        Raises
+        ------
+        TypeError
+            If the column dimension is not 'component'.
+        
+        Returns
+        -------
+        Dict[int, pd.DataFrame]
+            A dictionary of dataframes, where the keys are the unique relative origins and the values are dataframes containing the data for each relative origin.
         """
         if self._col_dim != 'component':
             raise TypeError
@@ -880,11 +922,15 @@ class XftAccessor:
         """Splits the data by phenotype name and relative origin.
         Specific to PhenotypeArray objects.
         
-        Raises:
-            TypeError: If the column dimension is not 'component'.
-            
-        Returns:
-            Dict[Tuple[str, int], pd.DataFrame]: A dictionary of dataframes, where the keys are tuples of phenotype name and relative origin and the values are dataframes containing the data for each combination of phenotype name and relative origin.
+        Raises
+        ------
+        TypeError
+        If the column dimension is not 'component'.
+        
+        Returns
+        -------
+        Dict[Tuple[str, int], pd.DataFrame]
+            A dictionary of dataframes, where the keys are tuples of phenotype name and relative origin and the values are dataframes containing the data for each combination of phenotype name and relative origin.
         """
         if self._col_dim != 'component':
             raise TypeError
@@ -894,14 +940,20 @@ class XftAccessor:
         """Returns the data as a Pandas DataFrame.
         Specific to PhenotypeArray objects.
         
-        Args:
-            prettify (bool): If True, the multi-index columns will be prettified by replacing -1, 0, 1 with 'proband', 'mother', 'father', respectively.
+        Parameters
+        ----------
+        prettify : bool, optional
+            If True, the multi-index columns will be prettified by replacing -1, 0, 1 with 'proband', 'mother', 'father', respectively.
         
-        Raises:
-            TypeError: If the column dimension is not 'component'.
-            
-        Returns:
-            pd.DataFrame: A Pandas DataFrame representing the data.
+        Raises
+        ------
+        TypeError
+            If the column dimension is not 'component'.
+        
+        Returns
+        -------
+        pd.DataFrame
+            A Pandas DataFrame representing the data.
         """
         if self._col_dim != 'component':
             raise TypeError

@@ -20,13 +20,22 @@ import xftsim as xft
 def profiled(call, level: int = 1, message: str = None):
     """
     A decorator that prints the duration of a function call when the specified logging level is met.
-
-    Args:
-        call (function): The function being decorated.
-        level (int, optional): The logging level at which the duration of the function call is printed.
-            Defaults to 1.
-        message (str, optional): A custom message to display in the log output. If not provided, the name of
-            the decorated function will be used.
+    
+    Parameters
+    ----------
+    call : function
+        The function being decorated.
+    level : int, optional
+        The logging level at which the duration of the function call is printed.
+        Defaults to 1.
+    message : str, optional
+        A custom message to display in the log output. If not provided, the name of
+        the decorated function will be used.
+    
+    Returns
+    -------
+    TYPE
+        Description
     """
     if message is not None:
         msg = message
@@ -45,13 +54,18 @@ def ids_from_n_generation(n: int,
                           ):
     """
     Creates an array of individual IDs based on the specified number of elements and generation.
-
-    Args:
-        n (int): The number of individuals.
-        generation (int): The generation number.
-
-    Returns:
-        numpy.ndarray: An array of individual IDs.
+    
+    Parameters
+    ----------
+    n : int
+        The number of individuals.
+    generation : int
+        The generation number.
+    
+    Returns
+    -------
+    numpy.ndarray
+        An array of individual IDs.
     """
     return np.char.add(str(generation) + "_", np.arange(n).astype(str))
 
@@ -59,13 +73,18 @@ def ids_from_n_generation(n: int,
 def paste(it, sep="_"):
     """
     Concatenates elements in a list-like object with a specified separator.
-
-    Args:
-        it (list-like): The list-like object containing elements to concatenate.
-        sep (str, optional): The separator used to concatenate the elements. Defaults to "_".
-
-    Returns:
-        numpy.ndarray: An array of concatenated string elements.
+    
+    Parameters
+    ----------
+    it : list-like
+        The list-like object containing elements to concatenate.
+    sep : str, optional
+        The separator used to concatenate the elements. Defaults to "_".
+    
+    Returns
+    -------
+    numpy.ndarray
+        An array of concatenated string elements.
     """
     output = functools.reduce(lambda x, y: np.char.add(np.char.add(np.array(x).astype(str), sep),
                                                        np.array(y).astype(str)), it)
@@ -75,12 +94,16 @@ def paste(it, sep="_"):
 def merge_duplicates(it: Iterable):
     """
     Merge duplicates in the input array by checking if any pasted elements are the same. 
-
-    Args:
-    it (Iterable): A numpy array with elements to be checked for duplication.
-
-    Returns:
-    list: Returns the input list with duplicates merged if present.
+    
+    Parameters
+    ----------
+    it : Iterable
+        A numpy array with elements to be checked for duplication.
+    
+    Returns
+    -------
+    list
+        Returns the input list with duplicates merged if present.
     """
     return it
     pasted = paste(it)
@@ -96,13 +119,18 @@ def ids_from_generation(generation: int,
     """Generates and returns a new array of IDs using the given generation number 
     and the given indices. The new array contains the given indices with the
     generation number prefixed to each index.
-
-    Args:
-        generation (int): The generation number to use in the prefix of the IDs.
-        indices (ndarray): A numpy array of indices.
-
-    Returns:
-        ndarray: A new numpy array of IDs with the given generation number prefixed to each index.
+    
+    Parameters
+    ----------
+    generation : int
+        The generation number to use in the prefix of the IDs.
+    indices : NDArray[Shape["*"], Int64], optional
+        A numpy array of indices.
+    
+    Returns
+    -------
+    ndarray
+        A new numpy array of IDs with the given generation number prefixed to each index.
     """
     return np.char.add(str(generation) + "_", indices.astype(str))
 
@@ -500,6 +528,23 @@ class VariableCount:
 
 
 class ConstantCount(VariableCount):
+    """
+    Class representing a constant count of individuals in a population.
+
+    Attributes
+    ----------
+    draw : Callable
+        a function that generates an array of counts
+    expectation : float
+        expected count
+    mating_fraction : float
+        the fraction of the population that is expected to mate
+
+    Parameters
+    ----------
+    count : int
+        The constant count of individuals in the population.
+    """
     def __init__(self, count: int):
         assert type(count) == int and count >= 0
         super().__init__(
@@ -510,6 +555,22 @@ class ConstantCount(VariableCount):
 
 
 class PoissonCount(VariableCount):
+    """
+    Class representing a Poisson-distributed count of individuals in a population.
+    Attributes
+    ----------
+    draw : Callable
+        a function that generates an array of counts
+    expectation : float
+        expected count
+    mating_fraction : float
+        the fraction of the population that is expected to mate
+
+    Parameters
+    ----------
+    rate : float
+        The Poisson rate parameter.
+    """
     def __init__(self, rate: float):
         assert rate >= 0, "Invalid rate"
         super().__init__(
@@ -520,6 +581,23 @@ class PoissonCount(VariableCount):
 
 
 class ZeroTruncatedPoissonCount(VariableCount):
+    """
+    Class representing a zero-truncated Poisson-distributed count of individuals in a population.
+
+    Attributes
+    ----------
+    draw : Callable
+        a function that generates an array of counts
+    expectation : float
+        expected count
+    mating_fraction : float
+        the fraction of the population that is expected to mate
+
+    Parameters
+    ----------
+    rate : float
+        The Poisson rate parameter prior to zero-truncation.
+    """
     def __init__(self, rate: float):
         assert rate >= 0, "Invalid rate"
         min_unif = sp.stats.poisson.cdf(0, mu=rate)
@@ -534,6 +612,25 @@ class ZeroTruncatedPoissonCount(VariableCount):
 
 
 class NegativeBinomialCount(VariableCount):
+    """
+    Class representing a negative binomial-distributed count of individuals in a population.
+
+    Attributes
+    ----------
+    draw : Callable
+        a function that generates an array of counts
+    expectation : float
+        expected count
+    mating_fraction : float
+        the fraction of the population that is expected to mate
+
+    Parameters
+    ----------
+    r : float
+        The number of successes in the negative binomial distribution.
+    p : float
+        The probability of success in the negative binomial distribution.
+    """
     def __init__(self, r: float, p: float):
         assert r > 0 and 1 >= p >= 0, "Invalid parameters"
         super().__init__(
@@ -544,6 +641,25 @@ class NegativeBinomialCount(VariableCount):
 
 
 class MixtureCount(VariableCount):
+    """
+    Class representing a mixture of VariableCounts of individuals in a population.
+
+    Attributes
+    ----------
+    draw : Callable
+        a function that generates an array of counts
+    expectation : float
+        expected count
+    mating_fraction : float
+        the fraction of the population that is expected to mate
+
+    Parameters
+    ----------
+    componentCounts : Iterable
+        An iterable of VariableCount instances, representing the components of the mixture.
+    mixture_probabilities : NDArray[Shape["*"], Float64]
+        An array of probabilities associated with each component in the mixture.
+    """
     def __init__(self,
                  componentCounts: Iterable,
                  mixture_probabilities: NDArray[Shape["*"], Float64],
