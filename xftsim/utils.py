@@ -18,6 +18,16 @@ import xftsim as xft
 
 @funcy.decorator
 def profiled(call, level: int = 1, message: str = None):
+        """
+    A decorator that prints the duration of a function call when the specified logging level is met.
+
+    Args:
+        call (function): The function being decorated.
+        level (int, optional): The logging level at which the duration of the function call is printed.
+            Defaults to 1.
+        message (str, optional): A custom message to display in the log output. If not provided, the name of
+            the decorated function will be used.
+    """
     if message is not None:
         msg = message
     else:
@@ -33,16 +43,45 @@ def profiled(call, level: int = 1, message: str = None):
 def ids_from_n_generation(n: int,
                           generation: int,
                           ):
+    """
+    Creates an array of individual IDs based on the specified number of elements and generation.
+
+    Args:
+        n (int): The number of individuals.
+        generation (int): The generation number.
+
+    Returns:
+        numpy.ndarray: An array of individual IDs.
+    """
     return np.char.add(str(generation) + "_", np.arange(n).astype(str))
 
 
 def paste(it, sep="_"):
+    """
+    Concatenates elements in a list-like object with a specified separator.
+
+    Args:
+        it (list-like): The list-like object containing elements to concatenate.
+        sep (str, optional): The separator used to concatenate the elements. Defaults to "_".
+
+    Returns:
+        numpy.ndarray: An array of concatenated string elements.
+    """
     output = functools.reduce(lambda x, y: np.char.add(np.char.add(np.array(x).astype(str), sep),
                                                        np.array(y).astype(str)), it)
     return np.asarray(output)
 
 
-def merge_duplicates(it):
+def merge_duplicates(it: Iterable):
+    """
+    Merge duplicates in the input array by checking if any pasted elements are the same. 
+
+    Args:
+    it (Iterable): A numpy array with elements to be checked for duplication.
+
+    Returns:
+    list: Returns the input list with duplicates merged if present.
+    """
     return it
     pasted = paste(it)
     unique_inds = np.unique(pasted, return_index=True)[1]
@@ -54,18 +93,61 @@ def merge_duplicates(it):
 def ids_from_generation(generation: int,
                         indices: NDArray[Shape["*"], Int64] = None,
                         ):
+    """Generates and returns a new array of IDs using the given generation number 
+    and the given indices. The new array contains the given indices with the
+    generation number prefixed to each index.
+
+    Args:
+        generation (int): The generation number to use in the prefix of the IDs.
+        indices (ndarray): A numpy array of indices.
+
+    Returns:
+        ndarray: A new numpy array of IDs with the given generation number prefixed to each index.
+    """
     return np.char.add(str(generation) + "_", indices.astype(str))
 
 
 def ids_from_generation_range(generation: int,
                               n: NDArray[Shape["*"], Int64] = None,
                               ):
+    """
+    Returns an array of string IDs of length n, created by concatenating 
+    the input generation with an increasing sequence of integers from 0 to n-1.
+
+    Parameters:
+    -----------
+    generation : int
+        An integer representing the generation of the IDs to be created.
+    n : NDArray[Shape["*"], Int64], optional (default=None)
+        An integer specifying the number of IDs to be generated. If None,
+        a range of IDs starting from 0 is created.
+
+    Returns:
+    --------
+    np.ndarray
+        A 1D numpy array containing the IDs in string format.
+    """
     return np.char.add(str(generation) + "_", np.arange(n).astype(str))
 
 
-# random sampling with replacement with replacement only occuring after
-# each element has been selected once, then twice, then so on.
-def exhaustive_permutation(a: NDArray[Shape["*"], Any], n_sample: int):
+def exhaustive_permutation(a: NDArray[Shape["*"], Any], 
+                           n_sample: int):
+    """
+    Returns a random permutation of the input array, such that each element 
+    is selected exactly once before any element is selected twice, and so forth
+
+    Parameters:
+    -----------
+    a : NDArray[Shape["*"], Any]
+        A numpy array to be permuted.
+    n_sample : int
+        An integer specifying the size of the permutation to be returned.
+
+    Returns:
+    --------
+    np.ndarray
+        A 1D numpy array containing the permuted elements.
+    """
     a = np.array(a)
     n = a.shape[0]
     if n_sample <= n:
@@ -83,6 +165,35 @@ def exhaustive_permutation(a: NDArray[Shape["*"], Any], n_sample: int):
 # example ((1,2,3,4), (3,2,1,0)) -> (1,2,3,1,2,1)
 def exhaustive_enumerate(a: NDArray[Shape["*"], Any],
                          n_per_a: NDArray[Shape["*"], Int64]):
+    """
+    Repeat each ith element of array a integer n_per_a[i] times
+    such that each every element appears min(j,  n_per_a[i]) times
+    in order before any element appears j+1 times.
+
+    Parameters:
+    -----------
+    a : array-like
+        1-D array of any shape and data type.
+    n_per_a : array-like
+        1-D array of int, representing the number of times each element
+        in `a` needs to be repeated.
+
+    Returns:
+    --------
+    out : array-like
+        1-D array of shape `(n,)` and the same data type as `a`, where
+        each element is repeated as per `n_per_a` in the order before
+        any element appears `j+1` times.
+
+    Raises:
+    -------
+    Warning : If the output array is empty.
+    
+    Examples:
+    ---------
+    >>> exhaustive_enumerate(np.array((1, 2, 3, 4)), np.array((3, 2, 1, 0)))
+    array([1, 2, 3, 1, 2, 1])
+    """
     a = np.array(a)
     n_per_a = np.array(n_per_a)
     output = []
@@ -99,17 +210,55 @@ def exhaustive_enumerate(a: NDArray[Shape["*"], Any],
 
 
 def sort_and_paste(x):
+    """
+    Sorts the input array in ascending order and concatenates the 
+    first element with an underscore separator followed by the second
+    element.
+
+    Parameters:
+    -----------
+    x : array-like
+        1-D array of any shape and data type.
+
+    Returns:
+    --------
+    out : array-like
+        1-D array of strings with shape `(n,)` and the same length as `x`,
+        where each element is formed by concatenating two sorted string
+        representations of each element in `x`, separated by an underscore.
+
+    Examples:
+    ---------
+    >>> sort_and_paste(np.array((3, 1, 2)))
+    array(['1_2', '2_3', '1_3'], dtype='<U3')
+    """
     sorted = np.sort(x).astype(str)
     return np.char.add(sorted[0],
                        np.char.add('_', sorted[1]))
 
-# def paste(x):
-    # xx = x.astype(str)
-    # return np.char.add(xx[0],
-    # np.char.add('_', xx[1]))
-
 
 def merge_duplicate_pairs(a, b, n, sort=False):
+    """
+    Merge duplicate pairs of values in a and b based on their corresponding values in n.
+
+    Parameters:
+    -----------
+    a : NDArray[Shape["*"], Any]
+        First array to merge.
+    b : NDArray[Shape["*"], Any]
+        Second array to merge.
+    n : NDArray[Shape["*"], Any]
+        Array of corresponding values that determine how the duplicates are merged.
+    sort : bool, optional
+        Whether to sort the values in a and b before merging the duplicates. Default is False.
+
+    Returns:
+    --------
+    Tuple[NDArray[Shape["*"], Any], NDArray[Shape["*"], Any], NDArray[Shape["*"], Any]]
+        The merged arrays, with duplicates removed based on the corresponding values in n.
+
+    """
+
     a = np.array(a)
     b = np.array(b)
     if sort:
@@ -129,23 +278,74 @@ def merge_duplicate_pairs(a, b, n, sort=False):
 
 # from https://stackoverflow.com/questions/4110059/pythonor-numpy-equivalent-of-match-in-r
 def match(a: List[Hashable], b: List[Hashable]) -> List[int]:
+    """
+    Finds the indices in b that match the elements in a, and returns the corresponding
+    index of each element in b.
+
+    Parameters:
+    -----------
+    a : List[Hashable]
+        List of elements to find matches for.
+    b : List[Hashable]
+        List of elements to find matches in.
+
+    Returns:
+    --------
+    List[int]
+        A list of indices in b that match the elements in a.
+
+    """
     b_dict = {x: i for i, x in enumerate(b)}
     return np.array([b_dict.get(x, None) for x in a])
 
 # find indices of b meeting condition in order of corresponding elements in a
 # useful for select columns of phenotype object
-
-
 def matching_indices_conditional(
     a: List[Hashable],
     b: List[Hashable],
     condition: NDArray[Shape["*"], Any],
 ) -> NDArray[Shape["*"], Int64]:
+    """
+    Returns the indices of matches between a and b arrays, given a boolean 
+    condition.
+    
+    Parameters
+    ----------
+    a : List[Hashable]
+        The first input array.
+    b : List[Hashable]
+        The second input array.
+    condition : NDArray[Shape["*"], Any]
+        The boolean condition array to apply.
+        
+    Returns
+    -------
+    NDArray[Shape["*"], Int64]
+        The matching indices array.
+    """
     return np.where(condition)[0][match(a, b[condition])]
 
 
 # make sure arrays are 2d, but preserve None
 def ensure2D(x: NDArray[Any, Any] = None):
+    """
+    Ensures the input array is 2D, by adding a new dimension if needed.
+    
+    Parameters
+    ----------
+    x : NDArray[Any, Any], optional
+        The input array, by default None.
+    
+    Returns
+    -------
+    NDArray[Any, Any]
+        The 2D input array.
+    
+    Raises
+    ------
+    ValueError
+        If the input array is not valid.
+    """
     if x is None:
         return x
     x = np.array(x)
@@ -160,6 +360,20 @@ def ensure2D(x: NDArray[Any, Any] = None):
 # map arrays -> list of columns comprising cartestian product as in expand.grid in R
 # but in order of pd.MultiIndex.from_product
 def cartesian_product(*args):
+    """
+    Returns a list of columns comprising a cartesian product of input arrays. Emulates
+    R function `expand.grid()`
+    
+    Parameters
+    ----------
+    *args : NDArray[Any, Any]
+        The input arrays.
+    
+    Returns
+    -------
+    List[NDArray[Any, Any]]
+        The list of columns.
+    """
     return [a.flatten() for a in np.meshgrid(*args, indexing="ij")]
 
 
@@ -169,10 +383,45 @@ from typing import Any, Hashable, List, Iterable, Dict, Callable, Union
 
 
 class VariableCount:
+    """
+    A class to represent random count variables
+
+    ...
+
+    Attributes
+    ----------
+    draw : Callable
+        a function that generates an array of counts
+    expectation : float
+        expected count
+    mating_fraction : float
+        the fraction of the population that is expected to mate
+
+    Methods
+    -------
+    None
+    """
+    
     def __init__(self,
                  draw: Callable,
                  expectation: float = None,
                  mating_fraction: float = None):
+        """
+        Constructs all the necessary attributes for the VariableCount object.
+
+        Parameters
+        ----------
+            draw : Callable
+                a function that generates an array of counts
+            expectation : float
+                expected count
+            mating_fraction : float
+                the fraction of the population that is expected to mate
+
+        Returns
+        -------
+            None
+        """
         self.draw = draw
         self._expectation = expectation
         self._expectation_impl = (expectation is not None)
@@ -181,6 +430,14 @@ class VariableCount:
 
     @property
     def expectation(self):
+        """
+        Getter function for expectation attribute.
+
+        Returns
+        -------
+        float
+            Expected count.
+        """
         if self._expectation_impl:
             return self._expectation
         else:
@@ -188,6 +445,18 @@ class VariableCount:
 
     @expectation.setter
     def expectation(self, value):
+        """
+        Setter function for expectation attribute.
+
+        Parameters
+        ----------
+            value : float
+                expected count
+
+        Returns
+        -------
+            None
+        """
         if value is not None:
             self._expectation_impl = True
         else:
@@ -196,6 +465,14 @@ class VariableCount:
 
     @property
     def mating_fraction(self):
+        """
+        Getter function for mating_fraction attribute.
+
+        Returns
+        -------
+        float
+            The fraction of the population that is expected to mate.
+        """
         if self._mating_fraction_impl:
             return self._mating_fraction
         else:
@@ -203,6 +480,18 @@ class VariableCount:
 
     @mating_fraction.setter
     def mating_fraction(self, value):
+        """
+        Setter function for mating_fraction attribute.
+
+        Parameters
+        ----------
+            value : float
+                The fraction of the population that is expected to mate.
+
+        Returns
+        -------
+            None
+        """
         if value is not None:
             self._mating_fraction_impl = True
         else:
@@ -286,6 +575,23 @@ class MixtureCount(VariableCount):
 
 # standardize columns of array
 def standardize_array(a: ArrayLike):
+    """
+    Standardizes columns of a 2D array.
+
+    Parameters:
+    -----------
+    a: ArrayLike
+        Input 2D array.
+
+    Returns:
+    --------
+    np.ndarray
+        Standardized 2D array.
+
+    Raises:
+    -------
+    None
+    """
     with np.errstate(invalid='ignore'):
         a = ensure2D(a)
         return ensure2D(np.apply_along_axis(lambda x: (x - np.mean(x)) / np.std(x),
@@ -297,6 +603,25 @@ def standardize_array(a: ArrayLike):
 @nb.jit(parallel=True)
 def _standardize_array_hw(haplotypes,
                           af):
+    """
+    Maps int8 haploid genotypes and float allele frequency to float32 standardized genotypes.
+
+    Parameters:
+    -----------
+    haplotypes: np.ndarray
+        Input array of int8 haploid genotypes.
+    af: np.ndarray
+        Input array of allele frequencies.
+
+    Returns:
+    --------
+    np.ndarray
+        Standardized genotypes.
+
+    Raises:
+    -------
+    None
+    """
     genotypes = np.empty(shape=(haplotypes.shape[0],
                                 haplotypes.shape[1] // 2), dtype=np.float32)
     means = (2 * af).astype(np.float32)
@@ -310,6 +635,25 @@ def _standardize_array_hw(haplotypes,
 
 def standardize_array_hw(haplotypes: NDArray[Shape["*,*"], Int8],
                          af: NDArray[Shape["*"], Float]):
+    """
+    Wraps _standardize_array_hw to prevent segfaults.
+
+    Parameters:
+    -----------
+    haplotypes: NDArray[Shape["*,*"], Int8]
+        Input array of int8 haploid genotypes.
+    af: NDArray[Shape["*"], Float]
+        Input array of allele frequencies.
+
+    Returns:
+    --------
+    np.ndarray
+        Standardized genotypes.
+
+    Raises:
+    -------
+    None
+    """
     with np.errstate(invalid='ignore'):
         # flatten af if needed
         af = np.array(af)
@@ -323,10 +667,46 @@ def standardize_array_hw(haplotypes: NDArray[Shape["*,*"], Int8],
 
 
 def unique_identifier(frame, index_variables):
+    """
+    Returns a unique identifier string generated from index variables of a dataframe.
+
+    Parameters:
+    -----------
+    frame: pd.DataFrame
+        Input dataframe.
+    index_variables: List[str]
+        List of column names to be used as index.
+
+    Returns:
+    --------
+    str
+        Unique identifier string.
+
+    Raises:
+    -------
+    None
+    """
     return paste([frame[variable].values for variable in index_variables], sep=".")
 
 
 def cov2cor(A):
+    """
+    Converts covariance matrix to correlation matrix.
+
+    Parameters:
+    -----------
+    A: Union[np.ndarray, pd.DataFrame, xr.DataArray]
+        Input covariance matrix.
+
+    Returns:
+    --------
+    Union[np.ndarray, pd.DataFrame, xr.DataArray]
+        Correlation matrix.
+
+    Raises:
+    -------
+    None
+    """
     with np.errstate(invalid='ignore'):
         S = np.diag(1 / np.sqrt(np.diag(A)))
         if isinstance(A, xr.DataArray):
@@ -343,6 +723,24 @@ def cov2cor(A):
 
 
 def to_simplex(*args):
+    """
+    Converts input values to a simplex vector.
+
+    Parameters:
+    -----------
+    *args: Union[float, int]
+        Input values.
+
+    Returns:
+    --------
+    np.ndarray
+        Simplex vector.
+
+    Raises:
+    -------
+    ValueError
+        If all input values are less than or equal to zero.
+    """
     a = np.array(args).ravel()
     if np.all(a <= 0): 
         raise ValueError()
@@ -351,6 +749,23 @@ def to_simplex(*args):
     return a / sum(a)
 
 def to_proportions(*args):
+    """
+    Converts input values to proportional values.
+
+    Parameters:
+    -----------
+    *args: Union[float, int]
+        Input values.
+
+    Returns:
+    --------
+    np.ndarray
+        Proportional values.
+
+    Raises:
+    -------
+    None
+    """
     simplex = to_simplex(args)
     for i in range(simplex.shape[0]):
         if np.any(simplex < 1):

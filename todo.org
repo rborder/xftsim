@@ -60,7 +60,7 @@
 ** ☐ io [3/8]
     - [X] remove from gitignore
     - [ ] common index api
-    - [ ] DOCUMENT
+    - [X] DOCUMENT
     - [ ] from_vcf
     - [X] from_plink1
     - [ ] from_plink2
@@ -108,4 +108,5 @@
     - [ ] DOCUMENT
     - [ ] prettify __repr__
 ** ☐ utils [0/1]
-    - [ ] DOCUMENT
+    - [ ] DOCUMENT - variable count
+    - [X] DOCUMENT - everything else
