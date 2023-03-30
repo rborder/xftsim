@@ -18,7 +18,7 @@ import xftsim as xft
 
 @funcy.decorator
 def profiled(call, level: int = 1, message: str = None):
-        """
+    """
     A decorator that prints the duration of a function call when the specified logging level is met.
 
     Args:

@@ -4,7 +4,7 @@ import pandas as pd
 import nptyping as npt
 import xarray as xr
 from nptyping import NDArray, Int8, Int64, Float64, Bool, Shape, Float, Int
-from typing import Any, Hashable, List, Iterable, Callable, Union, Dict
+from typing import Any, Hashable, List, Iterable, Callable, Union, Dict, Tuple
 from functools import cached_property
 from scipy import interpolate
 
@@ -13,46 +13,147 @@ import xftsim as xft
 
 @xr.register_dataarray_accessor("xft")
 class XftAccessor:
+    """
+    Accessor for Xarray DataArrays with specialized functionality for HaplotypeArray
+    and PhenotypeArray objects.
+    
+    Parameters
+    ----------
+    xarray_obj : xarray.DataArray
+        The DataArray to be accessed.
+    
+    Attributes
+    ----------
+    _obj : xarray.DataArray
+        The DataArray to be accessed.
+    _array_type : str
+        The type of the DataArray, either 'HaplotypeArray' or 'componentArray'.
+    _non_annotation_vars : list of str
+        The non-annotation variables in the DataArray.
+    _variant_vars : list of str
+        The variant annotation variables in the DataArray.
+    _sample_vars : list of str
+        The sample annotation variables in the DataArray.
+    _component_vars : list of str
+        The component annotation variables in the DataArray.
+    _row_dim : str
+        The label of the row dimension.
+    _col_dim : str
+        The label of the column dimension.
+    shape : tuple
+        The shape of the DataArray.
+    n : int
+        The number of rows in the DataArray.
+    data : numpy.ndarray
+        The data in the DataArray.
+    row_vars: list
+        List of coordinate variable names for the row dimension.
+    column_vars: list
+        List of coordinate variable names for the column dimension.
+    sample_mindex: pd.MultiIndex
+        MultiIndex object for the 'sample' dimension, containing iid, fid, and sex columns.
+    component_mindex: pd.MultiIndex
+        MultiIndex object for the 'component' dimension, containing phenotype_name, component_name, and vorigin_relative columns.
+
+
+    Raises
+    ------
+    NotImplementedError
+        If the DataArray dimensions are not ('sample', 'variant') or ('sample', 'component').
+    """
+    
     def __init__(self, xarray_obj):
         self._obj = xarray_obj
-        # haplotype array
         if self._obj.dims == ('sample', 'variant'):
             self._array_type = 'HaplotypeArray'
             self._non_annotation_vars = [
                 'variant', 'vid', 'chrom', 'zero_allele', 'one_allele', 'af', 'hcopy', 'pos_bp', 'pos_cM']
-            self._variant_vars = ['vid', 'chrom',
-                                  'zero_allele', 'one_allele', 'af']
+            self._variant_vars = ['vid', 'chrom', 'zero_allele', 'one_allele', 'af']
             self._sample_vars = ['iid', 'fid', 'sex']
         elif self._obj.dims == ('sample', 'component'):
             self._array_type = 'componentArray'
-            self._component_vars = ['phenotype_name',
-                                    'component_name', 'vorigin_relative']
+            self._component_vars = ['phenotype_name', 'component_name', 'vorigin_relative']
             self._sample_vars = ['iid', 'fid', 'sex']
         else:
-            raise NotImplementedError
-
+            raise NotImplementedError("Unsupported dimensions for DataArray.")
+    
     @property
     def _row_dim(self):
+        """
+        The label of the row dimension.
+        
+        Returns
+        -------
+        str
+            The label of the row dimension.
+        """
         return self._obj.dims[0]
 
     @property
     def _col_dim(self):
+        """
+        The label of the column dimension.
+        
+        Returns
+        -------
+        str
+            The label of the column dimension.
+        """
         return self._obj.dims[1]
 
     @property
     def shape(self):
+        """
+        The shape of the DataArray.
+        
+        Returns
+        -------
+        tuple
+            The shape of the DataArray.
+        """
         return self._obj.shape
 
     @property
     def n(self):
+        """
+        The number of rows in the DataArray.
+        
+        Returns
+        -------
+        int
+            The number of rows in the DataArray.
+        """
         return self._obj.shape[0]
 
     @property
     def data(self):
+        """
+        The data in the DataArray.
+        
+        Returns
+        -------
+        numpy.ndarray
+            The data in the DataArray.
+        """
         return self._obj.data
 
     #### functions for constructing XftIndex objects ####
     def get_sample_indexer(self):
+        """
+        Returns an instance of `xft.index.SampleIndex` representing the sample indexer
+        constructed from the input data.
+
+        Raises
+        ------
+        NotImplementedError
+            If `_row_dim` is not `'sample'`.
+
+        Returns
+        -------
+        SampleIndex
+            An instance of `xft.index.SampleIndex` constructed from the sample data in the
+            input object.
+        """
         if self._row_dim != 'sample':
             raise NotImplementedError
         return xft.index.SampleIndex(
@@ -65,6 +166,14 @@ class XftAccessor:
         raise NotImplementedError
 
     def get_variant_indexer(self):
+        """
+        Get the variant indexer of a HaplotypeArray.
+
+        Returns
+        -------
+        xft.index.HaploidVariantIndex
+            A HaploidVariantIndex object.
+        """
         if self._col_dim != 'variant':
             raise NotImplementedError
         annotations = self.get_annotation_dict()
@@ -88,6 +197,14 @@ class XftAccessor:
         raise NotImplementedError
 
     def get_component_indexer(self):
+        """
+        Get the component indexer of a PhenotypeArray.
+
+        Returns
+        -------
+        xft.index.ComponentIndex
+            A ComponentIndex object.
+        """
         if self._col_dim != 'component':
             raise NotImplementedError
         return xft.index.ComponentIndex(
@@ -97,6 +214,20 @@ class XftAccessor:
         )
 
     def reindex_components(self, value):
+        """
+        Reindex the components.
+
+        Parameters
+        ----------
+        value : xft.index.ComponentIndex
+            A ComponentIndex object.
+
+        Returns
+        -------
+        PhenotypeArray
+            A new PhenotypeArray object.
+
+        """
         # ugly as hell, works for now
         return PhenotypeArray(self._obj.data,
                               component_indexer=value,
@@ -107,6 +238,20 @@ class XftAccessor:
         # self._obj['vorigin_relative'] = value.vorigin_relative
 
     def get_row_indexer(self):
+        """
+        Get the row indexer.
+
+        Returns
+        -------
+        xft.index.SampleIndex
+            A SampleIndex object.
+
+        Raises
+        ------
+        TypeError
+            If the row dimension is not 'sample'.
+
+        """
         if self._row_dim == 'sample':
             return self.get_sample_indexer()
         else:
@@ -116,6 +261,19 @@ class XftAccessor:
         raise NotImplementedError
 
     def get_column_indexer(self):
+        """
+        Get the column indexer object for the PhenotypeArray object.
+
+        Returns
+        -------
+        xft.index.Indexer
+            The indexer object based on the current column dimension.
+
+        Raises
+        ------
+        TypeError
+            If the current column dimension is not recognized.
+        """
         if self._col_dim == 'variant':
             return self.get_variant_indexer()
         elif self._col_dim == 'component':
@@ -124,6 +282,23 @@ class XftAccessor:
             raise TypeError
 
     def set_column_indexer(self, value):
+        """
+        Set the column indexer object for the PhenotypeArray object.
+
+        Parameters
+        ----------
+        value : xft.index.Indexer
+            The new indexer object for the PhenotypeArray object.
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        TypeError
+            If the current column dimension is not recognized.
+        """
         if self._col_dim == 'variant':
             return self.set_variant_indexer(value)
         elif self._col_dim == 'component':
@@ -133,15 +308,44 @@ class XftAccessor:
 
     @property
     def row_vars(self):
+        """
+        Get the row coordinate variables for the PhenotypeArray object.
+
+        Returns
+        -------
+        XftIndex
+            The row coordinate variables of the row dimension.
+        """
         return self.get_row_indexer()._coord_variables
 
     @property
     def column_vars(self):
+        """
+        Get the column coordinate variables for the DataArray object.
+
+        Returns
+        -------
+        XftIndex
+            The column coordinate variables of the current column dimension.
+        """
         return self.get_column_indexer()._coord_variables
 
     # accessors for pd.MultiIndex objects
     @property
     def sample_mindex(self):
+        """
+        Get the sample multi-index for the PhenotypeArray object.
+
+        Returns
+        -------
+        pd.MultiIndex
+            A multi-index object containing sample IDs, family IDs, and sex information.
+        
+        Raises
+        ------
+        NotImplementedError
+            If the current row dimension is not 'sample'.
+        """
         if self._row_dim != 'sample':
             raise NotImplementedError
         df = pd.DataFrame.from_dict(dict(
@@ -153,6 +357,20 @@ class XftAccessor:
 
     @property
     def component_mindex(self):
+        """
+        Get a Pandas MultiIndex object for the component dimension.
+
+        Returns
+        -------
+        pandas.MultiIndex
+            MultiIndex object with phenotype_name, component_name, and vorigin_relative
+            as index levels.
+
+        Raises
+        ------
+        NotImplementedError
+            If the column dimension is not 'component'.
+        """ 
         if self._col_dim != 'component':
             raise NotImplementedError
         df = pd.DataFrame.from_dict(dict(
@@ -172,6 +390,22 @@ class XftAccessor:
     def interpolate_cM(self,
                        rmap_df: pd.DataFrame = xft.data.get_ceu_map(),
                        **kwargs):
+        """
+        Interpolate cM values based on genetic map information.
+        Specific to HaplotypeArray objects.
+
+        Parameters
+        ----------
+        rmap_df : pandas.DataFrame
+            Genetic map data as a DataFrame. Default is the CEU genetic map data.
+        **kwargs
+            Additional keyword arguments to be passed to scipy.interpolate.interp1d.
+
+        Raises
+        ------
+        TypeError
+            If the column dimension is not 'variant'.
+        """
         if self._col_dim != 'variant':
             raise TypeError
         chroms = np.unique(self._obj.chrom.values.astype(int)).astype(str)
@@ -183,30 +417,77 @@ class XftAccessor:
             self._obj.pos_cM[self._obj.chrom==chrom] = interpolator(self._obj.pos_bp[self._obj.chrom==chrom])
 
     def use_empirical_afs(self):
+        """
+        Sets allele frequencies to the empirical frequencies.
+        Specific to HaplotypeArray objects.
+        
+        Raises:
+        TypeError: If `_col_dim` is not 'variant'.
+        """
         if self._col_dim != 'variant':
             raise TypeError
         self._obj.af.values = np.repeat(self.af_empirical,2)
 
     @property
     def diploid_vid(self):
+        """
+        Diploid variant ID.
+        Specific to HaplotypeArray objects.
+
+        Returns:
+        numpy.ndarray: Diploid variant IDs.
+        
+        Raises:
+        TypeError: If `_col_dim` is not 'variant'.
+        """
         if self._col_dim != 'variant':
             raise TypeError
         return self._obj.vid[::2]
 
     @property
     def diploid_chrom(self):
+        """
+        Diploid chromosome numbers.
+        Specific to HaplotypeArray objects.
+
+        Returns:
+        numpy.ndarray: Diploid chromosome numbers.
+        
+        Raises:
+        TypeError: If `_col_dim` is not 'variant'.
+        """
         if self._col_dim != 'variant':
             raise TypeError
         return self._obj.chrom[::2]
 
     @property
     def generation(self):
+        """
+        Generation of the data.
+        Specific to HaplotypeArray objects.
+
+        Returns:
+        int: Generation attribute.
+        
+        Raises:
+        TypeError: If `_col_dim` is not 'variant'.
+        """
         if self._col_dim != 'variant':
             raise TypeError
         return self.attrs['generation']
 
     @property
     def af_empirical(self):
+        """
+        Empirical allele frequencies.
+        Specific to HaplotypeArray objects.
+
+        Returns:
+        numpy.ndarray: Empirical allele frequencies.
+        
+        Raises:
+        TypeError: If `_col_dim` is not 'variant'.
+        """
         if self._col_dim != 'variant':
             raise TypeError
         hap_AF = self._obj.mean(axis=0)
@@ -215,6 +496,16 @@ class XftAccessor:
 
     @property
     def maf_empirical(self):
+        """
+        Empirical minor allele frequencies.
+        Specific to HaplotypeArray objects.
+
+        Returns:
+        numpy.ndarray: Empirical minor allele frequencies.
+        
+        Raises:
+        TypeError: If `_col_dim` is not 'variant'.
+        """
         if self._col_dim != 'variant':
             raise TypeError
         tmp = self.af_empirical
@@ -223,16 +514,65 @@ class XftAccessor:
 
     @property
     def m(self):
+        """
+        Return the number of distinct diploid variants.
+        Specific to HaplotypeArray objects.
+        
+        Returns
+        -------
+        int:
+            The number of distinct diploid variants in the array.
+            
+        Raises
+        ------
+        TypeError:
+            If the `_col_dim` attribute is not equal to 'variant'.
+        """
         if self._col_dim != 'variant':
             raise TypeError
         return self._obj.shape[1] // 2
 
     def to_diploid(self):
+        """
+        Convert the object to a diploid representation by adding the two haplotypes for each variant.
+        Specific to HaplotypeArray objects.
+        
+        Returns
+        -------
+        HaplotypeArray:
+            A new HaplotypeArray object with the same samples but where each variant is represented as two haplotypes.
+            
+        Raises
+        ------
+        TypeError:
+            If the `_col_dim` attribute is not equal to 'variant'.
+        """
         if self._col_dim != 'variant':
             raise TypeError
         return self._obj[:, 0::2] + self._obj[:, 1::2]
 
     def to_diploid_standardized(self, af: NDArray, scale: bool):
+        """
+        Standardize the HaplotypeArray object and convert it to a diploid representation.
+        Specific to HaplotypeArray objects.
+        
+        Parameters
+        ----------
+        af: NDArray
+            An array containing the allele frequencies of each variant.
+        scale: bool
+            Whether or not to scale the standardized array by the square root of the number of variants.
+            
+        Returns
+        -------
+        ndarray:
+            A standardized diploid array where each variant is represented as the sum of two haplotypes.
+            
+        Raises
+        ------
+        TypeError:
+            If the `_col_dim` attribute is not equal to 'variant'.
+        """
         if self._col_dim != 'variant':
             raise TypeError
         if scale:
@@ -241,17 +581,64 @@ class XftAccessor:
             return xft.utils.standardize_array_hw(self._obj.data, af)
 
     def get_annotation_dict(self):
+        """
+        Return a dictionary of all annotation variables associated with the variants in the object.
+        Specific to HaplotypeArray objects.
+        
+        Returns
+        -------
+        dict:
+            A dictionary where the keys are the annotation variable names and the values are the corresponding arrays.
+            
+        Raises
+        ------
+        TypeError:
+            If the `_col_dim` attribute is not equal to 'variant'.
+        """
         if self._col_dim != 'variant':
             raise TypeError
         return {x[0]: x[1].values for x in self._obj.coords.variables.items() if 'variant' in x[1].dims and x[0] not in self._non_annotation_vars}
 
     def get_non_annotation_dict(self):
+        """
+        Return a dictionary of all non-annotation variables associated with the variants in the object.
+        Specific to HaplotypeArray objects.
+        
+        Returns
+        -------
+        dict:
+            A dictionary where the keys are the non-annotation variable names and the values are the corresponding arrays.
+            
+        Raises
+        ------
+        TypeError:
+            If the `_col_dim` attribute is not equal to 'variant'.
+        """
         if self._col_dim != 'variant':
             raise TypeError
         return {x[0]: x[1].values for x in self._obj.coords.variables.items() if 'variant' in x[1].dims and x[0] in self._variant_vars}
 
     # component index properties / methods
     def grep_component_index(self, keyword: str = 'phenotype'):
+        """
+        Returns the index array of components whose names contain the given keyword.
+        Specific to PhenotypeArray objects.
+
+        Parameters
+        ----------
+        keyword : str, optional
+            The keyword to search for in component names, by default 'phenotype'.
+
+        Returns
+        -------
+        XftIndex
+            The index of components that match the given keyword.
+
+        Raises
+        ------
+        TypeError
+            If the column dimension is not 'component'.
+        """
         if self._col_dim != 'component':
             raise TypeError
         pheno_cols = self._obj.component_name.values[self._obj.component_name.str.contains(
@@ -262,59 +649,184 @@ class XftAccessor:
 
     @property
     def k_total(self):
+        """
+        Returns the total number of components.
+        Specific to PhenotypeArray objects.
+
+        Returns
+        -------
+        int
+            The total number of components.
+
+        Raises
+        ------
+        TypeError
+            If the column dimension is not 'component'.
+        """
         if self._col_dim != 'component':
             raise TypeError
         return self.shape[1]  # number of all phenotype components
 
     @property
     def k_phenotypes(self):
+        """
+        Returns the number of unique phenotype components.
+        Specific to PhenotypeArray objects.
+
+        Returns
+        -------
+        int
+            The number of unique phenotype components.
+
+        Raises
+        ------
+        TypeError
+            If the column dimension is not 'component'.
+        """
         if self._col_dim != 'component':
             raise TypeError
         return np.unique(self._obj.phenotype_name).shape[0]
 
     @property
-    def all_phenotypes(self):
-        if self._col_dim != 'component':
-            raise TypeError
-        return np.unique(self._obj.phenotype_name)
+    def all_phenotypes(self) -> np.ndarray:
+        """
+        Returns an array of all the unique phenotype component names.
+        Specific to PhenotypeArray objects.
+
+        Returns
+        -------
+        numpy.ndarray
+            An array of all the unique phenotype component names.
+
+        Raises
+        ------
+        TypeError
+            If the column dimension is not 'component'.
+        """
 
     @property
-    def k_components(self):
+    def k_components(self) -> int:
+        """
+        Returns the number of unique component names.
+        Specific to PhenotypeArray objects.
+
+        Returns
+        -------
+        int
+            The number of unique component names.
+
+        Raises
+        ------
+        TypeError
+            If the column dimension is not 'component'.
+        """
         if self._col_dim != 'component':
             raise TypeError
         return np.unique(self._obj.component_name).shape[0]
 
     @property
-    def all_components(self):
+    def all_components(self) -> np.ndarray:
+        """
+        Returns an array of all the unique component names.
+        Specific to PhenotypeArray objects.
+
+        Returns
+        -------
+        numpy.ndarray
+            An array of all the unique component names.
+
+        Raises
+        ------
+        TypeError
+            If the column dimension is not 'component'.
+        """
         if self._col_dim != 'component':
             raise TypeError
         return np.unique(self._obj.component_name)
 
     @property
-    def k_relative(self):
+    def k_relative(self) -> int:
+        """
+        Returns the number of unique origin relative values.
+        Specific to PhenotypeArray objects.
+
+        Returns
+        -------
+        int
+            The number of unique origin relative values.
+
+        Raises
+        ------
+        TypeError
+            If the column dimension is not 'component'.
+        """
         if self._col_dim != 'component':
             raise TypeError
         return np.unique(self._obj.vorigin_relative).shape[0]
 
     @property
-    def all_relatives(self):
+    def all_relatives(self) -> np.ndarray:
+        """
+        Returns an array of all the unique origin relative values.
+        Specific to PhenotypeArray objects.
+
+        Returns
+        -------
+        numpy.ndarray
+            An array of all the unique origin relative values.
+
+        Raises
+        ------
+        TypeError
+            If the column dimension is not 'component'.
+        """
         if self._col_dim != 'component':
             raise TypeError
         return np.unique(self._obj.vorigin_relative)
 
     @property
-    def k_current(self):  # number of all current-gen specific components
+    def k_current(self) -> int:
+        """Returns the number of all current-gen specific components.
+        Specific to PhenotypeArray objects.
+
+        Raises:
+            TypeError: If the column dimension is not 'component'.
+            
+        Returns:
+            int: The number of all current-gen specific components.
+        """
         if self._col_dim != 'component':
             raise TypeError
         return np.sum(self._obj.vorigin_relative == -1)
 
-    def get_k_rel(self, rel):
+    def get_k_rel(self, rel) -> int:
+        """Returns the number of components with the given relative origin.
+        Specific to PhenotypeArray objects.
+        
+        Args:
+            rel (int): The relative origin of the components.
+        
+        Raises:
+            TypeError: If the column dimension is not 'component'.
+            
+        Returns:
+            int: The number of components with the given relative origin.
+        """
         if self._col_dim != 'component':
             raise TypeError
         return np.sum(self._obj.vorigin_relative == rel)
 
     @property
-    def depth(self):  # generational depth from binary relative encoding
+    def depth(self):
+        """Returns the generational depth from binary relative encoding.
+        Specific to PhenotypeArray objects.
+        
+        Raises:
+            TypeError: If the column dimension is not 'component'.
+            
+        Returns:
+            Union[float, np.nan]: The generational depth from binary relative encoding, or NaN if the relative origin is empty.
+        """
         if self._col_dim != 'component':
             raise TypeError
         if len(self.vorigin_relative) != 0:
@@ -322,27 +834,75 @@ class XftAccessor:
         else:
             return np.NaN
 
-    def split_by_phenotype(self):
+    def split_by_phenotype(self) -> Dict[str, pd.DataFrame]:
+        """Splits the data by phenotype name.
+        Specific to PhenotypeArray objects.
+        
+        Raises:
+            TypeError: If the column dimension is not 'component'.
+            
+        Returns:
+            Dict[str, pd.DataFrame]: A dictionary of dataframes, where the keys are the unique phenotype names and the values are dataframes containing the data for each phenotype.
+        """
         if self._col_dim != 'component':
             raise TypeError
         return {phenotype: pheno.loc[:, pheno.phenotype_name == phenotype] for phenotype in self.all_phenotypes}
 
     def split_by_component(self):
+        """Splits the data by component name.
+        Specific to PhenotypeArray objects.
+        
+        Raises:
+            TypeError: If the column dimension is not 'component'.
+            
+        Returns:
+            Dict[str, pd.DataFrame]: A dictionary of dataframes, where the keys are the unique component names and the values are dataframes containing the data for each component.
+        """
         if self._col_dim != 'component':
             raise TypeError
         return {component: pheno.loc[:, pheno.component_name == component] for component in self.all_components}
 
-    def split_by_vorigin(self):
+    def split_by_vorigin(self) -> Dict[int, pd.DataFrame]:
+        """Splits the data by relative origin.
+        Specific to PhenotypeArray objects.
+        
+        Raises:
+            TypeError: If the column dimension is not 'component'.
+            
+        Returns:
+            Dict[int, pd.DataFrame]: A dictionary of dataframes, where the keys are the unique relative origins and the values are dataframes containing the data for each relative origin.
+        """
         if self._col_dim != 'component':
             raise TypeError
         return {vorigin: pheno.loc[:, pheno.vorigin_relative == vorigin] for vorigin in self.all_relatives}
 
-    def split_by_phenotype_vorigin(self):
+    def split_by_phenotype_vorigin(self) -> Dict[Tuple[str, int], pd.DataFrame]:
+        """Splits the data by phenotype name and relative origin.
+        Specific to PhenotypeArray objects.
+        
+        Raises:
+            TypeError: If the column dimension is not 'component'.
+            
+        Returns:
+            Dict[Tuple[str, int], pd.DataFrame]: A dictionary of dataframes, where the keys are tuples of phenotype name and relative origin and the values are dataframes containing the data for each combination of phenotype name and relative origin.
+        """
         if self._col_dim != 'component':
             raise TypeError
         return {(phenotype, vorigin): pheno.loc[:, (pheno.phenotype_name == phenotype) ^ (pheno.vorigin_relative == vorigin)] for phenotype in self.all_phenotypes for vorigin in self.all_relatives}
 
     def as_pd(self, prettify: bool = True):
+        """Returns the data as a Pandas DataFrame.
+        Specific to PhenotypeArray objects.
+        
+        Args:
+            prettify (bool): If True, the multi-index columns will be prettified by replacing -1, 0, 1 with 'proband', 'mother', 'father', respectively.
+        
+        Raises:
+            TypeError: If the column dimension is not 'component'.
+            
+        Returns:
+            pd.DataFrame: A Pandas DataFrame representing the data.
+        """
         if self._col_dim != 'component':
             raise TypeError
         component_mind = self.component_mindex
@@ -358,6 +918,28 @@ class XftAccessor:
                             ).to_pandas()
 
     def __getitem__(self, *args):
+        """
+        Retrieve a subset of the data with the given indices.
+
+        Parameters
+        ----------
+        args : tuple
+            Tuple of indices to retrieve the subset of data. It can be one of the following:
+            
+            - A dictionary where the keys are column names and the values are the indices of the columns to retrieve.
+            - Two positional arguments representing row and column indices, respectively.
+
+        Returns
+        -------
+        xr.DataArray
+            The subset of data corresponding to the given indices.
+
+        Raises
+        ------
+        KeyError
+            If any of the indices provided are invalid.
+
+        """
         # indexing with a dict
         argv = args[0]
         # argv = args[0]
@@ -406,6 +988,24 @@ class XftAccessor:
         return self._obj.loc[row_indices, column_indices]
 
     def __setitem__(self, args, data):
+        """
+        Set the values of a subset of the data with the given indices.
+
+        Parameters
+        ----------
+        args : tuple
+            Tuple of indices to set the values of the subset of data. It can be one of the following:
+            
+            - A dictionary where the keys are column names and the values are the indices of the columns to set the values.
+            - Two positional arguments representing row and column indices, respectively.
+        data : xr.DataArray
+            The data to set in the specified subset of data.
+
+        Raises
+        ------
+        KeyError
+            If any of the indices provided are invalid.
+        """
         # indexing with a dict
         argv = args  # [0]
         # argv = args[0]
@@ -453,6 +1053,10 @@ class XftAccessor:
 
 
 class HaplotypeArray:
+    """
+    Represents a 2D array of binary haplotypes with accompanying row and column indices. 
+    Dummy class used for generation of DataArrays and static methods 
+    """
     def __new__(cls,
                 # n x 2m array of binary haplotypes
                 haplotypes: NDArray[Shape["*, *"], Int8] = None,
@@ -461,7 +1065,41 @@ class HaplotypeArray:
                 generation: int = 0,
                 n: int = None,
                 m: int = None,
-                ):
+                ) -> xr.DataArray:
+        """
+        Create a new instance of DataArray.
+
+        Parameters
+        ----------
+        haplotypes : np.ndarray, optional
+            A 2D array of binary haplotypes. If not provided, default to None.
+        variant_indexer : xft.index.HaploidVariantIndex, optional
+            A haploid variant indexer. If not provided, default to None.
+        sample_indexer : xft.index.SampleIndex, optional
+            A sample indexer. If not provided, default to None.
+        generation : int, optional
+            The generation number associated with the haplotypes. Default to 0.
+        n : int, optional
+            The number of samples. Required if `sample_indexer` is not provided.
+        m : int, optional
+            The number of variants. Required if `variant_indexer` is not provided.
+
+        Returns
+        -------
+        xr.DataArray
+            A 2D xarray DataArray with dimensions `sample` and `variant`.
+
+        Raises
+        ------
+        AssertionError
+            If either `variant_indexer` or `m` is not provided, or both are provided.
+            If either `sample_indexer` or `n` is not provided, or both are provided.
+        
+        Warns
+        -----
+        UserWarning
+            If `haplotypes` is not provided, or if `variant_indexer` is not provided and empirical allele frequencies are used.
+        """
         # obtain n,m if missing
         # assert (variant_indexer is not None) ^ (m is not None) ^ (h)), "provide variant_indexer OR m"
         # assert (sample_indexer is not None) ^ (n is not None), "provide sample_indexer OR n"
@@ -502,7 +1140,44 @@ class HaplotypeArray:
                             })
 
 
-class PhenotypeArray:
+class PhenotypeArray:    
+    """
+    An array that stores phenotypes for a set of individuals.
+    Dummy class used for generation of DataArrays and static methods 
+
+    Parameters
+    ----------
+    components : ndarray, optional
+        n x 2m array of binary haplotypes.
+    component_indexer : xft.index.ComponentIndex, optional
+        Indexer for components.
+    sample_indexer : xft.index.SampleIndex, optional
+        Indexer for samples.
+    generation : int, optional
+        The generation this PhenotypeArray belongs to.
+    n : int, optional
+        The number of samples.
+    k_total : int, optional
+        The total number of components.
+
+    Returns
+    -------
+    xr.DataArray
+        The initialized PhenotypeArray.
+
+    Raises
+    ------
+    AssertionError
+        If `components` is provided, then `n` and `k_total` must not be provided.
+        If `component_indexer` is provided, then `k_total` must not be provided.
+        If `sample_indexer` is provided, then `n` must not be provided.
+        If `components` is provided and `sample_indexer` is provided, then the shape of
+        `components` must match the size of the sample dimension of `sample_indexer`.
+        If `components` is provided and `component_indexer` is provided, then the shape
+        of `components` must match the size of the component dimension of `component_indexer`.
+        If `component_indexer` is provided, then the size of the component dimension of
+        `component_indexer` must match `k_total`.
+    """
     def __new__(cls,
                 # n x 2m array of binary haplotypes
                 components: NDArray[Shape["*, *"], Float] = None,
@@ -555,6 +1230,39 @@ class PhenotypeArray:
         haplotypes: xr.DataArray = None,
         n: int = None,
     ) -> xr.DataArray:
+        """
+        Create a PhenotypeArray from a product of names.
+
+        Parameters
+        ----------
+        phenotype_name : iterable
+            The names of the phenotypes.
+        component_name : iterable
+            The names of the components.
+        vorigin_relative : iterable
+            The relative origins of each component.
+        components : xr.DataArray, optional
+            The array to use as the components.
+        sample_indexer : xft.index.SampleIndex, optional
+            The sample indexer to use.
+        generation : int, optional
+            The generation of the PhenotypeArray.
+        haplotypes : xr.DataArray, optional
+            The haplotypes to use.
+        n : int, optional
+            The number of samples to use.
+
+        Returns
+        -------
+        xr.DataArray
+            The new PhenotypeArray.
+
+        Raises
+        ------
+        AssertionError
+            If exactly one of `generation` and `sample_indexer` is provided, or exactly one
+            of `haplotypes` and `sample_indexer`/`generation` or `n`/`generation` is provided.
+        """
         # use either haplotypes xOR sample_indexer/generation xOR n/generation
         bool_gsi = bool(generation is not None and sample_indexer is not None)
         bool_h = bool(haplotypes is not None)
