@@ -14,6 +14,24 @@ import dask.array as da
 
 
 class Statistic:
+    """
+    Base class for defining statistic estimators.
+
+    Attributes
+    ----------
+    name : str
+        The name of the statistic.
+    estimator : Callable
+        The function that estimates the statistic.
+
+    Methods
+    -------
+    estimate(sim: xft.sim.Simulation) -> None:
+        Estimate the statistic and update the results.
+
+    update_results(sim: xft.sim.Simulation, results: object) -> None:
+        Update the simulation's results_store with the estimated results.
+    """
     def __init__(self, 
                  estimator: Callable,
                  name: str,
@@ -37,6 +55,29 @@ class Statistic:
         sim.results_store[sim.generation][self.name] = results
 
 class SampleStatistics(Statistic):
+    """
+    Calculate and return various sample statistics for the given simulation.
+
+    Attributes
+    ----------
+    means : bool
+        If True, calculate and return the mean of each phenotype.
+    variance_components : bool
+        If True, calculate and return the variance components of each phenotype.
+    variances : bool
+        If True, calculate and return the variances of each phenotype.
+    vcov : bool
+        If True, calculate and return the variance-covariance matrix.
+    corr : bool
+        If True, calculate and return the correlation matrix.
+    prettify : bool
+        If True, prettify the output by converting it to a pandas DataFrame.
+
+    Methods
+    -------
+    estimator(sim: xft.sim.Simulation) -> Dict
+        Calculate and return the requested sample statistics for the given simulation.
+    """
     def __init__(self,
                  means: bool = True,
                  variance_components: bool = True,
@@ -73,6 +114,20 @@ class SampleStatistics(Statistic):
 
 
 class MatingStatistics(Statistic):
+    """
+    Calculate and return various mating statistics for the given simulation.
+
+    Attributes
+    ----------
+    component_index : xft.index.ComponentIndex, optional
+        Index of the component for which the statistics are calculated.
+        If not provided, calculate statistics for all components.
+
+    Methods
+    -------
+    estimator(sim: xft.sim.Simulation) -> Dict
+        Calculate and return the requested mating statistics for the given simulation.
+    """
     def __init__(self,
                  component_index: xft.index.ComponentIndex = None,
                  ):
@@ -97,11 +152,41 @@ class MatingStatistics(Statistic):
 # ## estimates tr (X %*% t(X) %*% X %*% t(X)) using l probing vectors
 @nb.jit(parallel=True)
 def _rtrace_K2(X, l): ## (matrix, int) -> float
+    """
+    Estimate the trace of the matrix product (X %*% t(X) %*% X %*% t(X)) using l probing vectors.
+
+    Parameters
+    ----------
+    X : np.ndarray
+        A 2D numpy array.
+    l : int
+        The number of random probes for trace estimation.
+
+    Returns
+    -------
+    float
+        The estimated trace of the matrix product.
+    """
     probes = np.random.randn(X.shape[0], l)
     W = probes.T @ (X @ (X.T @ (X @ (X.T @ probes))))
     return np.trace(W)/l
 
 def _rtrace_K2_dask(X, l): ## (matrix, int) -> float
+    """
+    Estimate the trace of the matrix product (X %*% t(X) %*% X %*% t(X)) using l probing vectors with Dask.
+
+    Parameters
+    ----------
+    X : np.ndarray
+        A 2D numpy array.
+    l : int
+        The number of random probes for trace estimation.
+
+    Returns
+    -------
+    float
+        The estimated trace of the matrix product.
+    """
     probes = np.random.randn(X.shape[0], l)
     W = da.dot(probes.T, da.dot(X, da.dot(X.T, da.dot(X, da.dot(X.T, probes)))))
     return da.trace(W)/l
@@ -112,6 +197,23 @@ def _haseman_elston_randomized(
                     Y, # (2D array) standardized phenotypes
                     l, # (int) number of random probes for trace estimation
                     ):
+    """
+    Perform randomized Haseman-Elston regression.
+
+    Parameters
+    ----------
+    G : np.ndarray
+        A 2D numpy array representing standardized (but not scaled) diploid genotypes.
+    Y : np.ndarray
+        A 2D numpy array representing standardized phenotypes.
+    l : int
+        The number of random probes for trace estimation.
+
+    Returns
+    -------
+    np.ndarray
+        A 2D numpy array representing the estimated genetic covariances.
+    """
     n,m = G.shape
     Ky = G @ (G.T @ Y)/m
     trK2 = _rtrace_K2(G/np.sqrt(m), l)
@@ -126,6 +228,23 @@ def _haseman_elston_randomized_dask(
                     Y, # (2D array) standardized phenotypes
                     l, # (int) number of random probes for trace estimation
                     ):
+    """
+    Perform randomized Haseman-Elston regression with Dask.
+
+    Parameters
+    ----------
+    G : np.ndarray
+        A 2D numpy array representing standardized (but not scaled) diploid genotypes.
+    Y : np.ndarray
+        A 2D numpy array representing standardized phenotypes.
+    l : int
+        The number of random probes for trace estimation.
+
+    Returns
+    -------
+    np.ndarray
+        A 2D numpy array representing the estimated genetic covariances.
+    """
     n,m = G.shape
     Ky = da.dot(G, da.dot(G.T, Y))/m
     trK2 = _rtrace_K2_dask(G/np.sqrt(m), l)
@@ -141,6 +260,21 @@ def _haseman_elston_deterministic(
                     G, # (2D array) standardized (but not scaled) diploid genotypes
                     Y, # (2D array) standardized phenotypes
                     ):
+    """
+    Perform deterministic Haseman-Elston regression.
+
+    Parameters
+    ----------
+    G : np.ndarray
+        A 2D numpy array representing standardized (but not scaled) diploid genotypes.
+    Y : np.ndarray
+        A 2D numpy array representing standardized phenotypes.
+
+    Returns
+    -------
+    np.ndarray
+        A 2D numpy array representing the estimated genetic covariances.
+    """
     n,m = G.shape
     Ky = G @ (G.T @ Y)/m
     trK2 = np.trace(G @ (G.T @ G @ (G.T/m))/m)
@@ -159,6 +293,27 @@ def haseman_elston(
                    dtype=np.float32,
                    dask: bool = False,
                    ):
+    """
+    Perform Haseman-Elston regression, with the option to choose randomized, deterministic, or randomized dask-based methods.
+
+    Parameters
+    ----------
+    G : np.ndarray
+        A 2D numpy array representing standardized (but not scaled) diploid genotypes.
+    Y : np.ndarray
+        A 2D numpy array representing standardized phenotypes.
+    n_probe : int, optional, default=500
+        The number of random probes for trace estimation. If n_probe is set to inf, use deterministic method.
+    dtype : numpy data type, optional, default=np.float32
+        The data type for the input arrays.
+    dask : bool, optional, default=False
+        If True, use dask for calculations.
+
+    Returns
+    -------
+    np.ndarray
+        A 2D numpy array representing the estimated genetic covariances.
+    """
     Y = xft.utils.ensure2D(Y).astype(dtype)
     G = np.array(G)#, dtype=dtype)
     if np.isinf(n_probe):
@@ -170,6 +325,30 @@ def haseman_elston(
 
   
 class HasemanElstonEstimator(Statistic):
+    """
+    Estimate Haseman-Elston regression for the given simulation.
+
+    Attributes
+    ----------
+    component_index : xft.index.ComponentIndex, optional
+        Index of the component for which the statistics are calculated.
+        If not provided, calculate statistics for all components.
+    genetic_correlation : bool
+        If True, calculate and return the genetic correlation matrix.
+    randomized : bool
+        If True, use a randomized trace estimator.
+    prettify : bool
+        If True, prettify the output by converting it to a pandas DataFrame.
+    n_probe : int
+        The number of random probes for trace estimation.
+    dask : bool
+        If True, use dask for calculations.
+
+    Methods
+    -------
+    estimator(sim: xft.sim.Simulation) -> Dict
+        Estimate and return the Haseman-Elston regression for the given simulation.
+    """
     def __init__(self,
                  component_index: xft.index.ComponentIndex = None,
                  genetic_correlation: bool = True,
