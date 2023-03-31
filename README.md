@@ -9,7 +9,7 @@
 
  - enable evaulation of methods for analyzing "complex traits" under realistically complex generative models
 
-
+<!-- 
 ## Quickstart: simulating bivariate cross-assortative mating
 
 Here we simulate 
@@ -73,3 +73,4 @@ sim = xft.sim.Simulation(founder_haplotypes = founder_haplotypes,
 
 
 
+ -->
