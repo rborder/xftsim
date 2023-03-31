@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 setup(
     name='xftsim',
     
-    version='0.0.0',
+    version='0.0.1.dev2',
     
     author="Richard Border",
     
@@ -14,6 +14,7 @@ setup(
     ]),
     
     install_requires = [
+    "funcy",
     "networkx",
     "nptyping",
     "numba",
@@ -25,4 +26,5 @@ setup(
     "xarray",
     ],
 
+    include_package_data=True,
 )
