@@ -9,6 +9,11 @@
 
  - enable evaulation of methods for analyzing "complex traits" under realistically complex generative models
 
+
+### Notice
+
+`xftsim` is under active development. Stay tuned for tutorials and documentation in the near future!
+
 <!-- 
 ## Quickstart: simulating bivariate cross-assortative mating
 
