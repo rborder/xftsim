@@ -271,7 +271,7 @@ class Simulation():
     @xft.utils.profiled()
     def update_pedigree(self):
         """
-        Update pedigree information.
+        Update pedigree information (NOT IMPLEMENTED).
         """
         warnings.warn('update_pedigree() not implemented')
         pass  # TODO

@@ -1,4 +1,3 @@
-
 * tutorials [0/4]
     - [ ] quickstart
     - [ ] random mating
@@ -50,6 +49,7 @@
     - [X] basic timing
     - [ ] cpu use
     - [ ] memory use
+* submodule features
 ** ☐ arch [3/15]
     - [X] common index api
     - [X] DOCUMENT
@@ -66,6 +66,8 @@
     - [ ] GxE
     - [ ] causal graph methods
     - [ ] prettify __repr__
+** ☐ data [/]
+    - [ ] incorporate genetic maps from stdpopsim
 ** ☐ [#A] effect [4/6]
     - [X] common index api
     - [X] DOCUMENT
