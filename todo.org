@@ -9,6 +9,29 @@
     - [ ] spatial_module
     - [ ] causal graph
 * features [0/0]
+** documentation
+*** ☐ Getting started [0/3]
+    - [ ] overview
+    - [ ] installation
+    - [ ] quickstart
+*** ☐ User guide [0/5]
+    - [ ] the components of a simulation
+    - [ ] founders haplotypes
+    - [ ] mating regime and recombination map
+    - [ ] phenogenetic architectures
+    - [ ] statistics and post-processors
+*** ☐ Under the hood [0/5]
+    - [ ] data structures
+    - [ ] indexing
+    - [ ] Extending mating regimes
+    - [ ] Extending phenogenetic architectures
+    - [ ] Extending statistical estimators
+*** ☐ Example gallery [0/5]
+    - [ ] random mating with variable population growth
+    - [ ] linear cross-trait assortative mating
+    - [ ] arbitrary cross-trait assortative mating
+    - [ ] vertical tranmission and causal dependence
+    - [ ] spatial assortment + environmental gradient
 ** ☐ module docstrings [2/13]
     - [ ] arch
     - [ ] data
@@ -43,14 +66,14 @@
     - [ ] GxE
     - [ ] causal graph methods
     - [ ] prettify __repr__
-** ☐ [#A] effect [3/6]
+** ☐ [#A] effect [4/6]
     - [X] common index api
     - [X] DOCUMENT
     - [ ] add get_annotations methods
     - [X] look into m_causal bug
     - [X] make scaled / standardized language intelligible/fix doc
     - [ ] prettify __repr__
-** ☐ [#A] founders [0/8]
+** ☐ [#A] founders [1/8]
     - [ ] common index api
     - [X] DOCUMENT
     - [ ] from_maf function
@@ -59,7 +82,7 @@
     - [ ] from_dask
     - [ ] from_zarr
     - [ ] prettify __repr__
-** ☐ index [1/6]
+** ☐ index [2/6]
     - [X] DOCUMENT
     - ~ unify VariantIndex
     - [ ] type field for components
@@ -67,8 +90,7 @@
     - [X] make from_product etc staticmethods
     - [ ] allow vorigin specification via string
     - [ ] prettify __repr__
-** ☐ [#A] ped [1/4]
-    - [ ] common index api
+** ☐ [#A] ped [1/3]
     - [X] DOCUMENT
     - [ ] update from mating
     - [ ] prettify __repr__
@@ -120,6 +142,9 @@
 ** ☐ struct [3/4]
     - [X] common index api
     - [X] constructors -> staticmethods
+    - [X] DOCUMENT
+    - [ ] prettify __repr__
+** ☐ sim [1/2]
     - [X] DOCUMENT
     - [ ] prettify __repr__
 ** ☐ utils [1/2]

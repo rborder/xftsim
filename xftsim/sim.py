@@ -16,8 +16,84 @@ import funcy
 
 
 class Simulation():
-    """docstring for Simulation"""
+    """
+    A class for running an xft simulation.
 
+    Attributes
+    ----------
+    mating_regime : xft.mate.MatingRegime
+        Mating regime.
+    recombination_map : xft.reproduce.RecombinationMap
+        Recombination map.
+    architecture : xft.arch.Architecture
+        Phenogenetic architecture.
+    statistics : Iterable, optional
+        Iterable of statistics to compute each generation, by default empty list.
+    post_processors : Iterable, optional
+        Iterable of post processors to apply each generation, by default empty list.
+    generation : int, optional
+        Initial generation, by default -1, corresponding to an uninitialized simulation
+    control : Dict, optional
+        Control parameters for the simulation, by default an empty dictionary.
+    reproduction_method : xft.reproduce.ReproductionMethod, optional
+        Reproduction method for the simulation, by default xft.reproduce.Meiosis.
+    control : dict
+        Control parameters for the simulation
+    haplotypes : xr.DataArray
+        Haplotypes for the current generation.
+    phenotypes : xr.DataArray
+        Phenotypes for the current generation.
+    mating : xr.DataArray
+        Mating information for the current generation.
+    parent_mating : xr.DataArray
+        Mating information for the previous generation.
+    parent_haplotypes : xr.DataArray
+        Haplotypes for the previous generation.
+    parent_phenotypes : xr.DataArray
+        Phenotypes for the previous generation.
+    results : xr.DataArray
+        Results for the current generation.
+    current_afs_empirical : xr.DataArray
+        Current empirical allele frequencies.
+    current_std_genotypes : xr.DataArray
+        Current standardized genotypes.
+    current_std_phenotypes : xr.DataArray
+        Current standardized phenotypes.
+    phenotype_store : Dict[int, xr.DataArray]
+        Dictionary storing phenotypes for each generation.
+    haplotype_store : Dict[int, xr.DataArray]
+        Dictionary storing haplotypes for each generation.
+    mating_store : Dict[int, xr.DataArray]
+        Dictionary storing mating information for each generation.
+    results_store : Dict[int, xr.DataArray]
+        Dictionary storing results for each generation.
+    pedigree : Any
+        Pedigree information for the simulation (currently not implemented).
+
+
+    Methods
+    -------
+    run(n_generations: int):
+        Run the simulation for a specified number of generations.
+    run_generation():
+        Run a single generation of the simulation.
+    compute_phenotypes():
+        Compute phenotypes for the current generation.
+    mate():
+        Perform mating for the current generation.
+    reproduce():
+        Perform reproduction for the current generation.
+    estimate_statistics():
+        Estimate statistics for the current generation.
+    process():
+        Process the current generation using post-processors.
+    update_pedigree():
+        Update pedigree information for the current generation.
+    increment_generation():
+        Increment the current generation.
+    move_forward(n_generations: int):
+        Move the simulation forward by a specified number of generations.
+    """
     def __init__(self,
                  founder_haplotypes: xr.DataArray,
                  mating_regime: xft.mate.MatingRegime,
@@ -29,6 +105,30 @@ class Simulation():
                  control={},
                  reproduction_method=xft.reproduce.Meiosis,
                  ):
+        """
+        Initialize a Simulation instance.
+
+        Parameters
+        ----------
+        founder_haplotypes : xr.DataArray
+            Haplotypes for the founder generation.
+        mating_regime : xft.mate.MatingRegime
+            Mating regime for the simulation.
+        recombination_map : xft.reproduce.RecombinationMap
+            Recombination map for the simulation.
+        architecture : xft.arch.Architecture
+            Architecture for the simulation.
+        statistics : Iterable, optional
+            Iterable of statistics to compute, by default an empty list.
+        post_processors : Iterable, optional
+            Iterable of post processors to apply, by default an empty list.
+        generation : int, optional
+            Initial generation, by default -1.
+        control : Dict, optional
+            Control parameters for the simulation, by default an empty dictionary.
+        reproduction_method : xft.reproduce.ReproductionMethod, optional
+            Reproduction method for the simulation, by default xft.reproduce.Meiosis.
+        """
         # attributes
         self.mating_regime = mating_regime
         self.recombination_map = recombination_map
@@ -83,11 +183,22 @@ class Simulation():
 
     @xft.utils.profiled(level=0)
     def run(self, n_generations: int):
+        """
+        Run the simulation for a specified number of generations.
+
+        Parameters
+        ----------
+        n_generations : int
+            Number of generations to run the simulation.
+        """
         for generation in range(n_generations):
             self.run_generation()
 
     @xft.utils.profiled(level=0)
     def run_generation(self):
+        """
+        Run a single generation of the simulation.
+        """
         self.increment_generation()
         self.reproduce()
         self.compute_phenotypes()
@@ -98,6 +209,9 @@ class Simulation():
 
     @xft.utils.profiled()
     def compute_phenotypes(self):
+        """
+        Compute phenotypes for the current generation.
+        """
         # generation zero
         if self.generation == 0:
             self.phenotypes = self.architecture.initialize_founder_phenotype_array(
@@ -116,11 +230,17 @@ class Simulation():
 
     @xft.utils.profiled()
     def mate(self):
+        """
+        Perform mating for the current generation.
+        """
         self.mating = self.mating_regime.mate(
             self.haplotypes, self.phenotypes, self.control)
 
     @xft.utils.profiled()
     def reproduce(self):
+        """
+        Perform reproduction for the current generation.
+        """
         if self.generation == 0:
             pass
         elif self.generation >= 1:
@@ -130,11 +250,17 @@ class Simulation():
 
     @xft.utils.profiled()
     def estimate_statistics(self):
+        """
+        Estimate statistics for the current generation.
+        """
         for stat in self.statistics:
             stat.estimate(self)
 
     @xft.utils.profiled()
     def process(self):
+        """
+        Apply post-processors to the current generation.
+        """
         for ind, proc in enumerate(self.post_processors):
             # allow callables that map xft.Simulation -> None
             if isinstance(proc, Callable):
@@ -144,6 +270,10 @@ class Simulation():
 
     @xft.utils.profiled()
     def update_pedigree(self):
+        """
+        Update pedigree information.
+        """
+        warnings.warn('update_pedigree() not implemented')
         pass  # TODO
 
     # generation is immutable except through Simulation().increment_generation()
