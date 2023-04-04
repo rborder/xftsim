@@ -11,6 +11,6 @@ todo
    
    Overview <overview>
    Installation <install>
-   Quickstart <quickstart>
+   Quickstart <tutorials/quickstart>
 
 
