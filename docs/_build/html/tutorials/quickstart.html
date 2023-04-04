@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Quickstart &mdash; xftsim 0.0.1-dev3 documentation</title>
+  <title>Quickstart &mdash; xftsim 0.0.1-dev9 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/nbsphinx-code-cells.css" type="text/css" />
@@ -14,6 +14,9 @@
   <![endif]-->
   
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/sphinx_highlight.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
@@ -50,8 +53,8 @@
 <li class="toctree-l1 current"><a class="reference internal" href="../getting_started.html">Getting started</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../install.html">Installation</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Quickstart</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#Setting-up-the-simulation">Setting up the simulation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Running-the-simulation-and-examining-the-results">Running the simulation and examining the results</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Setting-up-a-simulation">Setting up a simulation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Running-a-simulation-and-examining-the-results">Running a simulation and examining the results</a></li>
 </ul>
 </li>
 </ul>
@@ -87,10 +90,10 @@
   <section id="Quickstart">
 <h1>Quickstart<a class="headerlink" href="#Quickstart" title="Permalink to this heading"></a></h1>
 <p>In this brief tutorial, we’ll run a quick simulation that illustrates the impact of cross-trait assortative mating on the the Haseman-Elston regression genetic correlation estimator. In the process, we’ll learning about the essential components of an <code class="docutils literal notranslate"><span class="pre">xftsim</span></code> simulation.</p>
-<section id="Setting-up-the-simulation">
-<h2>Setting up the simulation<a class="headerlink" href="#Setting-up-the-simulation" title="Permalink to this heading"></a></h2>
+<section id="Setting-up-a-simulation">
+<h2>Setting up a simulation<a class="headerlink" href="#Setting-up-a-simulation" title="Permalink to this heading"></a></h2>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">xftsim</span> <span class="k">as</span> <span class="nn">xft</span>
@@ -104,13 +107,23 @@
 </pre></div>
 </div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">Simulation</span></code> objects require the following arguments: - <code class="docutils literal notranslate"><span class="pre">founder_haplotypes:</span> <span class="pre">xarray.core.dataarray.DataArray,</span></code> - <code class="docutils literal notranslate"><span class="pre">architecture:</span> <span class="pre">xftsim.arch.Architecture,</span></code> - <code class="docutils literal notranslate"><span class="pre">recombination_map:</span> <span class="pre">xftsim.reproduce.RecombinationMap,</span></code> - <code class="docutils literal notranslate"><span class="pre">mating_regime:</span> <span class="pre">xftsim.mate.MatingRegime,</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">Simulation</span></code> objects require the following arguments:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">founder_haplotypes:</span> <span class="pre">xarray.core.dataarray.DataArray,</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">architecture:</span> <span class="pre">xftsim.arch.Architecture,</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">recombination_map:</span> <span class="pre">xftsim.reproduce.RecombinationMap,</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mating_regime:</span> <span class="pre">xftsim.mate.MatingRegime,</span></code></p></li>
+</ul>
 <p>Together, these comprise our initial generation’s haplotypes (<code class="docutils literal notranslate"><span class="pre">founder_haplotypes</span></code>), a phenogenetic architecture mapping genotypes to phenotypes (<code class="docutils literal notranslate"><span class="pre">architecture</span></code>), a method for assigning mates (<code class="docutils literal notranslate"><span class="pre">mating_regime</span></code>), and a recombination map for meiosis (<code class="docutils literal notranslate"><span class="pre">recombination_map</span></code>).</p>
-<p>We can also supply the following iterables: - <code class="docutils literal notranslate"><span class="pre">statistics:</span> <span class="pre">Iterable</span> <span class="pre">=</span> <span class="pre">[],</span></code> - <code class="docutils literal notranslate"><span class="pre">post_processors:</span> <span class="pre">Iterable</span> <span class="pre">=</span> <span class="pre">[],</span></code></p>
+<p>We can also supply the following iterables:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">statistics:</span> <span class="pre">Iterable</span> <span class="pre">=</span> <span class="pre">[],</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">post_processors:</span> <span class="pre">Iterable</span> <span class="pre">=</span> <span class="pre">[],</span></code></p></li>
+</ul>
 <p>which correspond to any estimators (<code class="docutils literal notranslate"><span class="pre">statistics</span></code>) or other procedures (<code class="docutils literal notranslate"><span class="pre">post_processors</span></code>) we’d like to run every generation.</p>
 <p>For our <strong>founder haplotypes</strong>, we’ll simply generate independent binomial random variants for <code class="docutils literal notranslate"><span class="pre">n=8000</span></code> individuals at <code class="docutils literal notranslate"><span class="pre">m=1000</span></code> diploid sites:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">founder_haplotypes</span> <span class="o">=</span> <span class="n">xft</span><span class="o">.</span><span class="n">founders</span><span class="o">.</span><span class="n">founder_haplotypes_uniform_AFs</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">8000</span><span class="p">,</span>
@@ -120,7 +133,7 @@
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
@@ -510,27 +523,27 @@ Coordinates: (12/13)
     pos_bp       (variant) float64 nan nan nan nan nan ... nan nan nan nan nan
     pos_cM       (variant) float64 nan nan nan nan nan ... nan nan nan nan nan
 Attributes:
-    generation:  0</pre><div class='xr-wrap' style='display:none'><div class='xr-header'><div class='xr-obj-type'>xarray.DataArray</div><div class='xr-array-name'>'HaplotypeArray'</div><ul class='xr-dim-list'><li><span class='xr-has-index'>sample</span>: 8000</li><li><span class='xr-has-index'>variant</span>: 2000</li></ul></div><ul class='xr-sections'><li class='xr-section-item'><div class='xr-array-wrap'><input id='section-4e3254ec-3993-40b7-a587-ae781cd4dd26' class='xr-array-in' type='checkbox' checked><label for='section-4e3254ec-3993-40b7-a587-ae781cd4dd26' title='Show/hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-array-preview xr-preview'><span>1 0 0 0 0 0 0 1 1 1 1 0 1 1 0 0 0 ... 0 0 0 1 1 1 0 0 1 1 0 1 0 0 1 0</span></div><div class='xr-array-data'><pre>array([[1, 0, 0, ..., 0, 1, 1],
+    generation:  0</pre><div class='xr-wrap' style='display:none'><div class='xr-header'><div class='xr-obj-type'>xarray.DataArray</div><div class='xr-array-name'>'HaplotypeArray'</div><ul class='xr-dim-list'><li><span class='xr-has-index'>sample</span>: 8000</li><li><span class='xr-has-index'>variant</span>: 2000</li></ul></div><ul class='xr-sections'><li class='xr-section-item'><div class='xr-array-wrap'><input id='section-15f04996-7d91-4f6c-ae15-b0002b578c5e' class='xr-array-in' type='checkbox' checked><label for='section-15f04996-7d91-4f6c-ae15-b0002b578c5e' title='Show/hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-array-preview xr-preview'><span>1 0 0 0 0 0 0 1 1 1 1 0 1 1 0 0 0 ... 0 0 0 1 1 1 0 0 1 1 0 1 0 0 1 0</span></div><div class='xr-array-data'><pre>array([[1, 0, 0, ..., 0, 1, 1],
        [1, 1, 0, ..., 1, 0, 0],
        [1, 1, 0, ..., 1, 0, 1],
        ...,
        [1, 1, 0, ..., 0, 0, 0],
        [1, 0, 0, ..., 0, 0, 0],
-       [1, 0, 0, ..., 0, 1, 0]], dtype=int8)</pre></div></div></li><li class='xr-section-item'><input id='section-d3389f26-59f1-459b-b3c9-57eaf92d9359' class='xr-section-summary-in' type='checkbox'  checked><label for='section-d3389f26-59f1-459b-b3c9-57eaf92d9359' class='xr-section-summary' >Coordinates: <span>(13)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>sample</span></div><div class='xr-var-dims'>(sample)</div><div class='xr-var-dtype'>&lt;U13</div><div class='xr-var-preview xr-preview'>&#x27;0_0.0_0&#x27; ... &#x27;0_7999.0_7999&#x27;</div><input id='attrs-273179c0-a1fb-40b8-a37c-c772546b3e94' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-273179c0-a1fb-40b8-a37c-c772546b3e94' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-de13886c-2c88-4926-9ab9-f6b9ef350f59' class='xr-var-data-in' type='checkbox'><label for='data-de13886c-2c88-4926-9ab9-f6b9ef350f59' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([&#x27;0_0.0_0&#x27;, &#x27;0_1.0_1&#x27;, &#x27;0_2.0_2&#x27;, ..., &#x27;0_7997.0_7997&#x27;, &#x27;0_7998.0_7998&#x27;,
-       &#x27;0_7999.0_7999&#x27;], dtype=&#x27;&lt;U13&#x27;)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>iid</span></div><div class='xr-var-dims'>(sample)</div><div class='xr-var-dtype'>object</div><div class='xr-var-preview xr-preview'>&#x27;0_0&#x27; &#x27;0_1&#x27; ... &#x27;0_7998&#x27; &#x27;0_7999&#x27;</div><input id='attrs-a90e0ebf-85d9-4d6f-a5a7-a5f7b2ec0273' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-a90e0ebf-85d9-4d6f-a5a7-a5f7b2ec0273' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-4b697a7d-2db5-4ba9-9bb3-54640a14b4a7' class='xr-var-data-in' type='checkbox'><label for='data-4b697a7d-2db5-4ba9-9bb3-54640a14b4a7' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([&#x27;0_0&#x27;, &#x27;0_1&#x27;, &#x27;0_2&#x27;, ..., &#x27;0_7997&#x27;, &#x27;0_7998&#x27;, &#x27;0_7999&#x27;],
-      dtype=object)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>fid</span></div><div class='xr-var-dims'>(sample)</div><div class='xr-var-dtype'>object</div><div class='xr-var-preview xr-preview'>&#x27;0_0&#x27; &#x27;0_1&#x27; ... &#x27;0_7998&#x27; &#x27;0_7999&#x27;</div><input id='attrs-a31b0936-4617-42b1-a9af-accb9c41a82b' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-a31b0936-4617-42b1-a9af-accb9c41a82b' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-0e291785-a018-4fc9-8a66-3f6e678365f3' class='xr-var-data-in' type='checkbox'><label for='data-0e291785-a018-4fc9-8a66-3f6e678365f3' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([&#x27;0_0&#x27;, &#x27;0_1&#x27;, &#x27;0_2&#x27;, ..., &#x27;0_7997&#x27;, &#x27;0_7998&#x27;, &#x27;0_7999&#x27;],
-      dtype=object)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>sex</span></div><div class='xr-var-dims'>(sample)</div><div class='xr-var-dtype'>int64</div><div class='xr-var-preview xr-preview'>0 1 0 1 0 1 0 1 ... 0 1 0 1 0 1 0 1</div><input id='attrs-3a8daa9c-93eb-4d39-83cb-a0499c10bc9e' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-3a8daa9c-93eb-4d39-83cb-a0499c10bc9e' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-c83999d2-2838-42cc-a77a-a95cd89112d3' class='xr-var-data-in' type='checkbox'><label for='data-c83999d2-2838-42cc-a77a-a95cd89112d3' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([0, 1, 0, ..., 1, 0, 1])</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>variant</span></div><div class='xr-var-dims'>(variant)</div><div class='xr-var-dtype'>&lt;U5</div><div class='xr-var-preview xr-preview'>&#x27;0.0&#x27; &#x27;0.1&#x27; ... &#x27;999.0&#x27; &#x27;999.1&#x27;</div><input id='attrs-c245c63b-39f2-4b05-b9d7-75bc08506265' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-c245c63b-39f2-4b05-b9d7-75bc08506265' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-0f8f9258-08c7-43d1-9eb6-4b5d2a4a49b2' class='xr-var-data-in' type='checkbox'><label for='data-0f8f9258-08c7-43d1-9eb6-4b5d2a4a49b2' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([&#x27;0.0&#x27;, &#x27;0.1&#x27;, &#x27;1.0&#x27;, ..., &#x27;998.1&#x27;, &#x27;999.0&#x27;, &#x27;999.1&#x27;], dtype=&#x27;&lt;U5&#x27;)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>vid</span></div><div class='xr-var-dims'>(variant)</div><div class='xr-var-dtype'>object</div><div class='xr-var-preview xr-preview'>&#x27;0&#x27; &#x27;0&#x27; &#x27;1&#x27; ... &#x27;998&#x27; &#x27;999&#x27; &#x27;999&#x27;</div><input id='attrs-eb37114c-67a4-4af9-a479-16e4e71acddd' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-eb37114c-67a4-4af9-a479-16e4e71acddd' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-627f8a21-dbee-486e-8ef2-cc7b63ecb8d1' class='xr-var-data-in' type='checkbox'><label for='data-627f8a21-dbee-486e-8ef2-cc7b63ecb8d1' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([&#x27;0&#x27;, &#x27;0&#x27;, &#x27;1&#x27;, ..., &#x27;998&#x27;, &#x27;999&#x27;, &#x27;999&#x27;], dtype=object)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>chrom</span></div><div class='xr-var-dims'>(variant)</div><div class='xr-var-dtype'>int64</div><div class='xr-var-preview xr-preview'>0 0 0 0 0 0 0 ... 21 21 21 21 21 21</div><input id='attrs-8ea4b3d2-ab8a-4ccd-90f7-e74de3ac66bf' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-8ea4b3d2-ab8a-4ccd-90f7-e74de3ac66bf' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-e837ca55-c480-4679-886a-abacc68d437e' class='xr-var-data-in' type='checkbox'><label for='data-e837ca55-c480-4679-886a-abacc68d437e' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([ 0,  0,  0, ..., 21, 21, 21])</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>hcopy</span></div><div class='xr-var-dims'>(variant)</div><div class='xr-var-dtype'>object</div><div class='xr-var-preview xr-preview'>&#x27;0&#x27; &#x27;1&#x27; &#x27;0&#x27; &#x27;1&#x27; ... &#x27;0&#x27; &#x27;1&#x27; &#x27;0&#x27; &#x27;1&#x27;</div><input id='attrs-1f21f02f-dd27-4567-89b1-136880ac63f0' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-1f21f02f-dd27-4567-89b1-136880ac63f0' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-4d23ff6f-80a9-4021-8d29-9e575ec3fdd9' class='xr-var-data-in' type='checkbox'><label for='data-4d23ff6f-80a9-4021-8d29-9e575ec3fdd9' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([&#x27;0&#x27;, &#x27;1&#x27;, &#x27;0&#x27;, ..., &#x27;1&#x27;, &#x27;0&#x27;, &#x27;1&#x27;], dtype=object)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>zero_allele</span></div><div class='xr-var-dims'>(variant)</div><div class='xr-var-dtype'>object</div><div class='xr-var-preview xr-preview'>&#x27;A&#x27; &#x27;A&#x27; &#x27;A&#x27; &#x27;A&#x27; ... &#x27;A&#x27; &#x27;A&#x27; &#x27;A&#x27; &#x27;A&#x27;</div><input id='attrs-d94cadc1-1d7e-4004-bed3-c7b51ea9753e' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-d94cadc1-1d7e-4004-bed3-c7b51ea9753e' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-dea14d13-ebf5-4eb4-b604-52df88743b4e' class='xr-var-data-in' type='checkbox'><label for='data-dea14d13-ebf5-4eb4-b604-52df88743b4e' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([&#x27;A&#x27;, &#x27;A&#x27;, &#x27;A&#x27;, ..., &#x27;A&#x27;, &#x27;A&#x27;, &#x27;A&#x27;], dtype=object)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>one_allele</span></div><div class='xr-var-dims'>(variant)</div><div class='xr-var-dtype'>object</div><div class='xr-var-preview xr-preview'>&#x27;G&#x27; &#x27;G&#x27; &#x27;G&#x27; &#x27;G&#x27; ... &#x27;G&#x27; &#x27;G&#x27; &#x27;G&#x27; &#x27;G&#x27;</div><input id='attrs-4d6dee15-55fb-4af5-845a-5578529704ab' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-4d6dee15-55fb-4af5-845a-5578529704ab' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-5ec29745-9f2b-4a17-9db8-c706a45b315e' class='xr-var-data-in' type='checkbox'><label for='data-5ec29745-9f2b-4a17-9db8-c706a45b315e' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([&#x27;G&#x27;, &#x27;G&#x27;, &#x27;G&#x27;, ..., &#x27;G&#x27;, &#x27;G&#x27;, &#x27;G&#x27;], dtype=object)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>af</span></div><div class='xr-var-dims'>(variant)</div><div class='xr-var-dtype'>float64</div><div class='xr-var-preview xr-preview'>0.6572 0.6572 ... 0.3359 0.3359</div><input id='attrs-8e3536a4-9be3-4eeb-ac2f-3218c4af2739' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-8e3536a4-9be3-4eeb-ac2f-3218c4af2739' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-dd9ccd8c-204e-4606-9b53-7394c072da52' class='xr-var-data-in' type='checkbox'><label for='data-dd9ccd8c-204e-4606-9b53-7394c072da52' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([0.65717535, 0.65717535, 0.32891147, ..., 0.10333479, 0.33591577,
-       0.33591577])</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>pos_bp</span></div><div class='xr-var-dims'>(variant)</div><div class='xr-var-dtype'>float64</div><div class='xr-var-preview xr-preview'>nan nan nan nan ... nan nan nan nan</div><input id='attrs-9db3a65c-95cf-43cd-8d51-b8902e053226' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-9db3a65c-95cf-43cd-8d51-b8902e053226' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-ffe6dc77-4359-4c8a-8819-d2651fed406b' class='xr-var-data-in' type='checkbox'><label for='data-ffe6dc77-4359-4c8a-8819-d2651fed406b' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([nan, nan, nan, ..., nan, nan, nan])</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>pos_cM</span></div><div class='xr-var-dims'>(variant)</div><div class='xr-var-dtype'>float64</div><div class='xr-var-preview xr-preview'>nan nan nan nan ... nan nan nan nan</div><input id='attrs-88b6f0c0-b102-4fe9-9eae-c8f489eb3802' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-88b6f0c0-b102-4fe9-9eae-c8f489eb3802' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-e8c027c6-3abf-4877-9dec-41bdb77222ec' class='xr-var-data-in' type='checkbox'><label for='data-e8c027c6-3abf-4877-9dec-41bdb77222ec' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([nan, nan, nan, ..., nan, nan, nan])</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-4e6590ec-1ae2-4284-84c0-4835e931fad2' class='xr-section-summary-in' type='checkbox'  ><label for='section-4e6590ec-1ae2-4284-84c0-4835e931fad2' class='xr-section-summary' >Indexes: <span>(2)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-index-name'><div>sample</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-cfc4f174-e204-4a65-a9c2-e6d47ac8b91d' class='xr-index-data-in' type='checkbox'/><label for='index-cfc4f174-e204-4a65-a9c2-e6d47ac8b91d' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([&#x27;0_0.0_0&#x27;, &#x27;0_1.0_1&#x27;, &#x27;0_2.0_2&#x27;, &#x27;0_3.0_3&#x27;, &#x27;0_4.0_4&#x27;, &#x27;0_5.0_5&#x27;,
+       [1, 0, 0, ..., 0, 1, 0]], dtype=int8)</pre></div></div></li><li class='xr-section-item'><input id='section-1373a74c-0789-4829-8793-bd100c15de14' class='xr-section-summary-in' type='checkbox'  checked><label for='section-1373a74c-0789-4829-8793-bd100c15de14' class='xr-section-summary' >Coordinates: <span>(13)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>sample</span></div><div class='xr-var-dims'>(sample)</div><div class='xr-var-dtype'>&lt;U13</div><div class='xr-var-preview xr-preview'>&#x27;0_0.0_0&#x27; ... &#x27;0_7999.0_7999&#x27;</div><input id='attrs-a6bc8122-7703-4fae-9f43-d86badc3c49a' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-a6bc8122-7703-4fae-9f43-d86badc3c49a' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-834ecaca-f829-44b4-a293-db4f9b4f8fef' class='xr-var-data-in' type='checkbox'><label for='data-834ecaca-f829-44b4-a293-db4f9b4f8fef' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([&#x27;0_0.0_0&#x27;, &#x27;0_1.0_1&#x27;, &#x27;0_2.0_2&#x27;, ..., &#x27;0_7997.0_7997&#x27;, &#x27;0_7998.0_7998&#x27;,
+       &#x27;0_7999.0_7999&#x27;], dtype=&#x27;&lt;U13&#x27;)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>iid</span></div><div class='xr-var-dims'>(sample)</div><div class='xr-var-dtype'>object</div><div class='xr-var-preview xr-preview'>&#x27;0_0&#x27; &#x27;0_1&#x27; ... &#x27;0_7998&#x27; &#x27;0_7999&#x27;</div><input id='attrs-9328311b-ddd5-422a-9def-5d6ce6380944' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-9328311b-ddd5-422a-9def-5d6ce6380944' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-ea42db27-bc81-4742-b8c3-5318c7c658e7' class='xr-var-data-in' type='checkbox'><label for='data-ea42db27-bc81-4742-b8c3-5318c7c658e7' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([&#x27;0_0&#x27;, &#x27;0_1&#x27;, &#x27;0_2&#x27;, ..., &#x27;0_7997&#x27;, &#x27;0_7998&#x27;, &#x27;0_7999&#x27;],
+      dtype=object)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>fid</span></div><div class='xr-var-dims'>(sample)</div><div class='xr-var-dtype'>object</div><div class='xr-var-preview xr-preview'>&#x27;0_0&#x27; &#x27;0_1&#x27; ... &#x27;0_7998&#x27; &#x27;0_7999&#x27;</div><input id='attrs-18d556e2-a5fb-4bf5-b87f-4a07e7c5f43d' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-18d556e2-a5fb-4bf5-b87f-4a07e7c5f43d' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-88ab3349-0070-4823-9134-ce65f1eb18a3' class='xr-var-data-in' type='checkbox'><label for='data-88ab3349-0070-4823-9134-ce65f1eb18a3' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([&#x27;0_0&#x27;, &#x27;0_1&#x27;, &#x27;0_2&#x27;, ..., &#x27;0_7997&#x27;, &#x27;0_7998&#x27;, &#x27;0_7999&#x27;],
+      dtype=object)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>sex</span></div><div class='xr-var-dims'>(sample)</div><div class='xr-var-dtype'>int64</div><div class='xr-var-preview xr-preview'>0 1 0 1 0 1 0 1 ... 0 1 0 1 0 1 0 1</div><input id='attrs-db11a82b-7975-43bf-8a60-a88d06d7f763' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-db11a82b-7975-43bf-8a60-a88d06d7f763' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-34f55ecb-7479-4cd6-b61e-9894007afbf2' class='xr-var-data-in' type='checkbox'><label for='data-34f55ecb-7479-4cd6-b61e-9894007afbf2' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([0, 1, 0, ..., 1, 0, 1])</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>variant</span></div><div class='xr-var-dims'>(variant)</div><div class='xr-var-dtype'>&lt;U5</div><div class='xr-var-preview xr-preview'>&#x27;0.0&#x27; &#x27;0.1&#x27; ... &#x27;999.0&#x27; &#x27;999.1&#x27;</div><input id='attrs-c9646c36-8d5c-4a90-ad3e-ec17d1fb72ad' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-c9646c36-8d5c-4a90-ad3e-ec17d1fb72ad' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-5fe348cc-3f9b-4be6-8059-e5a92418cced' class='xr-var-data-in' type='checkbox'><label for='data-5fe348cc-3f9b-4be6-8059-e5a92418cced' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([&#x27;0.0&#x27;, &#x27;0.1&#x27;, &#x27;1.0&#x27;, ..., &#x27;998.1&#x27;, &#x27;999.0&#x27;, &#x27;999.1&#x27;], dtype=&#x27;&lt;U5&#x27;)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>vid</span></div><div class='xr-var-dims'>(variant)</div><div class='xr-var-dtype'>object</div><div class='xr-var-preview xr-preview'>&#x27;0&#x27; &#x27;0&#x27; &#x27;1&#x27; ... &#x27;998&#x27; &#x27;999&#x27; &#x27;999&#x27;</div><input id='attrs-8c62320d-aa4e-4f75-a0bd-b2411f36307d' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-8c62320d-aa4e-4f75-a0bd-b2411f36307d' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-677bf4fa-3cee-40d2-a58f-f36a2f3540ca' class='xr-var-data-in' type='checkbox'><label for='data-677bf4fa-3cee-40d2-a58f-f36a2f3540ca' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([&#x27;0&#x27;, &#x27;0&#x27;, &#x27;1&#x27;, ..., &#x27;998&#x27;, &#x27;999&#x27;, &#x27;999&#x27;], dtype=object)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>chrom</span></div><div class='xr-var-dims'>(variant)</div><div class='xr-var-dtype'>int64</div><div class='xr-var-preview xr-preview'>0 0 0 0 0 0 0 ... 21 21 21 21 21 21</div><input id='attrs-5bc44bae-e95e-4073-b6b3-c9e9785d7ef9' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-5bc44bae-e95e-4073-b6b3-c9e9785d7ef9' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-3271e2de-2054-49e7-8882-247a1e419403' class='xr-var-data-in' type='checkbox'><label for='data-3271e2de-2054-49e7-8882-247a1e419403' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([ 0,  0,  0, ..., 21, 21, 21])</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>hcopy</span></div><div class='xr-var-dims'>(variant)</div><div class='xr-var-dtype'>object</div><div class='xr-var-preview xr-preview'>&#x27;0&#x27; &#x27;1&#x27; &#x27;0&#x27; &#x27;1&#x27; ... &#x27;0&#x27; &#x27;1&#x27; &#x27;0&#x27; &#x27;1&#x27;</div><input id='attrs-34aac33a-31da-4cd1-8afd-1793f60ec08a' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-34aac33a-31da-4cd1-8afd-1793f60ec08a' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-765e1638-b083-4d74-8f9d-17d209933cd8' class='xr-var-data-in' type='checkbox'><label for='data-765e1638-b083-4d74-8f9d-17d209933cd8' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([&#x27;0&#x27;, &#x27;1&#x27;, &#x27;0&#x27;, ..., &#x27;1&#x27;, &#x27;0&#x27;, &#x27;1&#x27;], dtype=object)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>zero_allele</span></div><div class='xr-var-dims'>(variant)</div><div class='xr-var-dtype'>object</div><div class='xr-var-preview xr-preview'>&#x27;A&#x27; &#x27;A&#x27; &#x27;A&#x27; &#x27;A&#x27; ... &#x27;A&#x27; &#x27;A&#x27; &#x27;A&#x27; &#x27;A&#x27;</div><input id='attrs-004a150c-77a9-4d16-8a9a-f68b88cd2afd' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-004a150c-77a9-4d16-8a9a-f68b88cd2afd' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-c3a8723f-0497-4437-93ba-b0f0599caaea' class='xr-var-data-in' type='checkbox'><label for='data-c3a8723f-0497-4437-93ba-b0f0599caaea' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([&#x27;A&#x27;, &#x27;A&#x27;, &#x27;A&#x27;, ..., &#x27;A&#x27;, &#x27;A&#x27;, &#x27;A&#x27;], dtype=object)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>one_allele</span></div><div class='xr-var-dims'>(variant)</div><div class='xr-var-dtype'>object</div><div class='xr-var-preview xr-preview'>&#x27;G&#x27; &#x27;G&#x27; &#x27;G&#x27; &#x27;G&#x27; ... &#x27;G&#x27; &#x27;G&#x27; &#x27;G&#x27; &#x27;G&#x27;</div><input id='attrs-0a8110c6-5a5e-4361-af32-b547f9f644f5' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-0a8110c6-5a5e-4361-af32-b547f9f644f5' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-14a505b5-d9ca-4802-bc35-47511aa2e416' class='xr-var-data-in' type='checkbox'><label for='data-14a505b5-d9ca-4802-bc35-47511aa2e416' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([&#x27;G&#x27;, &#x27;G&#x27;, &#x27;G&#x27;, ..., &#x27;G&#x27;, &#x27;G&#x27;, &#x27;G&#x27;], dtype=object)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>af</span></div><div class='xr-var-dims'>(variant)</div><div class='xr-var-dtype'>float64</div><div class='xr-var-preview xr-preview'>0.6572 0.6572 ... 0.3359 0.3359</div><input id='attrs-ddef25b7-0967-45dc-bdd0-9949cfa9d067' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-ddef25b7-0967-45dc-bdd0-9949cfa9d067' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-1118803c-e364-4b35-8e5a-73be7c8bfcbc' class='xr-var-data-in' type='checkbox'><label for='data-1118803c-e364-4b35-8e5a-73be7c8bfcbc' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([0.65717535, 0.65717535, 0.32891147, ..., 0.10333479, 0.33591577,
+       0.33591577])</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>pos_bp</span></div><div class='xr-var-dims'>(variant)</div><div class='xr-var-dtype'>float64</div><div class='xr-var-preview xr-preview'>nan nan nan nan ... nan nan nan nan</div><input id='attrs-bd6fb864-7ce3-4348-9aa1-607863c68b72' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-bd6fb864-7ce3-4348-9aa1-607863c68b72' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-4a07ce9d-c373-4e95-b963-05d3e4989781' class='xr-var-data-in' type='checkbox'><label for='data-4a07ce9d-c373-4e95-b963-05d3e4989781' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([nan, nan, nan, ..., nan, nan, nan])</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>pos_cM</span></div><div class='xr-var-dims'>(variant)</div><div class='xr-var-dtype'>float64</div><div class='xr-var-preview xr-preview'>nan nan nan nan ... nan nan nan nan</div><input id='attrs-8e049296-6a0b-43f4-8f27-0efb0d14fb92' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-8e049296-6a0b-43f4-8f27-0efb0d14fb92' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-6f4ecbd3-d9ae-41e5-b122-17a81163b8be' class='xr-var-data-in' type='checkbox'><label for='data-6f4ecbd3-d9ae-41e5-b122-17a81163b8be' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([nan, nan, nan, ..., nan, nan, nan])</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-deeccf2c-8960-4cf0-8b92-4ad0c1c20659' class='xr-section-summary-in' type='checkbox'  ><label for='section-deeccf2c-8960-4cf0-8b92-4ad0c1c20659' class='xr-section-summary' >Indexes: <span>(2)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-index-name'><div>sample</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-3aaaf747-d72d-45d3-a0c7-2863e6ab23d3' class='xr-index-data-in' type='checkbox'/><label for='index-3aaaf747-d72d-45d3-a0c7-2863e6ab23d3' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([&#x27;0_0.0_0&#x27;, &#x27;0_1.0_1&#x27;, &#x27;0_2.0_2&#x27;, &#x27;0_3.0_3&#x27;, &#x27;0_4.0_4&#x27;, &#x27;0_5.0_5&#x27;,
        &#x27;0_6.0_6&#x27;, &#x27;0_7.0_7&#x27;, &#x27;0_8.0_8&#x27;, &#x27;0_9.0_9&#x27;,
        ...
        &#x27;0_7990.0_7990&#x27;, &#x27;0_7991.0_7991&#x27;, &#x27;0_7992.0_7992&#x27;, &#x27;0_7993.0_7993&#x27;,
        &#x27;0_7994.0_7994&#x27;, &#x27;0_7995.0_7995&#x27;, &#x27;0_7996.0_7996&#x27;, &#x27;0_7997.0_7997&#x27;,
        &#x27;0_7998.0_7998&#x27;, &#x27;0_7999.0_7999&#x27;],
-      dtype=&#x27;object&#x27;, name=&#x27;sample&#x27;, length=8000))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>variant</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-be9edc04-7122-4721-af64-d7bd07e7a36d' class='xr-index-data-in' type='checkbox'/><label for='index-be9edc04-7122-4721-af64-d7bd07e7a36d' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([&#x27;0.0&#x27;, &#x27;0.1&#x27;, &#x27;1.0&#x27;, &#x27;1.1&#x27;, &#x27;2.0&#x27;, &#x27;2.1&#x27;, &#x27;3.0&#x27;, &#x27;3.1&#x27;, &#x27;4.0&#x27;, &#x27;4.1&#x27;,
+      dtype=&#x27;object&#x27;, name=&#x27;sample&#x27;, length=8000))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>variant</div></div><div class='xr-index-preview'>PandasIndex</div><div></div><input id='index-42c4bf51-6f23-442c-a8e3-ed9436308eaa' class='xr-index-data-in' type='checkbox'/><label for='index-42c4bf51-6f23-442c-a8e3-ed9436308eaa' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([&#x27;0.0&#x27;, &#x27;0.1&#x27;, &#x27;1.0&#x27;, &#x27;1.1&#x27;, &#x27;2.0&#x27;, &#x27;2.1&#x27;, &#x27;3.0&#x27;, &#x27;3.1&#x27;, &#x27;4.0&#x27;, &#x27;4.1&#x27;,
        ...
        &#x27;995.0&#x27;, &#x27;995.1&#x27;, &#x27;996.0&#x27;, &#x27;996.1&#x27;, &#x27;997.0&#x27;, &#x27;997.1&#x27;, &#x27;998.0&#x27;, &#x27;998.1&#x27;,
        &#x27;999.0&#x27;, &#x27;999.1&#x27;],
-      dtype=&#x27;object&#x27;, name=&#x27;variant&#x27;, length=2000))</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-a77e1fd3-b988-4f0a-8b1f-719e1233489d' class='xr-section-summary-in' type='checkbox'  checked><label for='section-a77e1fd3-b988-4f0a-8b1f-719e1233489d' class='xr-section-summary' >Attributes: <span>(1)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><dl class='xr-attrs'><dt><span>generation :</span></dt><dd>0</dd></dl></div></li></ul></div></div></div>
+      dtype=&#x27;object&#x27;, name=&#x27;variant&#x27;, length=2000))</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-d43bb62e-8f8e-456c-9480-df78d73994e8' class='xr-section-summary-in' type='checkbox'  checked><label for='section-d43bb62e-8f8e-456c-9480-df78d73994e8' class='xr-section-summary' >Attributes: <span>(1)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><dl class='xr-attrs'><dt><span>generation :</span></dt><dd>0</dd></dl></div></li></ul></div></div></div>
 </div>
 <p>For our <strong>genetic architecture</strong>, we will use the independent GCTA model, where for each individual we have</p>
 <div class="math notranslate nohighlight">
@@ -541,7 +554,7 @@ Attributes:
 \[e\sim N(0, 1-h^2)\]</div>
 <p>for heritability <span class="math notranslate nohighlight">\(h^2 \in [0,1]\)</span>. This can be implemented in <code class="docutils literal notranslate"><span class="pre">xftsim</span></code> via the <code class="docutils literal notranslate"><span class="pre">arch.GCTA_Architecture</span></code> class:</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">architecture</span> <span class="o">=</span> <span class="n">xft</span><span class="o">.</span><span class="n">arch</span><span class="o">.</span><span class="n">GCTA_Architecture</span><span class="p">(</span>
@@ -553,7 +566,7 @@ Attributes:
 </div>
 <p>To keep things simple, we will use an exchangleable <strong>recombination map</strong> wherein recombination occurs between contiguous loci with independent probability <code class="docutils literal notranslate"><span class="pre">p=.1</span></code>:</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">recombination_map</span> <span class="o">=</span> <span class="n">xft</span><span class="o">.</span><span class="n">reproduce</span><span class="o">.</span><span class="n">RecombinationMap</span><span class="o">.</span><span class="n">constant_map_from_haplotypes</span><span class="p">(</span><span class="n">founder_haplotypes</span><span class="p">,</span>
@@ -567,7 +580,7 @@ Attributes:
 \[\text{corr}(Y,P\tilde{Y})=0.5\cdot1_{2×2}.\]</div>
 <p>We will have each couple generate two offspring, maintaining a constant population size. We implement this regime below:</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mating_regime</span> <span class="o">=</span> <span class="n">xft</span><span class="o">.</span><span class="n">mate</span><span class="o">.</span><span class="n">LinearAssortativeMatingRegime</span><span class="p">(</span><span class="n">r</span> <span class="o">=</span> <span class="mf">.5</span><span class="p">,</span>
@@ -579,7 +592,7 @@ Attributes:
 </div>
 <p>At each generation, we will request sample statistics and HE regression estimates. We will also use the <code class="docutils literal notranslate"><span class="pre">xft.proc.LimitMemory</span></code> post-processor to erase all but the most recent generation’s haplotypes in order to conserve memory:</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">statistics</span> <span class="o">=</span> <span class="p">[</span><span class="n">xft</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">MatingStatistics</span><span class="p">(),</span>
@@ -591,11 +604,11 @@ Attributes:
 </div>
 </div>
 </section>
-<section id="Running-the-simulation-and-examining-the-results">
-<h2>Running the simulation and examining the results<a class="headerlink" href="#Running-the-simulation-and-examining-the-results" title="Permalink to this heading"></a></h2>
+<section id="Running-a-simulation-and-examining-the-results">
+<h2>Running a simulation and examining the results<a class="headerlink" href="#Running-a-simulation-and-examining-the-results" title="Permalink to this heading"></a></h2>
 <p>Our simulation is constructed by supplying each of the above to the <code class="docutils literal notranslate"><span class="pre">Simulation</span></code> constructor:</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sim</span> <span class="o">=</span> <span class="n">Simulation</span><span class="p">(</span><span class="n">founder_haplotypes</span><span class="o">=</span><span class="n">founder_haplotypes</span><span class="p">,</span>
@@ -609,7 +622,7 @@ Attributes:
 </div>
 <p>We will run the simulation for 5 generations, which takes just a few seconds on a laptop:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">time</span> sim.run(5)
@@ -621,13 +634,13 @@ Attributes:
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-CPU times: user 17.3 s, sys: 9.4 s, total: 26.7 s
-Wall time: 7.11 s
+CPU times: user 16.7 s, sys: 4.57 s, total: 21.3 s
+Wall time: 7.06 s
 </pre></div></div>
 </div>
 <p>The most recent generations are accessible in as a <code class="docutils literal notranslate"><span class="pre">dict</span></code> object in <code class="docutils literal notranslate"><span class="pre">sim.results</span></code>, and all generations’ results are stored in <code class="docutils literal notranslate"><span class="pre">sim.results_store</span></code>. First let’s check that mating proceded as expected:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">## generation 0</span>
@@ -636,7 +649,7 @@ Wall time: 7.11 s
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
@@ -705,7 +718,7 @@ Wall time: 7.11 s
 </div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">## generation 4</span>
@@ -716,7 +729,7 @@ Wall time: 7.11 s
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
@@ -755,29 +768,29 @@ Wall time: 7.11 s
     <tr>
       <th>pheno_1.phenotype.mother</th>
       <td>1.000000</td>
-      <td>0.100744</td>
-      <td>0.494579</td>
-      <td>0.505479</td>
+      <td>0.107215</td>
+      <td>0.500763</td>
+      <td>0.495196</td>
     </tr>
     <tr>
       <th>pheno_2.phenotype.mother</th>
-      <td>0.100744</td>
+      <td>0.107215</td>
       <td>1.000000</td>
-      <td>0.494457</td>
-      <td>0.507605</td>
+      <td>0.490035</td>
+      <td>0.512701</td>
     </tr>
     <tr>
       <th>pheno_1.phenotype.father</th>
-      <td>0.494579</td>
-      <td>0.494457</td>
+      <td>0.500763</td>
+      <td>0.490035</td>
       <td>1.000000</td>
-      <td>0.112394</td>
+      <td>0.136145</td>
     </tr>
     <tr>
       <th>pheno_2.phenotype.father</th>
-      <td>0.505479</td>
-      <td>0.507605</td>
-      <td>0.112394</td>
+      <td>0.495196</td>
+      <td>0.512701</td>
+      <td>0.136145</td>
       <td>1.000000</td>
     </tr>
   </tbody>
@@ -786,7 +799,7 @@ Wall time: 7.11 s
 </div>
 <p>Next, let’s compare three quanitites across generations: - <code class="docutils literal notranslate"><span class="pre">rho_beta_true</span></code>, the correlation between true genetic effects for <code class="docutils literal notranslate"><span class="pre">pheno_1</span></code> and <code class="docutils literal notranslate"><span class="pre">pheno_2</span></code>, which doesn’t vary over time - <code class="docutils literal notranslate"><span class="pre">rho_score_true</span></code>, the correlation between true polygenic scores for <code class="docutils literal notranslate"><span class="pre">pheno_1</span></code> and <code class="docutils literal notranslate"><span class="pre">pheno_2</span></code>, which reflects changes in genetic architecture induced by xAM - <code class="docutils literal notranslate"><span class="pre">rho_beta_HE</span></code>, the HE-regression estimate of <code class="docutils literal notranslate"><span class="pre">rho_beta_true</span></code>, which is biased upwards under xAM</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">results</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_records</span><span class="p">([{</span><span class="s1">&#39;generation&#39;</span><span class="p">:</span><span class="n">key</span><span class="p">,</span>
@@ -809,7 +822,7 @@ Wall time: 7.11 s
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -826,7 +839,7 @@ Wall time: 7.11 s
 </div>
 <p>Finally, we save the generation 4 genotypes to disk. Here, we write to zarr, an efficient parallel format ideal for cases where we’d like to reload the data into python, but also to the plink binary format:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">xft</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">write_to_plink1</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">haplotypes</span><span class="p">,</span> <span class="s1">&#39;/tmp/plink_output&#39;</span><span class="p">)</span>
@@ -838,9 +851,9 @@ Wall time: 7.11 s
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-/home/rsb/Dropbox/ftsim/xftsim/xftsim/io.py:208: UserWarning: Writing to the plink bfile format removes phase information
+/home/rsb/miniconda3/lib/python3.9/site-packages/xftsim/io.py:208: UserWarning: Writing to the plink bfile format removes phase information
   warnings.warn(&#34;Writing to the plink bfile format removes phase information&#34;)
-Writing BED: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1/1 [00:00&lt;00:00, 10.39it/s]
+Writing BED: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1/1 [00:00&lt;00:00, 10.52it/s]
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -858,14 +871,14 @@ Writing BIM... done.
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
 
-/home/rsb/mambaforge/lib/python3.10/site-packages/pandas_plink/_write.py:261: FutureWarning: the &#39;line_terminator&#39;&#39; keyword is deprecated, use &#39;lineterminator&#39; instead.
+/home/rsb/miniconda3/lib/python3.9/site-packages/pandas_plink/_write.py:261: FutureWarning: the &#39;line_terminator&#39;&#39; keyword is deprecated, use &#39;lineterminator&#39; instead.
   df.to_csv(
-/home/rsb/mambaforge/lib/python3.10/site-packages/pandas_plink/_write.py:288: FutureWarning: the &#39;line_terminator&#39;&#39; keyword is deprecated, use &#39;lineterminator&#39; instead.
+/home/rsb/miniconda3/lib/python3.9/site-packages/pandas_plink/_write.py:288: FutureWarning: the &#39;line_terminator&#39;&#39; keyword is deprecated, use &#39;lineterminator&#39; instead.
   df.to_csv(
 </pre></div></div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">xft</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">save_haplotype_zarr</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">haplotypes</span><span class="p">,</span> <span class="s1">&#39;/tmp/zarr_output&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">)</span>

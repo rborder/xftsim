@@ -11,7 +11,7 @@ import os
 project = 'xftsim'
 copyright = '2023, Richard Border'
 author = 'Richard Border'
-release = '0.0.1-dev3'
+release = '0.0.1-dev9'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration

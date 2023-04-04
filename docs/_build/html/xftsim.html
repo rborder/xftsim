@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>xftsim package &mdash; xftsim 0.0.1-dev3 documentation</title>
+  <title>xftsim package &mdash; xftsim 0.0.1-dev9 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/custom.css" type="text/css" />
@@ -13,6 +13,9 @@
   <![endif]-->
   
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/sphinx_highlight.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
@@ -2500,8 +2503,100 @@ randomly assigning haplotypes at heterozygous sites.</p>
 </dd></dl>
 
 </section>
-<section id="xftsim-lsmate-module">
-<h2>xftsim.lsmate module<a class="headerlink" href="#xftsim-lsmate-module" title="Permalink to this heading"></a></h2>
+<section id="module-xftsim.lsmate">
+<span id="xftsim-lsmate-module"></span><h2>xftsim.lsmate module<a class="headerlink" href="#module-xftsim.lsmate" title="Permalink to this heading"></a></h2>
+<p>This module contains functions and classes for implementing different mating regimes in the context of population genetics simulations.</p>
+<p>Functions:</p>
+<blockquote>
+<div><p>_solve_qap_ls: Private function that solves the Quadratic Assignment Problem using LocalSolver.</p>
+</div></blockquote>
+<p>Classes:</p>
+<blockquote>
+<div><p>MatingRegime: Base class for defining mating regimes.
+RandomMatingRegime: A class for implementing random mating.
+BalancedRandomMatingRegime: A class for implementing balanced random mating.
+LinearAssortativeMatingRegime: A class for implementing linear assortative mating.
+KAssortativeMatingRegime: A class for implementing k-assortative mating.
+BatchedMatingRegime: A class for batching individuals to improve mating regime performance.</p>
+</div></blockquote>
+<dl class="py class">
+<dt class="sig sig-object py" id="xftsim.lsmate.KAssortativeMatingRegime">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">xftsim.lsmate.</span></span><span class="sig-name descname"><span class="pre">KAssortativeMatingRegime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">component_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cross_corr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offspring_per_pair=&lt;xftsim.utils.ConstantCount</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mates_per_female=&lt;xftsim.utils.ConstantCount</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">female_offspring_per_pair='balanced'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sex_aware=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exhaustive=True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#xftsim.lsmate.KAssortativeMatingRegime" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#xftsim.mate.MatingRegime" title="xftsim.mate.MatingRegime"><code class="xref py py-class docutils literal notranslate"><span class="pre">MatingRegime</span></code></a></p>
+<p>A class that implements the K-assortative mating regime. I.e., matches two sets of individuals with
+K phenotypes to achieve an arbitrary K x K cross-mate cross-correlation structure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>component_index</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">xft.index.ComponentIndex</span></code>) – An object containing information about the components.</p></li>
+<li><p><strong>cross_corr</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – The cross-correlation matrix of size K x K.</p></li>
+<li><p><strong>offspring_per_pair</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Union[int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">xft.utils.VariableCount]</span></code>, <em>optional</em>) – The number of offspring per mating pair. Default is 1.</p></li>
+<li><p><strong>mates_per_female</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Union[int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">xft.utils.VariableCount]</span></code>, <em>optional</em>) – The number of mates for each female. Default is 1.</p></li>
+<li><p><strong>female_offspring_per_pair</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Union[str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">xft.utils.VariableCount]</span></code>, <em>optional</em>) – The number of offspring per mating pair for females. Default is ‘balanced’.</p></li>
+<li><p><strong>sex_aware</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <em>optional</em>) – Whether to consider sex in mating pairs. Default is False.</p></li>
+<li><p><strong>exhaustive</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <em>optional</em>) – Whether to enumerate all possible pairs. Default is True.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="xftsim.lsmate.KAssortativeMatingRegime.cross_corr">
+<span class="sig-name descname"><span class="pre">cross_corr</span></span><a class="headerlink" href="#xftsim.lsmate.KAssortativeMatingRegime.cross_corr" title="Permalink to this definition"></a></dt>
+<dd><p>The cross-correlation matrix of size K x K.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="xftsim.lsmate.KAssortativeMatingRegime.component_index">
+<span class="sig-name descname"><span class="pre">component_index</span></span><a class="headerlink" href="#xftsim.lsmate.KAssortativeMatingRegime.component_index" title="Permalink to this definition"></a></dt>
+<dd><p>An object containing information about the components.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">xft.index.ComponentIndex</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="xftsim.lsmate.KAssortativeMatingRegime.K">
+<span class="sig-name descname"><span class="pre">K</span></span><a class="headerlink" href="#xftsim.lsmate.KAssortativeMatingRegime.K" title="Permalink to this definition"></a></dt>
+<dd><p>The total number of components.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="xftsim.lsmate.KAssortativeMatingRegime.mate">
+<span class="sig-name descname"><span class="pre">mate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">haplotypes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">xr.DataArray</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phenotypes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">xr.DataArray</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">xft.mate.MateAssignment:</span></span></span><a class="headerlink" href="#xftsim.lsmate.KAssortativeMatingRegime.mate" title="Permalink to this definition"></a></dt>
+<dd><p>Mate haplotypes and phenotypes based on the K-assortative mating regime.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id67">
+<span class="sig-name descname"><span class="pre">mate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">haplotypes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phenotypes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id67" title="Permalink to this definition"></a></dt>
+<dd><p>Mate haplotypes and phenotypes based on the K-assortative mating regime.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>haplotypes</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">xr.DataArray</span></code>, <em>optional</em>) – The haplotype data to be mated. Default is None.</p></li>
+<li><p><strong>phenotypes</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">xr.DataArray</span></code>, <em>optional</em>) – The phenotype data to be mated. Default is None.</p></li>
+<li><p><strong>control</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>, <em>optional</em>) – A dictionary of control parameters for mating. Default is None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>assignment</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">xft.mate.MateAssignment</span></code>) – The assignment of haplotypes to parents.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 <section id="module-xftsim.mate">
 <span id="xftsim-mate-module"></span><h2>xftsim.mate module<a class="headerlink" href="#module-xftsim.mate" title="Permalink to this heading"></a></h2>
@@ -2593,8 +2688,8 @@ simulate stratification.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="id67">
-<span class="sig-name descname"><span class="pre">batch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">haplotypes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phenotypes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id67" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id68">
+<span class="sig-name descname"><span class="pre">batch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">haplotypes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phenotypes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id68" title="Permalink to this definition"></a></dt>
 <dd><p>Split samples into batches.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -2615,8 +2710,8 @@ simulate stratification.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="id68">
-<span class="sig-name descname"><span class="pre">mate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">haplotypes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phenotypes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id68" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id69">
+<span class="sig-name descname"><span class="pre">mate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">haplotypes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phenotypes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id69" title="Permalink to this definition"></a></dt>
 <dd><p>Generate mating assignments in batches and merge into single assignment object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -2695,8 +2790,8 @@ Defaults to True.</p></li>
 <li><p><strong>maternal_sample_index</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">xft.index.SampleIndex</span></code>) – The sample index for the maternal individuals.</p></li>
 <li><p><strong>paternal_sample_index</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">xft.index.SampleIndex</span></code>) – The sample index for the paternal individuals.</p></li>
 <li><p><strong>previous_generation_sample_index</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">xft.index.SampleIndex</span></code>) – The sample index for the previous generation.</p></li>
-<li><p><strong>n_offspring_per_pair</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">NDArray[Shape[``</span></code>”*”<a href="#id69"><span class="problematic" id="id70">``</span></a><code class="xref py py-class docutils literal notranslate"><span class="pre">]</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Int64]</span></code>) – An array containing the number of offspring per mating pair.</p></li>
-<li><p><strong>n_females_per_pair</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">NDArray[Shape[``</span></code>”*”<a href="#id71"><span class="problematic" id="id72">``</span></a><code class="xref py py-class docutils literal notranslate"><span class="pre">]</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Int64]</span></code>) – An array containing the number of female offspring per mating pair.</p></li>
+<li><p><strong>n_offspring_per_pair</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">NDArray[Shape[``</span></code>”*”<a href="#id70"><span class="problematic" id="id71">``</span></a><code class="xref py py-class docutils literal notranslate"><span class="pre">]</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Int64]</span></code>) – An array containing the number of offspring per mating pair.</p></li>
+<li><p><strong>n_females_per_pair</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">NDArray[Shape[``</span></code>”*”<a href="#id72"><span class="problematic" id="id73">``</span></a><code class="xref py py-class docutils literal notranslate"><span class="pre">]</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Int64]</span></code>) – An array containing the number of female offspring per mating pair.</p></li>
 <li><p><strong>sex_aware</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">optional</span> <span class="pre">(default=False)</span></code>) – Whether the mate assignment is sex-aware.</p></li>
 </ul>
 </dd>
@@ -3068,8 +3163,8 @@ in the same order as the order of offspring in this MateAssignment.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="id73">
-<span class="sig-name descname"><span class="pre">enumerate_assignment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">female_indices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">male_indices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">haplotypes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phenotypes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id73" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id74">
+<span class="sig-name descname"><span class="pre">enumerate_assignment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">female_indices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">male_indices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">haplotypes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phenotypes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id74" title="Permalink to this definition"></a></dt>
 <dd><p>Enumerate the mate assignments.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -3087,8 +3182,8 @@ in the same order as the order of offspring in this MateAssignment.</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="id74">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">expected_female_offspring_per_pair</span></span><a class="headerlink" href="#id74" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id75">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">expected_female_offspring_per_pair</span></span><a class="headerlink" href="#id75" title="Permalink to this definition"></a></dt>
 <dd><p>Get the expected female offspring per pair.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -3101,8 +3196,8 @@ in the same order as the order of offspring in this MateAssignment.</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="id75">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">expected_mates_per_female</span></span><a class="headerlink" href="#id75" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id76">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">expected_mates_per_female</span></span><a class="headerlink" href="#id76" title="Permalink to this definition"></a></dt>
 <dd><p>Get the expected mates per female.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -3115,8 +3210,8 @@ in the same order as the order of offspring in this MateAssignment.</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="id76">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">expected_offspring_per_pair</span></span><a class="headerlink" href="#id76" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id77">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">expected_offspring_per_pair</span></span><a class="headerlink" href="#id77" title="Permalink to this definition"></a></dt>
 <dd><p>Get the expected offspring per pair.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -3129,8 +3224,8 @@ in the same order as the order of offspring in this MateAssignment.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="id77">
-<span class="sig-name descname"><span class="pre">get_potential_mates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">haplotypes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phenotypes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id77" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id78">
+<span class="sig-name descname"><span class="pre">get_potential_mates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">haplotypes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phenotypes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id78" title="Permalink to this definition"></a></dt>
 <dd><p>Return potential mating pairs.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -3146,8 +3241,8 @@ in the same order as the order of offspring in this MateAssignment.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="id78">
-<span class="sig-name descname"><span class="pre">mate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">haplotypes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phenotypes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id78" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id79">
+<span class="sig-name descname"><span class="pre">mate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">haplotypes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phenotypes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id79" title="Permalink to this definition"></a></dt>
 <dd><p>Mate individuals.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -3164,13 +3259,13 @@ in the same order as the order of offspring in this MateAssignment.</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="id79">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mateFunction</span></span><a class="headerlink" href="#id79" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id80">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mateFunction</span></span><a class="headerlink" href="#id80" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="id80">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">population_growth_factor</span></span><a class="headerlink" href="#id80" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id81">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">population_growth_factor</span></span><a class="headerlink" href="#id81" title="Permalink to this definition"></a></dt>
 <dd><p>Get the population growth factor.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -3367,8 +3462,8 @@ n_haplotype_generations: int, optional</p>
 <dt>n_phenotype_generations: int, optional</dt><dd><p>The number of phenotype generations to keep. If -1, keep all generations. Default is -1.</p>
 </dd>
 </dl>
-<section id="id81">
-<h3>Methods:<a class="headerlink" href="#id81" title="Permalink to this heading"></a></h3>
+<section id="id82">
+<h3>Methods:<a class="headerlink" href="#id82" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>processor(sim: xft.sim.Simulation) -&gt; None:</dt><dd><p>Deletes old haplotype and/or phenotype data from the simulation.</p>
 </dd>
@@ -3377,15 +3472,15 @@ n_haplotype_generations: int, optional</p>
 <dt class="sig sig-object py" id="xftsim.proc.LimitMemory.processor">
 <span class="sig-name descname"><span class="pre">processor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sim</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#xftsim.proc.LimitMemory.processor" title="Permalink to this definition"></a></dt>
 <dd><p>Deletes old haplotype and/or phenotype data from the simulation.</p>
-<section id="id82">
-<h4>Parameters:<a class="headerlink" href="#id82" title="Permalink to this heading"></a></h4>
+<section id="id83">
+<h4>Parameters:<a class="headerlink" href="#id83" title="Permalink to this heading"></a></h4>
 <dl class="simple">
 <dt>sim: xft.sim.Simulation</dt><dd><p>The simulation to delete old data from.</p>
 </dd>
 </dl>
 </section>
-<section id="id83">
-<h4>Returns:<a class="headerlink" href="#id83" title="Permalink to this heading"></a></h4>
+<section id="id84">
+<h4>Returns:<a class="headerlink" href="#id84" title="Permalink to this heading"></a></h4>
 <p>None</p>
 </section>
 </dd></dl>
@@ -3408,8 +3503,8 @@ processor: Callable</p>
 <dt>name: str</dt><dd><p>A name for the post-processing operation being defined.</p>
 </dd>
 </dl>
-<section id="id84">
-<h3>Methods:<a class="headerlink" href="#id84" title="Permalink to this heading"></a></h3>
+<section id="id85">
+<h3>Methods:<a class="headerlink" href="#id85" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>process(sim: xft.sim.Simulation) -&gt; None:</dt><dd><p>Applies the post-processing operation to the given simulation.</p>
 </dd>
@@ -3418,15 +3513,15 @@ processor: Callable</p>
 <dt class="sig sig-object py" id="xftsim.proc.PostProcessor.process">
 <span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sim</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#xftsim.proc.PostProcessor.process" title="Permalink to this definition"></a></dt>
 <dd><p>Applies the post-processing operation to the given simulation.</p>
-<section id="id85">
-<h4>Parameters:<a class="headerlink" href="#id85" title="Permalink to this heading"></a></h4>
+<section id="id86">
+<h4>Parameters:<a class="headerlink" href="#id86" title="Permalink to this heading"></a></h4>
 <dl class="simple">
 <dt>sim: xft.sim.Simulation</dt><dd><p>The simulation to apply the post-processing operation to.</p>
 </dd>
 </dl>
 </section>
-<section id="id86">
-<h4>Returns:<a class="headerlink" href="#id86" title="Permalink to this heading"></a></h4>
+<section id="id87">
+<h4>Returns:<a class="headerlink" href="#id87" title="Permalink to this heading"></a></h4>
 <p>None</p>
 </section>
 </dd></dl>
@@ -3529,8 +3624,8 @@ In the future, will require XftIndex object instead of vid and chrom.</p>
 <li><p><strong>p</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code> or <code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>, <em>optional</em>) – Probabilities, either a float or a numpy.ndarray, default is None. A single value
 results in an exchangle map, an array corresponds to probabilities of recombination
 between specified loci</p></li>
-<li><p><strong>vid</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">NDArray[Shape[``</span></code>”*”<a href="#id87"><span class="problematic" id="id88">``</span></a><code class="xref py py-class docutils literal notranslate"><span class="pre">]</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Any]</span></code>, <em>optional</em>) – Variant IDs, default is None.</p></li>
-<li><p><strong>chrom</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">NDArray[Shape[``</span></code>”*”<a href="#id89"><span class="problematic" id="id90">``</span></a><code class="xref py py-class docutils literal notranslate"><span class="pre">]</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Int64]</span></code>, <em>optional</em>) – Chromosomes, default is None.</p></li>
+<li><p><strong>vid</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">NDArray[Shape[``</span></code>”*”<a href="#id88"><span class="problematic" id="id89">``</span></a><code class="xref py py-class docutils literal notranslate"><span class="pre">]</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Any]</span></code>, <em>optional</em>) – Variant IDs, default is None.</p></li>
+<li><p><strong>chrom</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">NDArray[Shape[``</span></code>”*”<a href="#id90"><span class="problematic" id="id91">``</span></a><code class="xref py py-class docutils literal notranslate"><span class="pre">]</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Int64]</span></code>, <em>optional</em>) – Chromosomes, default is None.</p></li>
 </ul>
 </dd>
 </dl>
@@ -3705,8 +3800,8 @@ between specified loci</p></li>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="id91">
-<span class="sig-name descname"><span class="pre">control</span></span><a class="headerlink" href="#id91" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id92">
+<span class="sig-name descname"><span class="pre">control</span></span><a class="headerlink" href="#id92" title="Permalink to this definition"></a></dt>
 <dd><p>Control parameters for the simulation</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -3947,23 +4042,23 @@ between specified loci</p></li>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="id92">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">control</span></span><a class="headerlink" href="#id92" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py property">
 <dt class="sig sig-object py" id="id93">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">current_afs_empirical</span></span><a class="headerlink" href="#id93" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">control</span></span><a class="headerlink" href="#id93" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="id94">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">current_std_genotypes</span></span><a class="headerlink" href="#id94" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">current_afs_empirical</span></span><a class="headerlink" href="#id94" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="id95">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">current_std_phenotypes</span></span><a class="headerlink" href="#id95" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">current_std_genotypes</span></span><a class="headerlink" href="#id95" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="id96">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">current_std_phenotypes</span></span><a class="headerlink" href="#id96" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -3973,13 +4068,13 @@ between specified loci</p></li>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="id96">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">generation</span></span><a class="headerlink" href="#id96" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id97">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">generation</span></span><a class="headerlink" href="#id97" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="id97">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">haplotypes</span></span><a class="headerlink" href="#id97" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id98">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">haplotypes</span></span><a class="headerlink" href="#id98" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -3994,8 +4089,8 @@ between specified loci</p></li>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="id98">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mating</span></span><a class="headerlink" href="#id98" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id99">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mating</span></span><a class="headerlink" href="#id99" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -4004,23 +4099,23 @@ between specified loci</p></li>
 <dd></dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="id99">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parent_haplotypes</span></span><a class="headerlink" href="#id99" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py property">
 <dt class="sig sig-object py" id="id100">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parent_mating</span></span><a class="headerlink" href="#id100" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parent_haplotypes</span></span><a class="headerlink" href="#id100" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="id101">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parent_phenotypes</span></span><a class="headerlink" href="#id101" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parent_mating</span></span><a class="headerlink" href="#id101" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="id102">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">phenotypes</span></span><a class="headerlink" href="#id102" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parent_phenotypes</span></span><a class="headerlink" href="#id102" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="id103">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">phenotypes</span></span><a class="headerlink" href="#id103" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -4036,8 +4131,8 @@ between specified loci</p></li>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="id103">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">results</span></span><a class="headerlink" href="#id103" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id104">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">results</span></span><a class="headerlink" href="#id104" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -4147,8 +4242,8 @@ If not provided, calculate statistics for all components.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="id104">
-<span class="sig-name descname"><span class="pre">estimator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sim</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id104" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id105">
+<span class="sig-name descname"><span class="pre">estimator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sim</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id105" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -4177,8 +4272,8 @@ If not provided, calculate statistics for all components.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="id105">
-<span class="sig-name descname"><span class="pre">estimator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sim</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id105" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id106">
+<span class="sig-name descname"><span class="pre">estimator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sim</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id106" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -4261,8 +4356,8 @@ If not provided, calculate statistics for all components.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="id106">
-<span class="sig-name descname"><span class="pre">estimator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sim</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id106" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id107">
+<span class="sig-name descname"><span class="pre">estimator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sim</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id107" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -4307,13 +4402,13 @@ If not provided, calculate statistics for all components.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="id107">
-<span class="sig-name descname"><span class="pre">estimate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sim</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id107" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id108">
+<span class="sig-name descname"><span class="pre">estimate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sim</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id108" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="id108">
-<span class="sig-name descname"><span class="pre">update_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">results</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id108" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id109">
+<span class="sig-name descname"><span class="pre">update_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">results</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id109" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -4670,8 +4765,8 @@ Specific to PhenotypeArray objects.</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="id109">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">column_vars</span></span><a class="headerlink" href="#id109" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id110">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">column_vars</span></span><a class="headerlink" href="#id110" title="Permalink to this definition"></a></dt>
 <dd><p>Get the column coordinate variables for the DataArray object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -4681,8 +4776,8 @@ Specific to PhenotypeArray objects.</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="id110">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">component_mindex</span></span><a class="headerlink" href="#id110" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id111">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">component_mindex</span></span><a class="headerlink" href="#id111" title="Permalink to this definition"></a></dt>
 <dd><p>Get a Pandas MultiIndex object for the component dimension.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -4696,8 +4791,8 @@ as index levels.</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="id111">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data</span></span><a class="headerlink" href="#id111" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id112">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data</span></span><a class="headerlink" href="#id112" title="Permalink to this definition"></a></dt>
 <dd><p>The data in the DataArray.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -5019,8 +5114,8 @@ Specific to HaplotypeArray objects.</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="id112">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">n</span></span><a class="headerlink" href="#id112" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id113">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">n</span></span><a class="headerlink" href="#id113" title="Permalink to this definition"></a></dt>
 <dd><p>The number of rows in the DataArray.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -5044,8 +5139,8 @@ Specific to HaplotypeArray objects.</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="id113">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">row_vars</span></span><a class="headerlink" href="#id113" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id114">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">row_vars</span></span><a class="headerlink" href="#id114" title="Permalink to this definition"></a></dt>
 <dd><p>Get the row coordinate variables for the PhenotypeArray object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -5055,8 +5150,8 @@ Specific to HaplotypeArray objects.</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="id114">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sample_mindex</span></span><a class="headerlink" href="#id114" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id115">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sample_mindex</span></span><a class="headerlink" href="#id115" title="Permalink to this definition"></a></dt>
 <dd><p>Get the sample multi-index for the PhenotypeArray object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -5101,8 +5196,8 @@ Specific to HaplotypeArray objects.</p>
 <dd></dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="id115">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">shape</span></span><a class="headerlink" href="#id115" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id116">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">shape</span></span><a class="headerlink" href="#id116" title="Permalink to this definition"></a></dt>
 <dd><p>The shape of the DataArray.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -5319,7 +5414,7 @@ Specific to HaplotypeArray objects.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>componentCounts</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code>) – An iterable of VariableCount instances, representing the components of the mixture.</p></li>
-<li><p><strong>mixture_probabilities</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">NDArray[Shape[``</span></code>”*”<a href="#id116"><span class="problematic" id="id117">``</span></a><code class="xref py py-class docutils literal notranslate"><span class="pre">]</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Float64]</span></code>) – An array of probabilities associated with each component in the mixture.</p></li>
+<li><p><strong>mixture_probabilities</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">NDArray[Shape[``</span></code>”*”<a href="#id117"><span class="problematic" id="id118">``</span></a><code class="xref py py-class docutils literal notranslate"><span class="pre">]</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Float64]</span></code>) – An array of probabilities associated with each component in the mixture.</p></li>
 </ul>
 </dd>
 </dl>
@@ -5461,8 +5556,8 @@ Specific to HaplotypeArray objects.</p>
 <dd></dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="id118">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">expectation</span></span><a class="headerlink" href="#id118" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id119">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">expectation</span></span><a class="headerlink" href="#id119" title="Permalink to this definition"></a></dt>
 <dd><p>Getter function for expectation attribute.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -5472,8 +5567,8 @@ Specific to HaplotypeArray objects.</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="id119">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mating_fraction</span></span><a class="headerlink" href="#id119" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id120">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mating_fraction</span></span><a class="headerlink" href="#id120" title="Permalink to this definition"></a></dt>
 <dd><p>Getter function for mating_fraction attribute.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -5548,15 +5643,15 @@ R function <cite>expand.grid()</cite></p>
 <dt class="sig sig-object py" id="xftsim.utils.cov2cor">
 <span class="sig-prename descclassname"><span class="pre">xftsim.utils.</span></span><span class="sig-name descname"><span class="pre">cov2cor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#xftsim.utils.cov2cor" title="Permalink to this definition"></a></dt>
 <dd><p>Converts covariance matrix to correlation matrix.</p>
-<section id="id120">
-<h3>Parameters:<a class="headerlink" href="#id120" title="Permalink to this heading"></a></h3>
+<section id="id121">
+<h3>Parameters:<a class="headerlink" href="#id121" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>A: Union[np.ndarray, pd.DataFrame, xr.DataArray]</dt><dd><p>Input covariance matrix.</p>
 </dd>
 </dl>
 </section>
-<section id="id121">
-<h3>Returns:<a class="headerlink" href="#id121" title="Permalink to this heading"></a></h3>
+<section id="id122">
+<h3>Returns:<a class="headerlink" href="#id122" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>Union[np.ndarray, pd.DataFrame, xr.DataArray]</dt><dd><p>Correlation matrix.</p>
 </dd>
@@ -5591,8 +5686,8 @@ R function <cite>expand.grid()</cite></p>
 <dd><p>Repeat each ith element of array a integer n_per_a[i] times
 such that each every element appears min(j,  n_per_a[i]) times
 in order before any element appears j+1 times.</p>
-<section id="id122">
-<h3>Parameters:<a class="headerlink" href="#id122" title="Permalink to this heading"></a></h3>
+<section id="id123">
+<h3>Parameters:<a class="headerlink" href="#id123" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>a<span class="classifier">array-like</span></dt><dd><p>1-D array of any shape and data type.</p>
 </dd>
@@ -5601,8 +5696,8 @@ in <cite>a</cite> needs to be repeated.</p>
 </dd>
 </dl>
 </section>
-<section id="id123">
-<h3>Returns:<a class="headerlink" href="#id123" title="Permalink to this heading"></a></h3>
+<section id="id124">
+<h3>Returns:<a class="headerlink" href="#id124" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>out<span class="classifier">array-like</span></dt><dd><p>1-D array of shape <cite>(n,)</cite> and the same data type as <cite>a</cite>, where
 each element is repeated as per <cite>n_per_a</cite> in the order before
@@ -5610,8 +5705,8 @@ any element appears <cite>j+1</cite> times.</p>
 </dd>
 </dl>
 </section>
-<section id="id124">
-<h3>Raises:<a class="headerlink" href="#id124" title="Permalink to this heading"></a></h3>
+<section id="id125">
+<h3>Raises:<a class="headerlink" href="#id125" title="Permalink to this heading"></a></h3>
 <p>Warning : If the output array is empty.</p>
 </section>
 <section id="examples">
@@ -5628,8 +5723,8 @@ any element appears <cite>j+1</cite> times.</p>
 <span class="sig-prename descclassname"><span class="pre">xftsim.utils.</span></span><span class="sig-name descname"><span class="pre">exhaustive_permutation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_sample</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#xftsim.utils.exhaustive_permutation" title="Permalink to this definition"></a></dt>
 <dd><p>Returns a random permutation of the input array, such that each element
 is selected exactly once before any element is selected twice, and so forth</p>
-<section id="id125">
-<h3>Parameters:<a class="headerlink" href="#id125" title="Permalink to this heading"></a></h3>
+<section id="id126">
+<h3>Parameters:<a class="headerlink" href="#id126" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>a<span class="classifier">NDArray[Shape[“*”], Any]</span></dt><dd><p>A numpy array to be permuted.</p>
 </dd>
@@ -5637,8 +5732,8 @@ is selected exactly once before any element is selected twice, and so forth</p>
 </dd>
 </dl>
 </section>
-<section id="id126">
-<h3>Returns:<a class="headerlink" href="#id126" title="Permalink to this heading"></a></h3>
+<section id="id127">
+<h3>Returns:<a class="headerlink" href="#id127" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>np.ndarray</dt><dd><p>A 1D numpy array containing the permuted elements.</p>
 </dd>
@@ -5656,7 +5751,7 @@ generation number prefixed to each index.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>generation</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – The generation number to use in the prefix of the IDs.</p></li>
-<li><p><strong>indices</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">NDArray[Shape[``</span></code>”*”<a href="#id127"><span class="problematic" id="id128">``</span></a><code class="xref py py-class docutils literal notranslate"><span class="pre">]</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Int64]</span></code>, <em>optional</em>) – A numpy array of indices.</p></li>
+<li><p><strong>indices</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">NDArray[Shape[``</span></code>”*”<a href="#id128"><span class="problematic" id="id129">``</span></a><code class="xref py py-class docutils literal notranslate"><span class="pre">]</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Int64]</span></code>, <em>optional</em>) – A numpy array of indices.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -5670,8 +5765,8 @@ generation number prefixed to each index.</p>
 <span class="sig-prename descclassname"><span class="pre">xftsim.utils.</span></span><span class="sig-name descname"><span class="pre">ids_from_generation_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">generation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#xftsim.utils.ids_from_generation_range" title="Permalink to this definition"></a></dt>
 <dd><p>Returns an array of string IDs of length n, created by concatenating
 the input generation with an increasing sequence of integers from 0 to n-1.</p>
-<section id="id129">
-<h3>Parameters:<a class="headerlink" href="#id129" title="Permalink to this heading"></a></h3>
+<section id="id130">
+<h3>Parameters:<a class="headerlink" href="#id130" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>generation<span class="classifier">int</span></dt><dd><p>An integer representing the generation of the IDs to be created.</p>
 </dd>
@@ -5680,8 +5775,8 @@ a range of IDs starting from 0 is created.</p>
 </dd>
 </dl>
 </section>
-<section id="id130">
-<h3>Returns:<a class="headerlink" href="#id130" title="Permalink to this heading"></a></h3>
+<section id="id131">
+<h3>Returns:<a class="headerlink" href="#id131" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>np.ndarray</dt><dd><p>A 1D numpy array containing the IDs in string format.</p>
 </dd>
@@ -5711,8 +5806,8 @@ a range of IDs starting from 0 is created.</p>
 <span class="sig-prename descclassname"><span class="pre">xftsim.utils.</span></span><span class="sig-name descname"><span class="pre">match</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#xftsim.utils.match" title="Permalink to this definition"></a></dt>
 <dd><p>Finds the indices in b that match the elements in a, and returns the corresponding
 index of each element in b.</p>
-<section id="id131">
-<h3>Parameters:<a class="headerlink" href="#id131" title="Permalink to this heading"></a></h3>
+<section id="id132">
+<h3>Parameters:<a class="headerlink" href="#id132" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>a<span class="classifier">List[Hashable]</span></dt><dd><p>List of elements to find matches for.</p>
 </dd>
@@ -5720,8 +5815,8 @@ index of each element in b.</p>
 </dd>
 </dl>
 </section>
-<section id="id132">
-<h3>Returns:<a class="headerlink" href="#id132" title="Permalink to this heading"></a></h3>
+<section id="id133">
+<h3>Returns:<a class="headerlink" href="#id133" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>List[int]</dt><dd><p>A list of indices in b that match the elements in a.</p>
 </dd>
@@ -5739,11 +5834,11 @@ condition.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>a</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List[Hashable]</span></code>) – The first input array.</p></li>
 <li><p><strong>b</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List[Hashable]</span></code>) – The second input array.</p></li>
-<li><p><strong>condition</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">NDArray[Shape[``</span></code>”*”<a href="#id133"><span class="problematic" id="id134">``</span></a><code class="xref py py-class docutils literal notranslate"><span class="pre">]</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Any]</span></code>) – The boolean condition array to apply.</p></li>
+<li><p><strong>condition</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">NDArray[Shape[``</span></code>”*”<a href="#id134"><span class="problematic" id="id135">``</span></a><code class="xref py py-class docutils literal notranslate"><span class="pre">]</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Any]</span></code>) – The boolean condition array to apply.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">NDArray[Shape[``</span></code>”*”<a href="#id135"><span class="problematic" id="id136">``</span></a><code class="xref py py-class docutils literal notranslate"><span class="pre">]</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Int64]</span></code> – The matching indices array.</p>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">NDArray[Shape[``</span></code>”*”<a href="#id136"><span class="problematic" id="id137">``</span></a><code class="xref py py-class docutils literal notranslate"><span class="pre">]</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Int64]</span></code> – The matching indices array.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -5752,8 +5847,8 @@ condition.</p>
 <dt class="sig sig-object py" id="xftsim.utils.merge_duplicate_pairs">
 <span class="sig-prename descclassname"><span class="pre">xftsim.utils.</span></span><span class="sig-name descname"><span class="pre">merge_duplicate_pairs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#xftsim.utils.merge_duplicate_pairs" title="Permalink to this definition"></a></dt>
 <dd><p>Merge duplicate pairs of values in a and b based on their corresponding values in n.</p>
-<section id="id137">
-<h3>Parameters:<a class="headerlink" href="#id137" title="Permalink to this heading"></a></h3>
+<section id="id138">
+<h3>Parameters:<a class="headerlink" href="#id138" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>a<span class="classifier">NDArray[Shape[“*”], Any]</span></dt><dd><p>First array to merge.</p>
 </dd>
@@ -5765,8 +5860,8 @@ condition.</p>
 </dd>
 </dl>
 </section>
-<section id="id138">
-<h3>Returns:<a class="headerlink" href="#id138" title="Permalink to this heading"></a></h3>
+<section id="id139">
+<h3>Returns:<a class="headerlink" href="#id139" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>Tuple[NDArray[Shape[“*”], Any], NDArray[Shape[“*”], Any], NDArray[Shape[“*”], Any]]</dt><dd><p>The merged arrays, with duplicates removed based on the corresponding values in n.</p>
 </dd>
@@ -5831,15 +5926,15 @@ the decorated function will be used.</p></li>
 <dd><p>Sorts the input array in ascending order and concatenates the
 first element with an underscore separator followed by the second
 element.</p>
-<section id="id139">
-<h3>Parameters:<a class="headerlink" href="#id139" title="Permalink to this heading"></a></h3>
+<section id="id140">
+<h3>Parameters:<a class="headerlink" href="#id140" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>x<span class="classifier">array-like</span></dt><dd><p>1-D array of any shape and data type.</p>
 </dd>
 </dl>
 </section>
-<section id="id140">
-<h3>Returns:<a class="headerlink" href="#id140" title="Permalink to this heading"></a></h3>
+<section id="id141">
+<h3>Returns:<a class="headerlink" href="#id141" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>out<span class="classifier">array-like</span></dt><dd><p>1-D array of strings with shape <cite>(n,)</cite> and the same length as <cite>x</cite>,
 where each element is formed by concatenating two sorted string
@@ -5847,8 +5942,8 @@ representations of each element in <cite>x</cite>, separated by an underscore.</
 </dd>
 </dl>
 </section>
-<section id="id141">
-<h3>Examples:<a class="headerlink" href="#id141" title="Permalink to this heading"></a></h3>
+<section id="id142">
+<h3>Examples:<a class="headerlink" href="#id142" title="Permalink to this heading"></a></h3>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sort_and_paste</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)))</span>
 <span class="go">array([&#39;1_2&#39;, &#39;2_3&#39;, &#39;1_3&#39;], dtype=&#39;&lt;U3&#39;)</span>
 </pre></div>
@@ -5860,22 +5955,22 @@ representations of each element in <cite>x</cite>, separated by an underscore.</
 <dt class="sig sig-object py" id="xftsim.utils.standardize_array">
 <span class="sig-prename descclassname"><span class="pre">xftsim.utils.</span></span><span class="sig-name descname"><span class="pre">standardize_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#xftsim.utils.standardize_array" title="Permalink to this definition"></a></dt>
 <dd><p>Standardizes columns of a 2D array.</p>
-<section id="id142">
-<h3>Parameters:<a class="headerlink" href="#id142" title="Permalink to this heading"></a></h3>
+<section id="id143">
+<h3>Parameters:<a class="headerlink" href="#id143" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>a: ArrayLike</dt><dd><p>Input 2D array.</p>
 </dd>
 </dl>
 </section>
-<section id="id143">
-<h3>Returns:<a class="headerlink" href="#id143" title="Permalink to this heading"></a></h3>
+<section id="id144">
+<h3>Returns:<a class="headerlink" href="#id144" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>np.ndarray</dt><dd><p>Standardized 2D array.</p>
 </dd>
 </dl>
 </section>
-<section id="id144">
-<h3>Raises:<a class="headerlink" href="#id144" title="Permalink to this heading"></a></h3>
+<section id="id145">
+<h3>Raises:<a class="headerlink" href="#id145" title="Permalink to this heading"></a></h3>
 <p>None</p>
 </section>
 </dd></dl>
@@ -5884,8 +5979,8 @@ representations of each element in <cite>x</cite>, separated by an underscore.</
 <dt class="sig sig-object py" id="xftsim.utils.standardize_array_hw">
 <span class="sig-prename descclassname"><span class="pre">xftsim.utils.</span></span><span class="sig-name descname"><span class="pre">standardize_array_hw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">haplotypes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">af</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#xftsim.utils.standardize_array_hw" title="Permalink to this definition"></a></dt>
 <dd><p>Wraps _standardize_array_hw to prevent segfaults.</p>
-<section id="id145">
-<h3>Parameters:<a class="headerlink" href="#id145" title="Permalink to this heading"></a></h3>
+<section id="id146">
+<h3>Parameters:<a class="headerlink" href="#id146" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>haplotypes: NDArray[Shape[”<em>,</em>”], Int8]</dt><dd><p>Input array of int8 haploid genotypes.</p>
 </dd>
@@ -5893,15 +5988,15 @@ representations of each element in <cite>x</cite>, separated by an underscore.</
 </dd>
 </dl>
 </section>
-<section id="id146">
-<h3>Returns:<a class="headerlink" href="#id146" title="Permalink to this heading"></a></h3>
+<section id="id147">
+<h3>Returns:<a class="headerlink" href="#id147" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>np.ndarray</dt><dd><p>Standardized genotypes.</p>
 </dd>
 </dl>
 </section>
-<section id="id147">
-<h3>Raises:<a class="headerlink" href="#id147" title="Permalink to this heading"></a></h3>
+<section id="id148">
+<h3>Raises:<a class="headerlink" href="#id148" title="Permalink to this heading"></a></h3>
 <p>None</p>
 </section>
 </dd></dl>
@@ -5910,22 +6005,22 @@ representations of each element in <cite>x</cite>, separated by an underscore.</
 <dt class="sig sig-object py" id="xftsim.utils.to_proportions">
 <span class="sig-prename descclassname"><span class="pre">xftsim.utils.</span></span><span class="sig-name descname"><span class="pre">to_proportions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#xftsim.utils.to_proportions" title="Permalink to this definition"></a></dt>
 <dd><p>Converts input values to proportional values.</p>
-<section id="id148">
-<h3>Parameters:<a class="headerlink" href="#id148" title="Permalink to this heading"></a></h3>
+<section id="id149">
+<h3>Parameters:<a class="headerlink" href="#id149" title="Permalink to this heading"></a></h3>
 <dl class="simple">
-<dt><a href="#id149"><span class="problematic" id="id150">*</span></a>args: Union[float, int]</dt><dd><p>Input values.</p>
+<dt><a href="#id150"><span class="problematic" id="id151">*</span></a>args: Union[float, int]</dt><dd><p>Input values.</p>
 </dd>
 </dl>
 </section>
-<section id="id151">
-<h3>Returns:<a class="headerlink" href="#id151" title="Permalink to this heading"></a></h3>
+<section id="id152">
+<h3>Returns:<a class="headerlink" href="#id152" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>np.ndarray</dt><dd><p>Proportional values.</p>
 </dd>
 </dl>
 </section>
-<section id="id152">
-<h3>Raises:<a class="headerlink" href="#id152" title="Permalink to this heading"></a></h3>
+<section id="id153">
+<h3>Raises:<a class="headerlink" href="#id153" title="Permalink to this heading"></a></h3>
 <p>None</p>
 </section>
 </dd></dl>
@@ -5934,22 +6029,22 @@ representations of each element in <cite>x</cite>, separated by an underscore.</
 <dt class="sig sig-object py" id="xftsim.utils.to_simplex">
 <span class="sig-prename descclassname"><span class="pre">xftsim.utils.</span></span><span class="sig-name descname"><span class="pre">to_simplex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#xftsim.utils.to_simplex" title="Permalink to this definition"></a></dt>
 <dd><p>Converts input values to a simplex vector.</p>
-<section id="id153">
-<h3>Parameters:<a class="headerlink" href="#id153" title="Permalink to this heading"></a></h3>
+<section id="id154">
+<h3>Parameters:<a class="headerlink" href="#id154" title="Permalink to this heading"></a></h3>
 <dl class="simple">
-<dt><a href="#id154"><span class="problematic" id="id155">*</span></a>args: Union[float, int]</dt><dd><p>Input values.</p>
+<dt><a href="#id155"><span class="problematic" id="id156">*</span></a>args: Union[float, int]</dt><dd><p>Input values.</p>
 </dd>
 </dl>
 </section>
-<section id="id156">
-<h3>Returns:<a class="headerlink" href="#id156" title="Permalink to this heading"></a></h3>
+<section id="id157">
+<h3>Returns:<a class="headerlink" href="#id157" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>np.ndarray</dt><dd><p>Simplex vector.</p>
 </dd>
 </dl>
 </section>
-<section id="id157">
-<h3>Raises:<a class="headerlink" href="#id157" title="Permalink to this heading"></a></h3>
+<section id="id158">
+<h3>Raises:<a class="headerlink" href="#id158" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>ValueError</dt><dd><p>If all input values are less than or equal to zero.</p>
 </dd>
@@ -5961,8 +6056,8 @@ representations of each element in <cite>x</cite>, separated by an underscore.</
 <dt class="sig sig-object py" id="xftsim.utils.unique_identifier">
 <span class="sig-prename descclassname"><span class="pre">xftsim.utils.</span></span><span class="sig-name descname"><span class="pre">unique_identifier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index_variables</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#xftsim.utils.unique_identifier" title="Permalink to this definition"></a></dt>
 <dd><p>Returns a unique identifier string generated from index variables of a dataframe.</p>
-<section id="id158">
-<h3>Parameters:<a class="headerlink" href="#id158" title="Permalink to this heading"></a></h3>
+<section id="id159">
+<h3>Parameters:<a class="headerlink" href="#id159" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>frame: pd.DataFrame</dt><dd><p>Input dataframe.</p>
 </dd>
@@ -5970,15 +6065,15 @@ representations of each element in <cite>x</cite>, separated by an underscore.</
 </dd>
 </dl>
 </section>
-<section id="id159">
-<h3>Returns:<a class="headerlink" href="#id159" title="Permalink to this heading"></a></h3>
+<section id="id160">
+<h3>Returns:<a class="headerlink" href="#id160" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>str</dt><dd><p>Unique identifier string.</p>
 </dd>
 </dl>
 </section>
-<section id="id160">
-<h3>Raises:<a class="headerlink" href="#id160" title="Permalink to this heading"></a></h3>
+<section id="id161">
+<h3>Raises:<a class="headerlink" href="#id161" title="Permalink to this heading"></a></h3>
 <p>None</p>
 </section>
 </dd></dl>
