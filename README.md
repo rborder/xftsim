@@ -1,13 +1,16 @@
 <img src="./xftsimlogo.svg" width="20%">
 
 # eXtensible Forward Time SIMulator
-
+[![Documentation Status](https://readthedocs.org/projects/xftsim/badge/?version=latest)](https://xftsim.readthedocs.io/en/latest/?badge=latest)
 
 `xftsim` simulates complex phenotype/genotype data with an emphasis on short timescale phenomena. `xftsim` is designed with two primary goals:
 
  - make it easy for statistical geneticists to perform reproducible and systematic sensitivity analyses  to better limitations and assumptions
 
- - enable evaulation of methods for analyzing "complex traits" under realistically complex generative models
+ - enable evaulation of methods for analyzing complex traits under realistically complex generative models
+
+
+To get started, [check out the documentation](https://xftsim.readthedocs.io)!
 
 
 ### Notice
