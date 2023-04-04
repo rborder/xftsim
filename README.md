@@ -9,11 +9,20 @@
 
  - enable evaulation of methods for analyzing complex traits under realistically complex generative models
 
+## Installation
+
+`xftsim` is on PyPI. It can be installed using pip:
+
+```bash
+pip install xftsim
+```
+
+
+## Getting started
 
 To get started, [check out the documentation](https://xftsim.readthedocs.io)!
 
-
-### Notice
+## Notice
 
 `xftsim` is under active development. Stay tuned for tutorials and documentation in the near future!
 
