@@ -1,5 +1,5 @@
 import pandas as pd
-import os, sys
+import pkg_resources
 
 
 def get_ceu_map():
@@ -12,5 +12,6 @@ def get_ceu_map():
         A DataFrame with the CEU haplotype map.
 
     """
-    package_root = os.path.dirname(sys.modules['xftsim'].__file__)
-    return pd.read_csv(package_root + '/../maps/ceu.hg19.map')
+    stream = pkg_resources.resource_stream(__name__, 'maps/ceu.hg19.map')
+
+    return pd.read_csv(stream)
