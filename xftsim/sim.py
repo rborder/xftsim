@@ -273,7 +273,7 @@ class Simulation():
         """
         Update pedigree information (NOT IMPLEMENTED).
         """
-        warnings.warn('update_pedigree() not implemented')
+        # warnings.warn('update_pedigree() not implemented')
         pass  # TODO
 
     # generation is immutable except through Simulation().increment_generation()

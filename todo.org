@@ -9,6 +9,7 @@
     - [ ] causal graph
 * features [0/0]
 ** documentation
+*** ☐ replace duplicate descriptions
 *** ☐ Getting started [0/3]
     - [ ] overview
     - [ ] installation
@@ -148,6 +149,7 @@
     - [ ] prettify __repr__
 ** ☐ sim [1/2]
     - [X] DOCUMENT
+    - [ ] Make it clear which args are optional for Simulation class
     - [ ] prettify __repr__
 ** ☐ utils [1/2]
     - [ ] DOCUMENT - variable count

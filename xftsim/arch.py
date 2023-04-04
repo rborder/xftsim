@@ -1238,3 +1238,75 @@ class SpikeSlabArchitecture:
 #                        normalize=normalize,
 #                        multiplier=.5
 #                        )
+
+
+class GCTA_Architecture(Architecture):
+    """Additive genetic architecture object under GCTA infinitessimal model <CITE>
+
+    Under this genetic architecture, all variants are causal and standardized genetic variants / sqrt(m) 
+    have the user specified (possibly diagonal) genetic correlation matrix and variance equal to h2.
+
+    
+    Parameters
+    ----------
+    h2 : Iterable
+        Vector of genetic variances or genetic variance/covariance matrix
+    Rg : numpy.ndarray
+        Optional genetic correlation matrix
+    phenotype_name : Iterable
+        Optional names of phenotypes
+    variant_indexer : xft.index.HaploidVariantIndex | xft.index.DiploidVariantIndex
+        Variant indexer, will determine ploidy automatically
+        Phenotype component indexer, defaults to xft.index.ComponentIndex.RangeIndex if not provided
+    haplotypes : xr.DataArray
+        Alternatively, one can simply provide haplotypes instead of the variant indexer. Ignored if variant_indexer is supplied.
+    """
+    def __init__(self,
+        h2: Iterable,  # heritabilities
+        Rg: NDArray = None,  # either genetic variances or genetic variance/covariance matrix
+        phenotype_name: Iterable = None,
+        variant_indexer: Union[xft.index.HaploidVariantIndex,
+            xft.index.DiploidVariantIndex] = None,
+        haplotypes: xr.DataArray = None
+        ):
+
+        if variant_indexer is None and haplotypes is None:
+            raise ValueError('variant_indexer or haplotypes is required')
+        elif variant_indexer is None:
+            variant_indexer = haplotypes.xft.get_variant_indexer()
+
+        vg = np.array(h2).ravel()
+        if np.any(vg > 1) or np.any(vg < 0):
+            raise ValueError("h2 must be between zero and one") 
+        ve = 1 - vg
+        k_total = vg.shape[0]
+        if Rg is None:
+            Rg = np.eye(k_total)
+        elif Rg.shape != (k_total, k_total):
+            raise ValueError('Rg must be a 2d array')
+
+        sqrtvg = np.diag(np.sqrt(vg))
+        covg = sqrtvg @ Rg @ sqrtvg
+
+        if phenotype_name is None:
+            phenotype_name = np.char.add('phenotype_', 
+                                         np.arange(k_total).astype(str))
+        else:
+            phenotype_name = np.array(phenotype_name).ravel()
+            if phenotype_name.shape[0] != k_total:
+                raise ValueError('phenotype_name must match other arguments in length')
+
+        additive_component = xft.arch.AdditiveGeneticComponent(
+            xft.effect.GCTAEffects(vg = covg,
+                                   variant_indexer = variant_indexer,
+                                   component_indexer = xft.index.ComponentIndex.from_product(phenotype_name,
+                                                                                             ['additiveGenetic'])))
+
+        noise_component = xft.arch.AdditiveNoiseComponent(ve,
+                                                          phenotype_name=phenotype_name)
+
+        iind,oind=xft.arch.SumTransformation.construct_cindexes(phenotype_name)
+        sum_transformation = xft.arch.SumTransformation(iind,oind)
+        super().__init__(components = [additive_component,
+                                       noise_component,
+                                       sum_transformation])
