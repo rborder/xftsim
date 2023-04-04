@@ -26,7 +26,7 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
     "sphinx.ext.intersphinx",
-    "sphinx_autosummary_accessors",
+    #"sphinx_autosummary_accessors",
     #"sphinxawesome_theme",
     "sphinx.ext.extlinks",
     "sphinx.ext.mathjax",
