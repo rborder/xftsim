@@ -1,4 +1,6 @@
-<img src="./xftsimlogo.svg" width="20%"> [![Documentation Status](https://readthedocs.org/projects/xftsim/badge/?version=latest)](https://xftsim.readthedocs.io/en/latest/?badge=latest) [![PyPI version](https://badge.fury.io/py/xftsim.svg)](https://badge.fury.io/py/xftsim)
+<img src="./xftsimlogo.svg" width="20%"> 
+
+[![Documentation Status](https://readthedocs.org/projects/xftsim/badge/?version=latest)](https://xftsim.readthedocs.io/en/latest/?badge=latest) [![PyPI version](https://badge.fury.io/py/xftsim.svg)](https://badge.fury.io/py/xftsim)
 
 # eXtensible Forward Time SIMulator
 `xftsim` simulates complex phenotype/genotype data with an emphasis on short timescale phenomena. `xftsim` is designed with two primary goals:
