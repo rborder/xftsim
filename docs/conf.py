@@ -26,6 +26,7 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
     "sphinx.ext.intersphinx",
+    "myst_parser",
     #"sphinx_autosummary_accessors",
     #"sphinxawesome_theme",
     "sphinx.ext.extlinks",

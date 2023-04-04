@@ -13,9 +13,6 @@
   <![endif]-->
   
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/sphinx_highlight.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
@@ -334,7 +331,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#xftsim.io.write_to_plink1"><code class="docutils literal notranslate"><span class="pre">write_to_plink1()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#module-xftsim.lsmate">lsmate module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#lsmate-module">lsmate module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-xftsim.mate">mate module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#xftsim.mate.BalancedRandomMatingRegime"><code class="docutils literal notranslate"><span class="pre">BalancedRandomMatingRegime</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.mate.BalancedRandomMatingRegime.mate"><code class="docutils literal notranslate"><span class="pre">BalancedRandomMatingRegime.mate()</span></code></a></li>
@@ -3127,22 +3124,8 @@ randomly assigning haplotypes at heterozygous sites.</p>
 </dd></dl>
 
 </section>
-<section id="module-xftsim.lsmate">
-<span id="lsmate-module"></span><h2>lsmate module<a class="headerlink" href="#module-xftsim.lsmate" title="Permalink to this heading"></a></h2>
-<p>This module contains functions and classes for implementing different mating regimes in the context of population genetics simulations.</p>
-<p>Functions:</p>
-<blockquote>
-<div><p>_solve_qap_ls: Private function that solves the Quadratic Assignment Problem using LocalSolver.</p>
-</div></blockquote>
-<p>Classes:</p>
-<blockquote>
-<div><p>MatingRegime: Base class for defining mating regimes.
-RandomMatingRegime: A class for implementing random mating.
-BalancedRandomMatingRegime: A class for implementing balanced random mating.
-LinearAssortativeMatingRegime: A class for implementing linear assortative mating.
-KAssortativeMatingRegime: A class for implementing k-assortative mating.
-BatchedMatingRegime: A class for batching individuals to improve mating regime performance.</p>
-</div></blockquote>
+<section id="lsmate-module">
+<h2>lsmate module<a class="headerlink" href="#lsmate-module" title="Permalink to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 </tbody>
