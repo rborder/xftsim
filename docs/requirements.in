@@ -3,3 +3,7 @@ IPython
 nbsphinx
 jinja2==3.0.3
 myst-parser
+numpy
+xarray
+scipy
+nptyping
