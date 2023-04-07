@@ -333,6 +333,7 @@ class SampleIndex(XftIndex):
             mi_repr = mi_repr[:3] + ["            ..."] + mi_repr[-3:]
         output = [
                   "<SampleIndex>",
+                  f"  Generation {self.generation}",
                   f"  {self.n} indviduals from {self.n_fam} families",
                   f"  {self.n_female} biological females",
                   f"  {self.n_male} biological males",
