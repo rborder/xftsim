@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 setup(
     name='xftsim',
     
-    version='0.0.1.dev9',
+    version='0.0.1.dev8',
     
     author="Richard Border",
     
@@ -27,5 +27,4 @@ setup(
     ],
 
     include_package_data=True,
-    package_data={'': ['maps/*.map']},
-    )
+)

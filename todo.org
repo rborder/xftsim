@@ -1,5 +1,41 @@
-* tutorials [0/4]
-    - [ ] quickstart
+* immediate todos [0/2]
+    - [ ] direct interface with stdpopsim maps
+* documentation todos [0/2]
+** Getting started
+*** ☑ installation
+*** ☑ quickstart
+** User Guide
+*** ☐ nuts and bolts
+**** ☐ indexes
+**** ☐ data structures
+**** ☐ submodule organization
+*** ☐ anatomy of a simulation
+*** ☐ founder data
+**** ☐ synthetic data
+**** ☐ working with real data
+    - [ ] example with vcf data
+    - [ ] example with vcf plink data
+*** ☐ recombination maps
+*** ☐ architectures
+**** ☐ architecture class
+**** ☐ components
+**** ☐ vertical components and founder initializations
+*** ☐ mating regimes
+**** ☐ choosing mates
+**** ☐ controlling population growth
+*** ☐ statistics and post-processors 
+*** ☐ extending xftsim 
+    - [ ] Extending mating regimes
+    - [ ] Extending phenogenetic architectures
+    - [ ] Extending statistical estimators
+** Example gallery
+    - [ ] random mating with variable population growth
+    - [ ] linear cross-trait assortative mating
+    - [ ] arbitrary cross-trait assortative mating
+    - [ ] vertical tranmission and causal dependence
+    - [ ] spatial assortment + environmental gradient
+* tutorials [1/4]
+    - [X] quickstart
     - [ ] random mating
     - [ ] assortative mating
     - [ ] transmission / causal dependences
@@ -23,15 +59,7 @@
 *** ☐ Under the hood [0/5]
     - [ ] data structures
     - [ ] indexing
-    - [ ] Extending mating regimes
-    - [ ] Extending phenogenetic architectures
-    - [ ] Extending statistical estimators
 *** ☐ Example gallery [0/5]
-    - [ ] random mating with variable population growth
-    - [ ] linear cross-trait assortative mating
-    - [ ] arbitrary cross-trait assortative mating
-    - [ ] vertical tranmission and causal dependence
-    - [ ] spatial assortment + environmental gradient
 ** ☐ module docstrings [2/13]
     - [ ] arch
     - [ ] data
@@ -152,5 +180,5 @@
     - [ ] Make it clear which args are optional for Simulation class
     - [ ] prettify __repr__
 ** ☐ utils [1/2]
-    - [ ] DOCUMENT - variable count
+    - [X] DOCUMENT - variable count
     - [X] DOCUMENT - everything else
