@@ -13,6 +13,9 @@
   <![endif]-->
   
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/sphinx_highlight.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
@@ -44,6 +47,7 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide.html">User guide</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">API reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#module-xftsim.arch">arch module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#xftsim.arch.AdditiveGeneticComponent"><code class="docutils literal notranslate"><span class="pre">AdditiveGeneticComponent</span></code></a><ul>
@@ -331,7 +335,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#xftsim.io.write_to_plink1"><code class="docutils literal notranslate"><span class="pre">write_to_plink1()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#lsmate-module">lsmate module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-xftsim.lsmate">lsmate module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-xftsim.mate">mate module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#xftsim.mate.BalancedRandomMatingRegime"><code class="docutils literal notranslate"><span class="pre">BalancedRandomMatingRegime</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.mate.BalancedRandomMatingRegime.mate"><code class="docutils literal notranslate"><span class="pre">BalancedRandomMatingRegime.mate()</span></code></a></li>
@@ -495,6 +499,12 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#module-xftsim.stats">stats module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#xftsim.stats.GWAS_Estimator"><code class="docutils literal notranslate"><span class="pre">GWAS_Estimator</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#xftsim.stats.GWAS_Estimator.component_index"><code class="docutils literal notranslate"><span class="pre">GWAS_Estimator.component_index</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#xftsim.stats.GWAS_Estimator.estimator"><code class="docutils literal notranslate"><span class="pre">GWAS_Estimator.estimator()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id104"><code class="docutils literal notranslate"><span class="pre">GWAS_Estimator.estimator()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#xftsim.stats.HasemanElstonEstimator"><code class="docutils literal notranslate"><span class="pre">HasemanElstonEstimator</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.stats.HasemanElstonEstimator.component_index"><code class="docutils literal notranslate"><span class="pre">HasemanElstonEstimator.component_index</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.stats.HasemanElstonEstimator.genetic_correlation"><code class="docutils literal notranslate"><span class="pre">HasemanElstonEstimator.genetic_correlation</span></code></a></li>
@@ -503,13 +513,13 @@
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.stats.HasemanElstonEstimator.n_probe"><code class="docutils literal notranslate"><span class="pre">HasemanElstonEstimator.n_probe</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.stats.HasemanElstonEstimator.dask"><code class="docutils literal notranslate"><span class="pre">HasemanElstonEstimator.dask</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.stats.HasemanElstonEstimator.estimator"><code class="docutils literal notranslate"><span class="pre">HasemanElstonEstimator.estimator()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id104"><code class="docutils literal notranslate"><span class="pre">HasemanElstonEstimator.estimator()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id105"><code class="docutils literal notranslate"><span class="pre">HasemanElstonEstimator.estimator()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#xftsim.stats.MatingStatistics"><code class="docutils literal notranslate"><span class="pre">MatingStatistics</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.stats.MatingStatistics.component_index"><code class="docutils literal notranslate"><span class="pre">MatingStatistics.component_index</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.stats.MatingStatistics.estimator"><code class="docutils literal notranslate"><span class="pre">MatingStatistics.estimator()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id105"><code class="docutils literal notranslate"><span class="pre">MatingStatistics.estimator()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id106"><code class="docutils literal notranslate"><span class="pre">MatingStatistics.estimator()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#xftsim.stats.SampleStatistics"><code class="docutils literal notranslate"><span class="pre">SampleStatistics</span></code></a><ul>
@@ -520,7 +530,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.stats.SampleStatistics.corr"><code class="docutils literal notranslate"><span class="pre">SampleStatistics.corr</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.stats.SampleStatistics.prettify"><code class="docutils literal notranslate"><span class="pre">SampleStatistics.prettify</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.stats.SampleStatistics.estimator"><code class="docutils literal notranslate"><span class="pre">SampleStatistics.estimator()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id106"><code class="docutils literal notranslate"><span class="pre">SampleStatistics.estimator()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id107"><code class="docutils literal notranslate"><span class="pre">SampleStatistics.estimator()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#xftsim.stats.Statistic"><code class="docutils literal notranslate"><span class="pre">Statistic</span></code></a><ul>
@@ -528,8 +538,8 @@
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.stats.Statistic.estimator"><code class="docutils literal notranslate"><span class="pre">Statistic.estimator</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.stats.Statistic.estimate"><code class="docutils literal notranslate"><span class="pre">Statistic.estimate()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.stats.Statistic.update_results"><code class="docutils literal notranslate"><span class="pre">Statistic.update_results()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id107"><code class="docutils literal notranslate"><span class="pre">Statistic.estimate()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id108"><code class="docutils literal notranslate"><span class="pre">Statistic.update_results()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id108"><code class="docutils literal notranslate"><span class="pre">Statistic.estimate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id109"><code class="docutils literal notranslate"><span class="pre">Statistic.update_results()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#xftsim.stats.haseman_elston"><code class="docutils literal notranslate"><span class="pre">haseman_elston()</span></code></a></li>
@@ -562,9 +572,9 @@
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.struct.XftAccessor.all_phenotypes"><code class="docutils literal notranslate"><span class="pre">XftAccessor.all_phenotypes</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.struct.XftAccessor.all_relatives"><code class="docutils literal notranslate"><span class="pre">XftAccessor.all_relatives</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.struct.XftAccessor.as_pd"><code class="docutils literal notranslate"><span class="pre">XftAccessor.as_pd()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id109"><code class="docutils literal notranslate"><span class="pre">XftAccessor.column_vars</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id110"><code class="docutils literal notranslate"><span class="pre">XftAccessor.component_mindex</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id111"><code class="docutils literal notranslate"><span class="pre">XftAccessor.data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id110"><code class="docutils literal notranslate"><span class="pre">XftAccessor.column_vars</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id111"><code class="docutils literal notranslate"><span class="pre">XftAccessor.component_mindex</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id112"><code class="docutils literal notranslate"><span class="pre">XftAccessor.data</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.struct.XftAccessor.depth"><code class="docutils literal notranslate"><span class="pre">XftAccessor.depth</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.struct.XftAccessor.diploid_chrom"><code class="docutils literal notranslate"><span class="pre">XftAccessor.diploid_chrom</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.struct.XftAccessor.diploid_vid"><code class="docutils literal notranslate"><span class="pre">XftAccessor.diploid_vid</span></code></a></li>
@@ -586,15 +596,15 @@
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.struct.XftAccessor.k_total"><code class="docutils literal notranslate"><span class="pre">XftAccessor.k_total</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.struct.XftAccessor.m"><code class="docutils literal notranslate"><span class="pre">XftAccessor.m</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.struct.XftAccessor.maf_empirical"><code class="docutils literal notranslate"><span class="pre">XftAccessor.maf_empirical</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id112"><code class="docutils literal notranslate"><span class="pre">XftAccessor.n</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id113"><code class="docutils literal notranslate"><span class="pre">XftAccessor.n</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.struct.XftAccessor.reindex_components"><code class="docutils literal notranslate"><span class="pre">XftAccessor.reindex_components()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id113"><code class="docutils literal notranslate"><span class="pre">XftAccessor.row_vars</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id114"><code class="docutils literal notranslate"><span class="pre">XftAccessor.sample_mindex</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id114"><code class="docutils literal notranslate"><span class="pre">XftAccessor.row_vars</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id115"><code class="docutils literal notranslate"><span class="pre">XftAccessor.sample_mindex</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.struct.XftAccessor.set_column_indexer"><code class="docutils literal notranslate"><span class="pre">XftAccessor.set_column_indexer()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.struct.XftAccessor.set_row_indexer"><code class="docutils literal notranslate"><span class="pre">XftAccessor.set_row_indexer()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.struct.XftAccessor.set_sample_indexer"><code class="docutils literal notranslate"><span class="pre">XftAccessor.set_sample_indexer()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.struct.XftAccessor.set_variant_indexer"><code class="docutils literal notranslate"><span class="pre">XftAccessor.set_variant_indexer()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id115"><code class="docutils literal notranslate"><span class="pre">XftAccessor.shape</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id116"><code class="docutils literal notranslate"><span class="pre">XftAccessor.shape</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.struct.XftAccessor.split_by_component"><code class="docutils literal notranslate"><span class="pre">XftAccessor.split_by_component()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.struct.XftAccessor.split_by_phenotype"><code class="docutils literal notranslate"><span class="pre">XftAccessor.split_by_phenotype()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.struct.XftAccessor.split_by_phenotype_vorigin"><code class="docutils literal notranslate"><span class="pre">XftAccessor.split_by_phenotype_vorigin()</span></code></a></li>
@@ -636,8 +646,8 @@
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.utils.VariableCount.expectation"><code class="docutils literal notranslate"><span class="pre">VariableCount.expectation</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.utils.VariableCount.mating_fraction"><code class="docutils literal notranslate"><span class="pre">VariableCount.mating_fraction</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.utils.VariableCount.None"><code class="docutils literal notranslate"><span class="pre">VariableCount.None()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id118"><code class="docutils literal notranslate"><span class="pre">VariableCount.expectation</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id119"><code class="docutils literal notranslate"><span class="pre">VariableCount.mating_fraction</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id119"><code class="docutils literal notranslate"><span class="pre">VariableCount.expectation</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id120"><code class="docutils literal notranslate"><span class="pre">VariableCount.mating_fraction</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#xftsim.utils.ZeroTruncatedPoissonCount"><code class="docutils literal notranslate"><span class="pre">ZeroTruncatedPoissonCount</span></code></a><ul>
@@ -3124,8 +3134,22 @@ randomly assigning haplotypes at heterozygous sites.</p>
 </dd></dl>
 
 </section>
-<section id="lsmate-module">
-<h2>lsmate module<a class="headerlink" href="#lsmate-module" title="Permalink to this heading"></a></h2>
+<section id="module-xftsim.lsmate">
+<span id="lsmate-module"></span><h2>lsmate module<a class="headerlink" href="#module-xftsim.lsmate" title="Permalink to this heading"></a></h2>
+<p>This module contains functions and classes for implementing different mating regimes in the context of population genetics simulations.</p>
+<p>Functions:</p>
+<blockquote>
+<div><p>_solve_qap_ls: Private function that solves the Quadratic Assignment Problem using LocalSolver.</p>
+</div></blockquote>
+<p>Classes:</p>
+<blockquote>
+<div><p>MatingRegime: Base class for defining mating regimes.
+RandomMatingRegime: A class for implementing random mating.
+BalancedRandomMatingRegime: A class for implementing balanced random mating.
+LinearAssortativeMatingRegime: A class for implementing linear assortative mating.
+KAssortativeMatingRegime: A class for implementing k-assortative mating.
+BatchedMatingRegime: A class for batching individuals to improve mating regime performance.</p>
+</div></blockquote>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 </tbody>
@@ -4697,6 +4721,45 @@ between specified loci</p></li>
 <section id="module-xftsim.stats">
 <span id="stats-module"></span><h2>stats module<a class="headerlink" href="#module-xftsim.stats" title="Permalink to this heading"></a></h2>
 <dl class="py class">
+<dt class="sig sig-object py" id="xftsim.stats.GWAS_Estimator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">xftsim.stats.</span></span><span class="sig-name descname"><span class="pre">GWAS_Estimator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">component_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#xftsim.stats.GWAS_Estimator" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="xftsim.html#xftsim.stats.Statistic" title="xftsim.stats.Statistic"><code class="xref py py-class docutils literal notranslate"><span class="pre">Statistic</span></code></a></p>
+<p>Perform linear assocation studies for the given simulation.</p>
+<p>When called within a Simulation, will add to Simulation.results[‘GWAS’]
+a 3-D array indexed as follows:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>the first dimension indexes variants via xft.index.DiploidVariantIndex</p></li>
+<li><p>the second dimension indexes four association statistics: slope, se, test-statistic, and p-value</p></li>
+<li><p>the third dimension indexes phenotypic components via xft.index.ComponentIndex</p></li>
+</ul>
+</div></blockquote>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="xftsim.stats.GWAS_Estimator.component_index">
+<span class="sig-name descname"><span class="pre">component_index</span></span><a class="headerlink" href="#xftsim.stats.GWAS_Estimator.component_index" title="Permalink to this definition"></a></dt>
+<dd><p>Index of the component for which the statistics are calculated.
+If not provided, calculate statistics for all phenotype components.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">xft.index.ComponentIndex</span></code>, <em>optional</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="xftsim.stats.GWAS_Estimator.estimator">
+<span class="sig-name descname"><span class="pre">estimator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">xft.sim.Simulation</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="headerlink" href="#xftsim.stats.GWAS_Estimator.estimator" title="Permalink to this definition"></a></dt>
+<dd><p>Estimate and return the Haseman-Elston regression for the given simulation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id104">
+<span class="sig-name descname"><span class="pre">estimator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sim</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id104" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="xftsim.stats.HasemanElstonEstimator">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">xftsim.stats.</span></span><span class="sig-name descname"><span class="pre">HasemanElstonEstimator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">component_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">genetic_correlation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">randomized</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prettify</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_probe</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#xftsim.stats.HasemanElstonEstimator" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="xftsim.html#xftsim.stats.Statistic" title="xftsim.stats.Statistic"><code class="xref py py-class docutils literal notranslate"><span class="pre">Statistic</span></code></a></p>
@@ -4775,8 +4838,8 @@ If not provided, calculate statistics for all components.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="id104">
-<span class="sig-name descname"><span class="pre">estimator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sim</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id104" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id105">
+<span class="sig-name descname"><span class="pre">estimator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sim</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id105" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -4805,8 +4868,8 @@ If not provided, calculate statistics for all components.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="id105">
-<span class="sig-name descname"><span class="pre">estimator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sim</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id105" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id106">
+<span class="sig-name descname"><span class="pre">estimator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sim</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id106" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -4889,8 +4952,8 @@ If not provided, calculate statistics for all components.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="id106">
-<span class="sig-name descname"><span class="pre">estimator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sim</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id106" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id107">
+<span class="sig-name descname"><span class="pre">estimator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sim</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id107" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -4935,13 +4998,13 @@ If not provided, calculate statistics for all components.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="id107">
-<span class="sig-name descname"><span class="pre">estimate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sim</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id107" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id108">
+<span class="sig-name descname"><span class="pre">estimate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sim</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id108" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="id108">
-<span class="sig-name descname"><span class="pre">update_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">results</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id108" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id109">
+<span class="sig-name descname"><span class="pre">update_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">results</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id109" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -4971,7 +5034,7 @@ If not provided, calculate statistics for all components.</p>
 <span id="struct-module"></span><h2>struct module<a class="headerlink" href="#module-xftsim.struct" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="xftsim.struct.HaplotypeArray">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">xftsim.struct.</span></span><span class="sig-name descname"><span class="pre">HaplotypeArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">haplotypes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variant_indexer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_indexer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">generation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#xftsim.struct.HaplotypeArray" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">xftsim.struct.</span></span><span class="sig-name descname"><span class="pre">HaplotypeArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">haplotypes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variant_indexer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_indexer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">generation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#xftsim.struct.HaplotypeArray" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Represents a 2D array of binary haplotypes with accompanying row and column indices.
 Dummy class used for generation of DataArrays and static methods</p>
@@ -5298,8 +5361,8 @@ Specific to PhenotypeArray objects.</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="id109">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">column_vars</span></span><a class="headerlink" href="#id109" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id110">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">column_vars</span></span><a class="headerlink" href="#id110" title="Permalink to this definition"></a></dt>
 <dd><p>Get the column coordinate variables for the DataArray object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -5309,8 +5372,8 @@ Specific to PhenotypeArray objects.</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="id110">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">component_mindex</span></span><a class="headerlink" href="#id110" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id111">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">component_mindex</span></span><a class="headerlink" href="#id111" title="Permalink to this definition"></a></dt>
 <dd><p>Get a Pandas MultiIndex object for the component dimension.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -5324,8 +5387,8 @@ as index levels.</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="id111">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data</span></span><a class="headerlink" href="#id111" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id112">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data</span></span><a class="headerlink" href="#id112" title="Permalink to this definition"></a></dt>
 <dd><p>The data in the DataArray.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -5647,8 +5710,8 @@ Specific to HaplotypeArray objects.</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="id112">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">n</span></span><a class="headerlink" href="#id112" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id113">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">n</span></span><a class="headerlink" href="#id113" title="Permalink to this definition"></a></dt>
 <dd><p>The number of rows in the DataArray.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -5672,8 +5735,8 @@ Specific to HaplotypeArray objects.</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="id113">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">row_vars</span></span><a class="headerlink" href="#id113" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id114">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">row_vars</span></span><a class="headerlink" href="#id114" title="Permalink to this definition"></a></dt>
 <dd><p>Get the row coordinate variables for the PhenotypeArray object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -5683,8 +5746,8 @@ Specific to HaplotypeArray objects.</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="id114">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sample_mindex</span></span><a class="headerlink" href="#id114" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id115">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sample_mindex</span></span><a class="headerlink" href="#id115" title="Permalink to this definition"></a></dt>
 <dd><p>Get the sample multi-index for the PhenotypeArray object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -5729,8 +5792,8 @@ Specific to HaplotypeArray objects.</p>
 <dd></dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="id115">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">shape</span></span><a class="headerlink" href="#id115" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id116">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">shape</span></span><a class="headerlink" href="#id116" title="Permalink to this definition"></a></dt>
 <dd><p>The shape of the DataArray.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -5947,7 +6010,7 @@ Specific to HaplotypeArray objects.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>componentCounts</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code>) – An iterable of VariableCount instances, representing the components of the mixture.</p></li>
-<li><p><strong>mixture_probabilities</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">NDArray[Shape[``</span></code>”*”<a href="#id116"><span class="problematic" id="id117">``</span></a><code class="xref py py-class docutils literal notranslate"><span class="pre">]</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Float64]</span></code>) – An array of probabilities associated with each component in the mixture.</p></li>
+<li><p><strong>mixture_probabilities</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">NDArray[Shape[``</span></code>”*”<a href="#id117"><span class="problematic" id="id118">``</span></a><code class="xref py py-class docutils literal notranslate"><span class="pre">]</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Float64]</span></code>) – An array of probabilities associated with each component in the mixture.</p></li>
 </ul>
 </dd>
 </dl>
@@ -6089,8 +6152,8 @@ Specific to HaplotypeArray objects.</p>
 <dd></dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="id118">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">expectation</span></span><a class="headerlink" href="#id118" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id119">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">expectation</span></span><a class="headerlink" href="#id119" title="Permalink to this definition"></a></dt>
 <dd><p>Getter function for expectation attribute.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -6100,8 +6163,8 @@ Specific to HaplotypeArray objects.</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="id119">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mating_fraction</span></span><a class="headerlink" href="#id119" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="id120">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mating_fraction</span></span><a class="headerlink" href="#id120" title="Permalink to this definition"></a></dt>
 <dd><p>Getter function for mating_fraction attribute.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -6176,15 +6239,15 @@ R function <cite>expand.grid()</cite></p>
 <dt class="sig sig-object py" id="xftsim.utils.cov2cor">
 <span class="sig-prename descclassname"><span class="pre">xftsim.utils.</span></span><span class="sig-name descname"><span class="pre">cov2cor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#xftsim.utils.cov2cor" title="Permalink to this definition"></a></dt>
 <dd><p>Converts covariance matrix to correlation matrix.</p>
-<section id="id120">
-<h3>Parameters:<a class="headerlink" href="#id120" title="Permalink to this heading"></a></h3>
+<section id="id121">
+<h3>Parameters:<a class="headerlink" href="#id121" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>A: Union[np.ndarray, pd.DataFrame, xr.DataArray]</dt><dd><p>Input covariance matrix.</p>
 </dd>
 </dl>
 </section>
-<section id="id121">
-<h3>Returns:<a class="headerlink" href="#id121" title="Permalink to this heading"></a></h3>
+<section id="id122">
+<h3>Returns:<a class="headerlink" href="#id122" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>Union[np.ndarray, pd.DataFrame, xr.DataArray]</dt><dd><p>Correlation matrix.</p>
 </dd>
@@ -6219,8 +6282,8 @@ R function <cite>expand.grid()</cite></p>
 <dd><p>Repeat each ith element of array a integer n_per_a[i] times
 such that each every element appears min(j,  n_per_a[i]) times
 in order before any element appears j+1 times.</p>
-<section id="id122">
-<h3>Parameters:<a class="headerlink" href="#id122" title="Permalink to this heading"></a></h3>
+<section id="id123">
+<h3>Parameters:<a class="headerlink" href="#id123" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>a<span class="classifier">array-like</span></dt><dd><p>1-D array of any shape and data type.</p>
 </dd>
@@ -6229,8 +6292,8 @@ in <cite>a</cite> needs to be repeated.</p>
 </dd>
 </dl>
 </section>
-<section id="id123">
-<h3>Returns:<a class="headerlink" href="#id123" title="Permalink to this heading"></a></h3>
+<section id="id124">
+<h3>Returns:<a class="headerlink" href="#id124" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>out<span class="classifier">array-like</span></dt><dd><p>1-D array of shape <cite>(n,)</cite> and the same data type as <cite>a</cite>, where
 each element is repeated as per <cite>n_per_a</cite> in the order before
@@ -6238,8 +6301,8 @@ any element appears <cite>j+1</cite> times.</p>
 </dd>
 </dl>
 </section>
-<section id="id124">
-<h3>Raises:<a class="headerlink" href="#id124" title="Permalink to this heading"></a></h3>
+<section id="id125">
+<h3>Raises:<a class="headerlink" href="#id125" title="Permalink to this heading"></a></h3>
 <p>Warning : If the output array is empty.</p>
 </section>
 <section id="examples">
@@ -6256,8 +6319,8 @@ any element appears <cite>j+1</cite> times.</p>
 <span class="sig-prename descclassname"><span class="pre">xftsim.utils.</span></span><span class="sig-name descname"><span class="pre">exhaustive_permutation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_sample</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#xftsim.utils.exhaustive_permutation" title="Permalink to this definition"></a></dt>
 <dd><p>Returns a random permutation of the input array, such that each element
 is selected exactly once before any element is selected twice, and so forth</p>
-<section id="id125">
-<h3>Parameters:<a class="headerlink" href="#id125" title="Permalink to this heading"></a></h3>
+<section id="id126">
+<h3>Parameters:<a class="headerlink" href="#id126" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>a<span class="classifier">NDArray[Shape[“*”], Any]</span></dt><dd><p>A numpy array to be permuted.</p>
 </dd>
@@ -6265,8 +6328,8 @@ is selected exactly once before any element is selected twice, and so forth</p>
 </dd>
 </dl>
 </section>
-<section id="id126">
-<h3>Returns:<a class="headerlink" href="#id126" title="Permalink to this heading"></a></h3>
+<section id="id127">
+<h3>Returns:<a class="headerlink" href="#id127" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>np.ndarray</dt><dd><p>A 1D numpy array containing the permuted elements.</p>
 </dd>
@@ -6284,7 +6347,7 @@ generation number prefixed to each index.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>generation</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – The generation number to use in the prefix of the IDs.</p></li>
-<li><p><strong>indices</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">NDArray[Shape[``</span></code>”*”<a href="#id127"><span class="problematic" id="id128">``</span></a><code class="xref py py-class docutils literal notranslate"><span class="pre">]</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Int64]</span></code>, <em>optional</em>) – A numpy array of indices.</p></li>
+<li><p><strong>indices</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">NDArray[Shape[``</span></code>”*”<a href="#id128"><span class="problematic" id="id129">``</span></a><code class="xref py py-class docutils literal notranslate"><span class="pre">]</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Int64]</span></code>, <em>optional</em>) – A numpy array of indices.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -6298,8 +6361,8 @@ generation number prefixed to each index.</p>
 <span class="sig-prename descclassname"><span class="pre">xftsim.utils.</span></span><span class="sig-name descname"><span class="pre">ids_from_generation_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">generation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#xftsim.utils.ids_from_generation_range" title="Permalink to this definition"></a></dt>
 <dd><p>Returns an array of string IDs of length n, created by concatenating
 the input generation with an increasing sequence of integers from 0 to n-1.</p>
-<section id="id129">
-<h3>Parameters:<a class="headerlink" href="#id129" title="Permalink to this heading"></a></h3>
+<section id="id130">
+<h3>Parameters:<a class="headerlink" href="#id130" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>generation<span class="classifier">int</span></dt><dd><p>An integer representing the generation of the IDs to be created.</p>
 </dd>
@@ -6308,8 +6371,8 @@ a range of IDs starting from 0 is created.</p>
 </dd>
 </dl>
 </section>
-<section id="id130">
-<h3>Returns:<a class="headerlink" href="#id130" title="Permalink to this heading"></a></h3>
+<section id="id131">
+<h3>Returns:<a class="headerlink" href="#id131" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>np.ndarray</dt><dd><p>A 1D numpy array containing the IDs in string format.</p>
 </dd>
@@ -6339,8 +6402,8 @@ a range of IDs starting from 0 is created.</p>
 <span class="sig-prename descclassname"><span class="pre">xftsim.utils.</span></span><span class="sig-name descname"><span class="pre">match</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#xftsim.utils.match" title="Permalink to this definition"></a></dt>
 <dd><p>Finds the indices in b that match the elements in a, and returns the corresponding
 index of each element in b.</p>
-<section id="id131">
-<h3>Parameters:<a class="headerlink" href="#id131" title="Permalink to this heading"></a></h3>
+<section id="id132">
+<h3>Parameters:<a class="headerlink" href="#id132" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>a<span class="classifier">List[Hashable]</span></dt><dd><p>List of elements to find matches for.</p>
 </dd>
@@ -6348,8 +6411,8 @@ index of each element in b.</p>
 </dd>
 </dl>
 </section>
-<section id="id132">
-<h3>Returns:<a class="headerlink" href="#id132" title="Permalink to this heading"></a></h3>
+<section id="id133">
+<h3>Returns:<a class="headerlink" href="#id133" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>List[int]</dt><dd><p>A list of indices in b that match the elements in a.</p>
 </dd>
@@ -6367,11 +6430,11 @@ condition.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>a</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List[Hashable]</span></code>) – The first input array.</p></li>
 <li><p><strong>b</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List[Hashable]</span></code>) – The second input array.</p></li>
-<li><p><strong>condition</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">NDArray[Shape[``</span></code>”*”<a href="#id133"><span class="problematic" id="id134">``</span></a><code class="xref py py-class docutils literal notranslate"><span class="pre">]</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Any]</span></code>) – The boolean condition array to apply.</p></li>
+<li><p><strong>condition</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">NDArray[Shape[``</span></code>”*”<a href="#id134"><span class="problematic" id="id135">``</span></a><code class="xref py py-class docutils literal notranslate"><span class="pre">]</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Any]</span></code>) – The boolean condition array to apply.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">NDArray[Shape[``</span></code>”*”<a href="#id135"><span class="problematic" id="id136">``</span></a><code class="xref py py-class docutils literal notranslate"><span class="pre">]</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Int64]</span></code> – The matching indices array.</p>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">NDArray[Shape[``</span></code>”*”<a href="#id136"><span class="problematic" id="id137">``</span></a><code class="xref py py-class docutils literal notranslate"><span class="pre">]</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Int64]</span></code> – The matching indices array.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -6380,8 +6443,8 @@ condition.</p>
 <dt class="sig sig-object py" id="xftsim.utils.merge_duplicate_pairs">
 <span class="sig-prename descclassname"><span class="pre">xftsim.utils.</span></span><span class="sig-name descname"><span class="pre">merge_duplicate_pairs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#xftsim.utils.merge_duplicate_pairs" title="Permalink to this definition"></a></dt>
 <dd><p>Merge duplicate pairs of values in a and b based on their corresponding values in n.</p>
-<section id="id137">
-<h3>Parameters:<a class="headerlink" href="#id137" title="Permalink to this heading"></a></h3>
+<section id="id138">
+<h3>Parameters:<a class="headerlink" href="#id138" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>a<span class="classifier">NDArray[Shape[“*”], Any]</span></dt><dd><p>First array to merge.</p>
 </dd>
@@ -6393,8 +6456,8 @@ condition.</p>
 </dd>
 </dl>
 </section>
-<section id="id138">
-<h3>Returns:<a class="headerlink" href="#id138" title="Permalink to this heading"></a></h3>
+<section id="id139">
+<h3>Returns:<a class="headerlink" href="#id139" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>Tuple[NDArray[Shape[“*”], Any], NDArray[Shape[“*”], Any], NDArray[Shape[“*”], Any]]</dt><dd><p>The merged arrays, with duplicates removed based on the corresponding values in n.</p>
 </dd>
@@ -6459,15 +6522,15 @@ the decorated function will be used.</p></li>
 <dd><p>Sorts the input array in ascending order and concatenates the
 first element with an underscore separator followed by the second
 element.</p>
-<section id="id139">
-<h3>Parameters:<a class="headerlink" href="#id139" title="Permalink to this heading"></a></h3>
+<section id="id140">
+<h3>Parameters:<a class="headerlink" href="#id140" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>x<span class="classifier">array-like</span></dt><dd><p>1-D array of any shape and data type.</p>
 </dd>
 </dl>
 </section>
-<section id="id140">
-<h3>Returns:<a class="headerlink" href="#id140" title="Permalink to this heading"></a></h3>
+<section id="id141">
+<h3>Returns:<a class="headerlink" href="#id141" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>out<span class="classifier">array-like</span></dt><dd><p>1-D array of strings with shape <cite>(n,)</cite> and the same length as <cite>x</cite>,
 where each element is formed by concatenating two sorted string
@@ -6475,8 +6538,8 @@ representations of each element in <cite>x</cite>, separated by an underscore.</
 </dd>
 </dl>
 </section>
-<section id="id141">
-<h3>Examples:<a class="headerlink" href="#id141" title="Permalink to this heading"></a></h3>
+<section id="id142">
+<h3>Examples:<a class="headerlink" href="#id142" title="Permalink to this heading"></a></h3>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sort_and_paste</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)))</span>
 <span class="go">array([&#39;1_2&#39;, &#39;2_3&#39;, &#39;1_3&#39;], dtype=&#39;&lt;U3&#39;)</span>
 </pre></div>
@@ -6488,22 +6551,22 @@ representations of each element in <cite>x</cite>, separated by an underscore.</
 <dt class="sig sig-object py" id="xftsim.utils.standardize_array">
 <span class="sig-prename descclassname"><span class="pre">xftsim.utils.</span></span><span class="sig-name descname"><span class="pre">standardize_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#xftsim.utils.standardize_array" title="Permalink to this definition"></a></dt>
 <dd><p>Standardizes columns of a 2D array.</p>
-<section id="id142">
-<h3>Parameters:<a class="headerlink" href="#id142" title="Permalink to this heading"></a></h3>
+<section id="id143">
+<h3>Parameters:<a class="headerlink" href="#id143" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>a: ArrayLike</dt><dd><p>Input 2D array.</p>
 </dd>
 </dl>
 </section>
-<section id="id143">
-<h3>Returns:<a class="headerlink" href="#id143" title="Permalink to this heading"></a></h3>
+<section id="id144">
+<h3>Returns:<a class="headerlink" href="#id144" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>np.ndarray</dt><dd><p>Standardized 2D array.</p>
 </dd>
 </dl>
 </section>
-<section id="id144">
-<h3>Raises:<a class="headerlink" href="#id144" title="Permalink to this heading"></a></h3>
+<section id="id145">
+<h3>Raises:<a class="headerlink" href="#id145" title="Permalink to this heading"></a></h3>
 <p>None</p>
 </section>
 </dd></dl>
@@ -6512,8 +6575,8 @@ representations of each element in <cite>x</cite>, separated by an underscore.</
 <dt class="sig sig-object py" id="xftsim.utils.standardize_array_hw">
 <span class="sig-prename descclassname"><span class="pre">xftsim.utils.</span></span><span class="sig-name descname"><span class="pre">standardize_array_hw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">haplotypes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">af</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#xftsim.utils.standardize_array_hw" title="Permalink to this definition"></a></dt>
 <dd><p>Wraps _standardize_array_hw to prevent segfaults.</p>
-<section id="id145">
-<h3>Parameters:<a class="headerlink" href="#id145" title="Permalink to this heading"></a></h3>
+<section id="id146">
+<h3>Parameters:<a class="headerlink" href="#id146" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>haplotypes: NDArray[Shape[”<em>,</em>”], Int8]</dt><dd><p>Input array of int8 haploid genotypes.</p>
 </dd>
@@ -6521,15 +6584,15 @@ representations of each element in <cite>x</cite>, separated by an underscore.</
 </dd>
 </dl>
 </section>
-<section id="id146">
-<h3>Returns:<a class="headerlink" href="#id146" title="Permalink to this heading"></a></h3>
+<section id="id147">
+<h3>Returns:<a class="headerlink" href="#id147" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>np.ndarray</dt><dd><p>Standardized genotypes.</p>
 </dd>
 </dl>
 </section>
-<section id="id147">
-<h3>Raises:<a class="headerlink" href="#id147" title="Permalink to this heading"></a></h3>
+<section id="id148">
+<h3>Raises:<a class="headerlink" href="#id148" title="Permalink to this heading"></a></h3>
 <p>None</p>
 </section>
 </dd></dl>
@@ -6538,22 +6601,22 @@ representations of each element in <cite>x</cite>, separated by an underscore.</
 <dt class="sig sig-object py" id="xftsim.utils.to_proportions">
 <span class="sig-prename descclassname"><span class="pre">xftsim.utils.</span></span><span class="sig-name descname"><span class="pre">to_proportions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#xftsim.utils.to_proportions" title="Permalink to this definition"></a></dt>
 <dd><p>Converts input values to proportional values.</p>
-<section id="id148">
-<h3>Parameters:<a class="headerlink" href="#id148" title="Permalink to this heading"></a></h3>
+<section id="id149">
+<h3>Parameters:<a class="headerlink" href="#id149" title="Permalink to this heading"></a></h3>
 <dl class="simple">
-<dt><a href="#id149"><span class="problematic" id="id150">*</span></a>args: Union[float, int]</dt><dd><p>Input values.</p>
+<dt><a href="#id150"><span class="problematic" id="id151">*</span></a>args: Union[float, int]</dt><dd><p>Input values.</p>
 </dd>
 </dl>
 </section>
-<section id="id151">
-<h3>Returns:<a class="headerlink" href="#id151" title="Permalink to this heading"></a></h3>
+<section id="id152">
+<h3>Returns:<a class="headerlink" href="#id152" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>np.ndarray</dt><dd><p>Proportional values.</p>
 </dd>
 </dl>
 </section>
-<section id="id152">
-<h3>Raises:<a class="headerlink" href="#id152" title="Permalink to this heading"></a></h3>
+<section id="id153">
+<h3>Raises:<a class="headerlink" href="#id153" title="Permalink to this heading"></a></h3>
 <p>None</p>
 </section>
 </dd></dl>
@@ -6562,22 +6625,22 @@ representations of each element in <cite>x</cite>, separated by an underscore.</
 <dt class="sig sig-object py" id="xftsim.utils.to_simplex">
 <span class="sig-prename descclassname"><span class="pre">xftsim.utils.</span></span><span class="sig-name descname"><span class="pre">to_simplex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#xftsim.utils.to_simplex" title="Permalink to this definition"></a></dt>
 <dd><p>Converts input values to a simplex vector.</p>
-<section id="id153">
-<h3>Parameters:<a class="headerlink" href="#id153" title="Permalink to this heading"></a></h3>
+<section id="id154">
+<h3>Parameters:<a class="headerlink" href="#id154" title="Permalink to this heading"></a></h3>
 <dl class="simple">
-<dt><a href="#id154"><span class="problematic" id="id155">*</span></a>args: Union[float, int]</dt><dd><p>Input values.</p>
+<dt><a href="#id155"><span class="problematic" id="id156">*</span></a>args: Union[float, int]</dt><dd><p>Input values.</p>
 </dd>
 </dl>
 </section>
-<section id="id156">
-<h3>Returns:<a class="headerlink" href="#id156" title="Permalink to this heading"></a></h3>
+<section id="id157">
+<h3>Returns:<a class="headerlink" href="#id157" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>np.ndarray</dt><dd><p>Simplex vector.</p>
 </dd>
 </dl>
 </section>
-<section id="id157">
-<h3>Raises:<a class="headerlink" href="#id157" title="Permalink to this heading"></a></h3>
+<section id="id158">
+<h3>Raises:<a class="headerlink" href="#id158" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>ValueError</dt><dd><p>If all input values are less than or equal to zero.</p>
 </dd>
@@ -6589,8 +6652,8 @@ representations of each element in <cite>x</cite>, separated by an underscore.</
 <dt class="sig sig-object py" id="xftsim.utils.unique_identifier">
 <span class="sig-prename descclassname"><span class="pre">xftsim.utils.</span></span><span class="sig-name descname"><span class="pre">unique_identifier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index_variables</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#xftsim.utils.unique_identifier" title="Permalink to this definition"></a></dt>
 <dd><p>Returns a unique identifier string generated from index variables of a dataframe.</p>
-<section id="id158">
-<h3>Parameters:<a class="headerlink" href="#id158" title="Permalink to this heading"></a></h3>
+<section id="id159">
+<h3>Parameters:<a class="headerlink" href="#id159" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>frame: pd.DataFrame</dt><dd><p>Input dataframe.</p>
 </dd>
@@ -6598,15 +6661,15 @@ representations of each element in <cite>x</cite>, separated by an underscore.</
 </dd>
 </dl>
 </section>
-<section id="id159">
-<h3>Returns:<a class="headerlink" href="#id159" title="Permalink to this heading"></a></h3>
+<section id="id160">
+<h3>Returns:<a class="headerlink" href="#id160" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>str</dt><dd><p>Unique identifier string.</p>
 </dd>
 </dl>
 </section>
-<section id="id160">
-<h3>Raises:<a class="headerlink" href="#id160" title="Permalink to this heading"></a></h3>
+<section id="id161">
+<h3>Raises:<a class="headerlink" href="#id161" title="Permalink to this heading"></a></h3>
 <p>None</p>
 </section>
 </dd></dl>

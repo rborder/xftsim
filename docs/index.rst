@@ -16,6 +16,7 @@ eXtensible Forward Time SIMulator
    :maxdepth: 2
 
    Getting started <getting_started>
+   User guide <user_guide>
    Example gallery <examples>
    API reference <api>
 

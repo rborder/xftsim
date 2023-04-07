@@ -4,8 +4,6 @@
 Getting started
 ===============
 
-todo
-
 .. toctree::
    :maxdepth: 4
    
