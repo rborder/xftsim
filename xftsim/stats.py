@@ -5,6 +5,7 @@ import numpy as np
 import numba as nb
 import pandas as pd
 import nptyping as npt
+import scipy as sp
 import xarray as xr
 from nptyping import NDArray, Int8, Int64, Float64, Bool, Shape
 from typing import Any, Hashable, List, Iterable, Callable, Union, Dict, final
@@ -429,3 +430,193 @@ class HasemanElstonEstimator(Statistic):
 #         if self.corr:
 #             output['corr'] = pheno_df.corr()
 #         return output
+
+
+@nb.njit
+def _linear_regression_with_intercept_nb(X: NDArray,
+                                         y: NDArray) -> NDArray:
+    """
+    Numba implementation of simple linear regression of y ~ 1 + X. 
+    Intercepts term is included but corresponing coefficients are not reported
+    
+    Parameters
+    ----------
+    X : NDArray
+        n-by-1 array of predictor
+    y : NDArray
+        n-by-1 standardized outcome array
+    
+    Returns
+    -------
+    NDArray
+        2 array consisting of standardized slope corresponding standard errors.
+    """
+    n = X.shape[0]
+    y = y.reshape((n,1))
+    X = X/np.std(X)
+    X = X.reshape((n,1))
+    pred = np.hstack((np.ones_like(X), X))
+    XtX = pred.T @ pred
+    XtXinv = np.linalg.pinv(pred.T @ pred)
+    coef = XtXinv @ (pred.T @ y)
+    yhat = pred @ coef
+    res = y - yhat
+    s2 = (res.T @ res) / (n - 2)
+    std_err = np.sqrt(s2 * np.diag(XtXinv))
+    return [coef.ravel()[1], std_err.ravel()[1]]
+
+@nb.njit
+def _vec_linear_regression_with_intercept_nb(X: NDArray,
+                                             y: NDArray) -> NDArray:
+    """
+    Numba implementation of simple linear regression vectorized over predictors. 
+    Intercepts term is included but corresponing coefficients are not reported
+    
+    Parameters
+    ----------
+    X : NDArray
+        n-by-m array of predictors
+    y : NDArray
+        n-by-1 standardized outcome array
+    
+    Returns
+    -------
+    NDArray
+        m-by-2 array of standardized slopes (first column) and corresponding standard errors (second column)
+        for each of the m predictors. 
+    """
+    output = np.empty((X.shape[1], 2), dtype=y.dtype)
+    for j in np.arange(X.shape[1]):
+        output[j,:] = _linear_regression_with_intercept_nb(X[:,j],y)
+    return output
+
+
+
+@nb.njit
+def _mv_vec_linear_regression_with_intercept_nb(X: NDArray,
+                                                Y: NDArray) -> NDArray:
+    """
+    Numba implementation of simple linear regression vectorized over predictors
+    and outcomes. 
+    Intercept terms are included but corresponing coefficients are not reported
+    
+    Parameters
+    ----------
+    X : NDArray
+        n-by-m array of predictors
+    Y : NDArray
+        n-by-k standardized outcome arrays
+    
+    Returns
+    -------
+    NDArray
+        m-by-2-by-k array of standardized slopes (first column) and corresponding standard errors (second column)
+        for each of the m predictors. 
+    """
+    output = np.empty((X.shape[1], 2, Y.shape[1]), dtype=Y.dtype)
+    for k in nb.prange(Y.shape[1]):
+        y = Y[:,k].ravel()
+        y = y / np.std(y)
+        for j in np.arange(X.shape[1]):
+            output[j,:, k] = _linear_regression_with_intercept_nb(X[:,j],y)
+    return output
+
+
+def _p_val_t(t: float, df: Union[int, float]) -> float:
+    """
+    p-values for student's t distribution
+    
+    Parameters
+    ----------
+    t : float
+        Test statistic
+    df : int or float
+        degrees of freedom
+    
+    Returns
+    -------
+    float
+        p-value
+    """
+    return (1-sp.stats.t.cdf(t,df))*2
+
+
+def _mv_gwas_nb(X: NDArray, Y: NDArray) -> NDArray:
+    """
+    Numba implementation of simple linear regression vectorized over predictors and outcomes 
+    Intercepts term is included but corresponing coefficients are not reported.
+    Both X and Y columns are automatically scaled to have unit variance.
+    
+    Parameters
+    ----------
+    X : NDArray
+        n-by-m array of predictors
+    Y : NDArray
+        n-by-k outcome array
+    
+    Returns
+    -------
+    NDArray
+        m-by-4-by-k array with columns respectively corresponding to
+        slopes, standard errors, test statistics, and p-values 
+        for each of the m predictors. 
+    """
+    tmp = _mv_vec_linear_regression_with_intercept_nb(X,Y)
+    output = np.tile(tmp,(1,2,1))
+    output[:,2,:] = output[:,0,:] /output[:,1,:] 
+    output[:,3,:] = _p_val_t(output[:,2,:], X.shape[0]-2) 
+    return(output)
+
+
+
+
+class GWAS_Estimator(Statistic):
+    """
+    Perform linear assocation studies for the given simulation.
+
+    When called within a Simulation, will add to Simulation.results['GWAS']
+    a 3-D array indexed as follows:
+        - the first dimension indexes variants via xft.index.DiploidVariantIndex
+        - the second dimension indexes four association statistics: slope, se, test-statistic, and p-value
+        - the third dimension indexes phenotypic components via xft.index.ComponentIndex
+
+    Attributes
+    ----------
+    component_index : xft.index.ComponentIndex, optional
+        Index of the component for which the statistics are calculated.
+        If not provided, calculate statistics for all phenotype components.
+
+    Methods
+    -------
+    estimator(sim: xft.sim.Simulation) -> Dict
+        Estimate and return the Haseman-Elston regression for the given simulation.
+    """
+    def __init__(self,
+                 component_index: xft.index.ComponentIndex = None,
+                 # numba: bool = True,
+                 ):
+        self.name = 'GWAS'
+        self.component_index = component_index
+        # self.numba = numba
+
+    @xft.utils.profiled(level=2, message = "GWAS estimator")
+    def estimator(self, sim: xft.sim.Simulation) -> Dict:
+        ## look for "phenotype" components if component_index not provided
+        if self.component_index is None:
+            # pheno_cols= sim.phenotypes.component_name.values[sim.phenotypes.component_name.str.contains('phenotype')]
+            # component_index = sim.phenotypes.xft.get_component_indexer()[dict(component_name=pheno_cols)]
+            component_index = sim.phenotypes.xft.grep_component_index('phenotype')
+        else:
+            component_index = self.component_index
+        Y = sim.current_std_phenotypes.xft[None, component_index].data.astype(np.float32)
+        # if Y.shape[1] <2:
+        #     raise NotImplementedError()
+        G = sim.current_std_genotypes
+        sum_stats = _mv_gwas_nb(G,Y)
+        coord_dict = component_index.coord_dict.copy()
+        coord_dict.update(sim.haplotypes.xft.get_variant_indexer().to_diploid().coord_dict)
+        coord_dict.update({'statistic':('statistic', ['beta', 'se', 't', 'p'])})
+        output = dict(GWAS=xr.DataArray(sum_stats,dims=('variant', 'statistic', 'component'), 
+                                        coords=coord_dict))
+        return output
+
