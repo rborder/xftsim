@@ -290,7 +290,11 @@ class SampleIndex(XftIndex):
             self.frame = frame
 
 
-    ## access data frame columns as properities
+    @property
+    def unique_identifier(self):
+        return xft.utils.unique_identifier(self.frame, self._index_variables, prefix=self.generation)
+
+    ## access data frame columns as properitie[s
     @property
     def iid(self):
         return self.frame['iid'].values
@@ -862,7 +866,7 @@ class ComponentIndex(XftIndex):
 
     def __repr__(self):
         mi_repr = self.frame.__repr__().split("\n")
-        if len(mi_repr) > 10:
+        if len(mi_repr) > 50:
             mi_repr = mi_repr[:4] + ["            ..."] + mi_repr[-2:]
         if self.depth == 1:
             depth_str = f"{self.depth} generation"
