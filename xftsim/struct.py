@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 import nptyping as npt
 import xarray as xr
+import dask.array as da
 from nptyping import NDArray, Int8, Int64, Float64, Bool, Shape, Float, Int
 from typing import Any, Hashable, List, Iterable, Callable, Union, Dict, Tuple
 from functools import cached_property
@@ -1117,6 +1118,8 @@ class HaplotypeArray:
                 generation: int = 0,
                 n: int = None,
                 m: int = None,
+                dask: bool = False,
+                **kwargs,
                 ) -> xr.DataArray:
         """
         Create a new instance of DataArray.
@@ -1135,6 +1138,10 @@ class HaplotypeArray:
             The number of samples. Required if `sample_indexer` is not provided.
         m : int, optional
             The number of variants. Required if `variant_indexer` is not provided.
+        dask : bool, optional
+            Create a Dask array?
+        **kwargs :
+            Additional arguments to pass to dask.array
 
         Returns
         -------
@@ -1183,6 +1190,9 @@ class HaplotypeArray:
 
         coord_dict = sample_indexer.coord_dict.copy()
         coord_dict.update(variant_indexer.coord_dict)
+        ## convert to dask array if necessary
+        if dask and not isinstance(data,da.Array):
+            data = da.asarray(data)
         return xr.DataArray(data=data,
                             dims=['sample', 'variant'],
                             coords=coord_dict,
