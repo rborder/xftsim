@@ -1,6 +1,7 @@
 import warnings
 import numpy as np
 import pandas as pd
+import dask.array as da
 import nptyping as npt
 import xarray as xr
 from nptyping import NDArray, Int8, Int64, Float64, Bool, Shape
@@ -338,6 +339,8 @@ def meiosis(parental_haplotypes: npt.NDArray[npt.Shape["*,*"], npt.Int8],
     offspring_haplotypes = np.empty((n, m_hap), dtype=np.int8)
     m_meiosis_ii_inds = np.arange(0, m_hap, 2, dtype=np.int64)
     p_meiosis_ii_inds = np.arange(1, m_hap, 2, dtype=np.int64)
+    if isinstance(parental_haplotypes, da.Array):
+        parental_haplotypes = parental_haplotypes.compute()
     return _meiosis(parental_haplotypes,
                     offspring_haplotypes,
                     n,
