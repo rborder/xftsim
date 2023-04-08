@@ -782,7 +782,7 @@ def standardize_array_hw(haplotypes: NDArray[Shape["*,*"], Int8],
         return _standardize_array_hw(haplotypes, af)
 
 
-def unique_identifier(frame, index_variables):
+def unique_identifier(frame, index_variables, prefix: str = None):
     """
     Returns a unique identifier string generated from index variables of a dataframe.
 
@@ -792,17 +792,22 @@ def unique_identifier(frame, index_variables):
         Input dataframe.
     index_variables: List[str]
         List of column names to be used as index.
+    prefix: str
+        Optional prefix
 
     Returns:
     --------
     str
-        Unique identifier string.
+        Unique identifier string of the form [<prefix>..]<index_var1>.<index_var2>...
 
     Raises:
     -------
     None
     """
-    return paste([frame[variable].values for variable in index_variables], sep=".")
+    output = paste([frame[variable].values for variable in index_variables], sep=".")
+    if prefix is not None:
+        output = np.char.add(str(prefix)+'..', output)
+    return output
 
 
 def cov2cor(A):
