@@ -15,8 +15,8 @@ eXtensible Forward Time SIMulator
 .. toctree::
    :maxdepth: 2
 
-   Getting started <getting_started>
-   User guide <user_guide>
+   Getting started <gettingstarted/getting_started>
+   User guide <userguide/user_guide>
    Example gallery <examples>
    API reference <api>
 

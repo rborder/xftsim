@@ -45,8 +45,8 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="user_guide.html">User guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gettingstarted/getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userguide/user_guide.html">User guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API reference</a></li>
 </ul>
 
@@ -2214,6 +2214,11 @@ additional annotations. Each variant is associated with two alleles, represented
 <dl class="py property">
 <dt class="sig sig-object py" id="id64">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sex</span></span><a class="headerlink" href="#id64" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="xftsim.index.SampleIndex.unique_identifier">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">unique_identifier</span></span><a class="headerlink" href="#xftsim.index.SampleIndex.unique_identifier" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -6094,7 +6099,7 @@ representations of each element in <cite>x</cite>, separated by an underscore.</
 
 <dl class="py function">
 <dt class="sig sig-object py" id="xftsim.utils.unique_identifier">
-<span class="sig-prename descclassname"><span class="pre">xftsim.utils.</span></span><span class="sig-name descname"><span class="pre">unique_identifier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index_variables</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#xftsim.utils.unique_identifier" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">xftsim.utils.</span></span><span class="sig-name descname"><span class="pre">unique_identifier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index_variables</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#xftsim.utils.unique_identifier" title="Permalink to this definition"></a></dt>
 <dd><p>Returns a unique identifier string generated from index variables of a dataframe.</p>
 <section id="id160">
 <h3>Parameters:<a class="headerlink" href="#id160" title="Permalink to this heading"></a></h3>
@@ -6103,12 +6108,14 @@ representations of each element in <cite>x</cite>, separated by an underscore.</
 </dd>
 <dt>index_variables: List[str]</dt><dd><p>List of column names to be used as index.</p>
 </dd>
+<dt>prefix: str</dt><dd><p>Optional prefix</p>
+</dd>
 </dl>
 </section>
 <section id="id161">
 <h3>Returns:<a class="headerlink" href="#id161" title="Permalink to this heading"></a></h3>
 <dl class="simple">
-<dt>str</dt><dd><p>Unique identifier string.</p>
+<dt>str</dt><dd><p>Unique identifier string of the form [&lt;prefix&gt;..]&lt;index_var1&gt;.&lt;index_var2&gt;…</p>
 </dd>
 </dl>
 </section>

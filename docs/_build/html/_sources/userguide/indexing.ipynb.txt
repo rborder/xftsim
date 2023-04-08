@@ -1,0 +1,1064 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "cac7381a-e6af-4adc-a005-81508bc573e9",
+   "metadata": {},
+   "source": [
+    "# Indexing\n",
+    "\n",
+    "In the course of constructing simulations, we very frequently want to refer to specific individuals, specific variants, or specific phenotyping components. For example, when we create a haplotype array, rows will correspond in individuals and columns will correspond to haploid sites. \n",
+    "\n",
+    "The `xftsim.index` submodule implements classes corresponding to these specific cases:\n",
+    "\n",
+    " - `xft.index.SampleIndex` indexes individuals\n",
+    " - `xft.index.HaploidVariantIndex` and `xft.index.DiploidVariantIndex` index genetic variants\n",
+    " - `xft.index.ComponentIndex` indexes phenotypes and components of phenotypes\n",
+    "\n",
+    "All the above are instances of the `xft.index.XftIndex` superclass and can be represented as Pandas DataFrames using the `.frame` property:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "6bce2cee-e501-4a14-b529-b876c1eb6f37",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-04-07T23:08:37.474198Z",
+     "iopub.status.busy": "2023-04-07T23:08:37.473910Z"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>phenotype_name</th>\n",
+       "      <th>component_name</th>\n",
+       "      <th>vorigin_relative</th>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>component</th>\n",
+       "      <th></th>\n",
+       "      <th></th>\n",
+       "      <th></th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>phenotype_1.additiveGenetic.proband</th>\n",
+       "      <td>phenotype_1</td>\n",
+       "      <td>additiveGenetic</td>\n",
+       "      <td>-1</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>phenotype_1.additiveNoise.proband</th>\n",
+       "      <td>phenotype_1</td>\n",
+       "      <td>additiveNoise</td>\n",
+       "      <td>-1</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>phenotype_1.phenotype.proband</th>\n",
+       "      <td>phenotype_1</td>\n",
+       "      <td>phenotype</td>\n",
+       "      <td>-1</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>phenotype_2.additiveGenetic.proband</th>\n",
+       "      <td>phenotype_2</td>\n",
+       "      <td>additiveGenetic</td>\n",
+       "      <td>-1</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>phenotype_2.additiveNoise.proband</th>\n",
+       "      <td>phenotype_2</td>\n",
+       "      <td>additiveNoise</td>\n",
+       "      <td>-1</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>phenotype_2.phenotype.proband</th>\n",
+       "      <td>phenotype_2</td>\n",
+       "      <td>phenotype</td>\n",
+       "      <td>-1</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "                                    phenotype_name   component_name  \\\n",
+       "component                                                             \n",
+       "phenotype_1.additiveGenetic.proband    phenotype_1  additiveGenetic   \n",
+       "phenotype_1.additiveNoise.proband      phenotype_1    additiveNoise   \n",
+       "phenotype_1.phenotype.proband          phenotype_1        phenotype   \n",
+       "phenotype_2.additiveGenetic.proband    phenotype_2  additiveGenetic   \n",
+       "phenotype_2.additiveNoise.proband      phenotype_2    additiveNoise   \n",
+       "phenotype_2.phenotype.proband          phenotype_2        phenotype   \n",
+       "\n",
+       "                                     vorigin_relative  \n",
+       "component                                              \n",
+       "phenotype_1.additiveGenetic.proband                -1  \n",
+       "phenotype_1.additiveNoise.proband                  -1  \n",
+       "phenotype_1.phenotype.proband                      -1  \n",
+       "phenotype_2.additiveGenetic.proband                -1  \n",
+       "phenotype_2.additiveNoise.proband                  -1  \n",
+       "phenotype_2.phenotype.proband                      -1  "
+      ]
+     },
+     "execution_count": 2,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "import xftsim as xft\n",
+    "\n",
+    "## Here's a ComponentIndex instance. Ignore the details for now.\n",
+    "cindex = xft.index.ComponentIndex.from_product(('phenotype_1', 'phenotype_2'), \n",
+    "                                               ('additiveGenetic', 'additiveNoise', 'phenotype'))\n",
+    "\n",
+    "## We can turn this in a Pandas data.frame \n",
+    "cframe = cindex.frame\n",
+    "cframe"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "c0344227-b6ea-4e29-b0a4-f5a42cc31239",
+   "metadata": {},
+   "source": [
+    "## Component indexing\n",
+    "\n",
+    "### Overview\n",
+    "\n",
+    "The most important indexer to undeestand is the `xft.index.ComponentIndex`. In `xftsim`, individual level data with respect to a given sample (the \"proband\") is indexed as follows:\n",
+    " \n",
+    " - `phenotype_name`, phenotypes,\n",
+    " - `component_name`, components of phenotypes,\n",
+    " - `vorigin_relative`, relationship of originator of component to proband (see below).\n",
+    " \n",
+    "Components are essentially sub-phenotypes and include the phenotype itself. For example, euppose we assume that the phenotype height is comprised of two components: an additive genetic component and an additive, individual-specific noise component. The corresponding component index looks like this:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "f2a02cee-5cdc-4584-aaa5-4c20da67de3e",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-04-07T23:08:40.742211Z",
+     "iopub.status.busy": "2023-04-07T23:08:40.741983Z",
+     "iopub.status.idle": "2023-04-07T23:08:40.749919Z",
+     "shell.execute_reply": "2023-04-07T23:08:40.749135Z",
+     "shell.execute_reply.started": "2023-04-07T23:08:40.742189Z"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<ComponentIndex>\n",
+       "  3 components of 1 phenotype spanning 1 generation\n",
+       "                               phenotype_name   component_name  \\\n",
+       "component                                                        \n",
+       "height.additiveGenetic.proband         height  additiveGenetic   \n",
+       "height.additiveNoise.proband           height    additiveNoise   \n",
+       "height.phenotype.proband               height        phenotype   \n",
+       "\n",
+       "                                vorigin_relative  \n",
+       "component                                         \n",
+       "height.additiveGenetic.proband                -1  \n",
+       "height.additiveNoise.proband                  -1  \n",
+       "height.phenotype.proband                      -1  "
+      ]
+     },
+     "execution_count": 3,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "xft.index.ComponentIndex.from_product(phenotype_name=('height'), \n",
+    "                                      component_name=('additiveGenetic', 'additiveNoise', 'phenotype'),\n",
+    "                                      vorigin_relative=-1)                               "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "769ef811-f3cb-4637-9c11-c10e39476d7c",
+   "metadata": {},
+   "source": [
+    "Note that we have added a third component `phenotype` to represent the sums of the first two components. Components can be as general or as specific as we like.\n",
+    "\n",
+    "In many cases, we can ignore `vorigin_relative`, but it's essential if we want to model intergenerational phenotypic effects such as vertical transmission. It works like this:\n",
+    "\n",
+    "`vorigin_relative` is a binary encoding that represents relationship to a proband as follows:\n",
+    "\n",
+    "\n",
+    "|`vorigin_relative`|  relationship to proband |\n",
+    "|----|------------|\n",
+    "| -1 |       self |\n",
+    "| 0  |     mother |\n",
+    "| 1  |     father |\n",
+    "| 00 |  maternal grandmother |\n",
+    "| 10 |  maternal grandfather |\n",
+    "| 01 |  paternal grandmother |\n",
+    "| 11 |  paternal grandfather |\n",
+    "| 000 |  maternal grandmother's mother |\n",
+    "| 100 |  maternal grandmother's father |\n",
+    "| ... |  ... |\n",
+    "\n",
+    "\n",
+    "and so forth. In most cases, considering maternal or paternal effects is sufficent. Suppose we'd like to jointly analyze trio's heights, bone mineral density (BMD), as well as the heritable and nonheritable components thereof. In this case, our component index would look like this:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "1dba2da5-b2cf-41a9-a699-d871458229a0",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-04-07T23:08:40.752381Z",
+     "iopub.status.busy": "2023-04-07T23:08:40.752104Z",
+     "iopub.status.idle": "2023-04-07T23:08:40.762241Z",
+     "shell.execute_reply": "2023-04-07T23:08:40.761675Z",
+     "shell.execute_reply.started": "2023-04-07T23:08:40.752359Z"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<ComponentIndex>\n",
+       "  3 components of 2 phenotypes spanning 2 generations\n",
+       "                         phenotype_name component_name  vorigin_relative\n",
+       "component                                                               \n",
+       "height.genetic.proband           height        genetic                -1\n",
+       "height.genetic.mother            height        genetic                 0\n",
+       "height.genetic.father            height        genetic                 1\n",
+       "height.noise.proband             height          noise                -1\n",
+       "height.noise.mother              height          noise                 0\n",
+       "height.noise.father              height          noise                 1\n",
+       "height.phenotype.proband         height      phenotype                -1\n",
+       "height.phenotype.mother          height      phenotype                 0\n",
+       "height.phenotype.father          height      phenotype                 1\n",
+       "BMD.genetic.proband                 BMD        genetic                -1\n",
+       "BMD.genetic.mother                  BMD        genetic                 0\n",
+       "BMD.genetic.father                  BMD        genetic                 1\n",
+       "BMD.noise.proband                   BMD          noise                -1\n",
+       "BMD.noise.mother                    BMD          noise                 0\n",
+       "BMD.noise.father                    BMD          noise                 1\n",
+       "BMD.phenotype.proband               BMD      phenotype                -1\n",
+       "BMD.phenotype.mother                BMD      phenotype                 0\n",
+       "BMD.phenotype.father                BMD      phenotype                 1"
+      ]
+     },
+     "execution_count": 4,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "xft.index.ComponentIndex.from_product(phenotype_name=('height','BMD'), \n",
+    "                                      component_name=('genetic', 'noise', 'phenotype'),\n",
+    "                                      vorigin_relative=(-1,0,1))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "25fc0ce9-8523-49dd-ae20-dc031828089a",
+   "metadata": {},
+   "source": [
+    "There are several ways to construct a component index, the first of which we've used several times already:\n",
+    "\n",
+    "### Constructing a component index from a cartestian product\n",
+    "\n",
+    "To generate a component index by expanding combinations of `phenotype_name`, `component_name`, and `vorigin_relative`, we can use the `.from_product()` method:\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "f96035c6-97c4-4779-84b4-e5b943c1d69e",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-04-07T23:08:40.763219Z",
+     "iopub.status.busy": "2023-04-07T23:08:40.763044Z",
+     "iopub.status.idle": "2023-04-07T23:08:40.770986Z",
+     "shell.execute_reply": "2023-04-07T23:08:40.770501Z",
+     "shell.execute_reply.started": "2023-04-07T23:08:40.763201Z"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<ComponentIndex>\n",
+       "  1 component of 1 phenotype spanning 2 generations\n",
+       "                         phenotype_name component_name  vorigin_relative\n",
+       "component                                                               \n",
+       "height.phenotype.proband         height      phenotype                -1\n",
+       "height.phenotype.father          height      phenotype                 1"
+      ]
+     },
+     "execution_count": 5,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "xft.index.ComponentIndex.from_product(phenotype_name=('height',), \n",
+    "                                      component_name=('phenotype'),\n",
+    "                                      vorigin_relative=(-1,1))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "3ca53905-f1a7-42aa-a58a-44cc3d5290e4",
+   "metadata": {},
+   "source": [
+    "See above for further examples.\n",
+    "\n",
+    "### Constructing a component index for specific components\n",
+    "\n",
+    "We can also manually specify arguments:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "09773ea6-83ed-4d2a-be21-6373dfff6f2b",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-04-07T23:08:40.771773Z",
+     "iopub.status.busy": "2023-04-07T23:08:40.771571Z",
+     "iopub.status.idle": "2023-04-07T23:08:40.779177Z",
+     "shell.execute_reply": "2023-04-07T23:08:40.778651Z",
+     "shell.execute_reply.started": "2023-04-07T23:08:40.771752Z"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<ComponentIndex>\n",
+       "  2 components of 2 phenotypes spanning 2 generations\n",
+       "                         phenotype_name component_name  vorigin_relative\n",
+       "component                                                               \n",
+       "height.phenotype.proband         height      phenotype                -1\n",
+       "BMD.genetic.father                  BMD        genetic                 1"
+      ]
+     },
+     "execution_count": 6,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "cindex = xft.index.ComponentIndex(phenotype_name=('height','BMD'),\n",
+    "                                  component_name=('phenotype','genetic'),\n",
+    "                                  vorigin_relative=(-1,1))\n",
+    "cindex"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "c3dfe386-c83a-4c1e-bcf6-cbe29cfc8518",
+   "metadata": {},
+   "source": [
+    "or provide a Pandas DataFrame with the same information:\n",
+    "    "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "7160d53d-73cc-42c1-b10d-563ef7bdf5c8",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-04-07T23:08:40.780451Z",
+     "iopub.status.busy": "2023-04-07T23:08:40.780095Z",
+     "iopub.status.idle": "2023-04-07T23:08:40.787122Z",
+     "shell.execute_reply": "2023-04-07T23:08:40.786531Z",
+     "shell.execute_reply.started": "2023-04-07T23:08:40.780428Z"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<ComponentIndex>\n",
+       "  2 components of 2 phenotypes spanning 2 generations\n",
+       "                         phenotype_name component_name  vorigin_relative\n",
+       "component                                                               \n",
+       "height.phenotype.proband         height      phenotype                -1\n",
+       "BMD.genetic.father                  BMD        genetic                 1"
+      ]
+     },
+     "execution_count": 7,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    " xft.index.ComponentIndex(frame = cindex.frame)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "7f5debb0-0086-4b5e-a54c-e94779a13a5a",
+   "metadata": {},
+   "source": [
+    "### Constructing a generic component index\n",
+    "\n",
+    "Finally, we can construct a generic component index by providing the number of phenotypes, `k_total`:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "79c6f950-cc61-40f0-992b-111c497c385e",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-04-07T23:08:40.788009Z",
+     "iopub.status.busy": "2023-04-07T23:08:40.787786Z",
+     "iopub.status.idle": "2023-04-07T23:08:40.794654Z",
+     "shell.execute_reply": "2023-04-07T23:08:40.794065Z",
+     "shell.execute_reply.started": "2023-04-07T23:08:40.787988Z"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<ComponentIndex>\n",
+       "  1 component of 3 phenotypes spanning 1 generation\n",
+       "                  phenotype_name component_name  vorigin_relative\n",
+       "component                                                        \n",
+       "0.generic.proband              0        generic                -1\n",
+       "1.generic.proband              1        generic                -1\n",
+       "2.generic.proband              2        generic                -1"
+      ]
+     },
+     "execution_count": 8,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "xft.index.ComponentIndex(k_total=3)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "21f96c11-a2e9-4c15-b2f8-d29c5188c808",
+   "metadata": {},
+   "source": [
+    "## Variant indexing\n",
+    "\n",
+    "Genetic data can be influenced with either `xft.index.HaploidVariantIndex` or `xft.index.DiploidVariantIndex` objects. The former, which indexes haploid sites, is used when distinguishing between homologous sites is necessary, such as during meioisis. It is trivial to switch between these indices so we will focus our introduction on `xft.index.DiploidVariantIndex`.\n",
+    "\n",
+    "A `DiploidVariantIndex` tracks the following variant-level information\n",
+    "\n",
+    " - `vid`, a vector of variant IDs\n",
+    " - `chrom`, a vector of chromosome IDs\n",
+    " - `zero_allele`, the allele corresponding to zeros\n",
+    " - `one_allele`, a vector of chromosome IDs\n",
+    " - `af`, a vector of ancestral allele frequencies.\n",
+    " - `annotation_array`, additional variant level annotations\n",
+    " - `h_copy`, haplotype copy (always 'd' for diploid data, '0' or '1' for haploid data\n",
+    " - `pos_bp`, physical position measured in basepairs\n",
+    " - `pos_cM`, position as measured in centiMorgans\n",
+    " \n",
+    " There are several ways to construct variant indices, though you'll rarely need to do this in practice. Typically, you'll use an automatically generated variant index, regardless of whether you're using real or synthethic founder data.\n",
+    " \n",
+    " ### Constructing a variant index\n",
+    " \n",
+    " To construct a generic variant index, you only need to provide the number of diploid variants `m` and the number of chromosomes `n_chrom`:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 18,
+   "id": "abbb3ffb-9f65-4da3-a134-7234c783b504",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-04-07T23:19:08.242120Z",
+     "iopub.status.busy": "2023-04-07T23:19:08.241292Z",
+     "iopub.status.idle": "2023-04-07T23:19:08.266506Z",
+     "shell.execute_reply": "2023-04-07T23:19:08.265361Z",
+     "shell.execute_reply.started": "2023-04-07T23:19:08.242046Z"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<DiploidVariantIndex>\n",
+       "  500 diploid variants on 22 chromosome(s)\n",
+       "  MAF ranges from nan to nan\n",
+       "  0 annotation(s) \n",
+       "         vid  chrom zero_allele one_allele  af hcopy  pos_bp  pos_cM\n",
+       "variant                                                             \n",
+       "0.d        0      0           A          G NaN     d     NaN     NaN\n",
+       "1.d        1      0           A          G NaN     d     NaN     NaN\n",
+       "2.d        2      0           A          G NaN     d     NaN     NaN\n",
+       "3.d        3      0           A          G NaN     d     NaN     NaN\n",
+       "4.d        4      0           A          G NaN     d     NaN     NaN\n",
+       "...      ...    ...         ...        ...  ..   ...     ...     ...\n",
+       "495.d    495     21           A          G NaN     d     NaN     NaN\n",
+       "496.d    496     21           A          G NaN     d     NaN     NaN\n",
+       "497.d    497     21           A          G NaN     d     NaN     NaN\n",
+       "498.d    498     21           A          G NaN     d     NaN     NaN\n",
+       "499.d    499     21           A          G NaN     d     NaN     NaN\n",
+       "\n",
+       "[500 rows x 8 columns]"
+      ]
+     },
+     "execution_count": 18,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "vind = xft.index.DiploidVariantIndex(m=500,n_chrom=22)\n",
+    "vind"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "a3db7b08-5e07-4e55-a794-efb1cd7ce450",
+   "metadata": {},
+   "source": [
+    "Alternatively we can supply the above arguments individually (only `vid` is strictly necessary) or via a pandas DataFrame:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 19,
+   "id": "f4a51651-9200-4667-9816-57912dc22a3f",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-04-07T23:20:52.541403Z",
+     "iopub.status.busy": "2023-04-07T23:20:52.541176Z",
+     "iopub.status.idle": "2023-04-07T23:20:52.556177Z",
+     "shell.execute_reply": "2023-04-07T23:20:52.555318Z",
+     "shell.execute_reply.started": "2023-04-07T23:20:52.541383Z"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<DiploidVariantIndex>\n",
+       "  500 diploid variants on 1 chromosome(s)\n",
+       "  MAF ranges from nan to nan\n",
+       "  0 annotation(s) \n",
+       "         vid  chrom zero_allele one_allele  af hcopy  pos_bp  pos_cM\n",
+       "variant                                                             \n",
+       "0.d        0      0           A          G NaN     d     NaN     NaN\n",
+       "1.d        1      0           A          G NaN     d     NaN     NaN\n",
+       "2.d        2      0           A          G NaN     d     NaN     NaN\n",
+       "3.d        3      0           A          G NaN     d     NaN     NaN\n",
+       "4.d        4      0           A          G NaN     d     NaN     NaN\n",
+       "...      ...    ...         ...        ...  ..   ...     ...     ...\n",
+       "495.d    495      0           A          G NaN     d     NaN     NaN\n",
+       "496.d    496      0           A          G NaN     d     NaN     NaN\n",
+       "497.d    497      0           A          G NaN     d     NaN     NaN\n",
+       "498.d    498      0           A          G NaN     d     NaN     NaN\n",
+       "499.d    499      0           A          G NaN     d     NaN     NaN\n",
+       "\n",
+       "[500 rows x 8 columns]"
+      ]
+     },
+     "execution_count": 19,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "xft.index.DiploidVariantIndex(vid=vind.vid)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 20,
+   "id": "8bf60126-9f13-498d-be40-68a6a9e561df",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-04-07T23:21:16.874140Z",
+     "iopub.status.busy": "2023-04-07T23:21:16.873284Z",
+     "iopub.status.idle": "2023-04-07T23:21:16.903323Z",
+     "shell.execute_reply": "2023-04-07T23:21:16.901817Z",
+     "shell.execute_reply.started": "2023-04-07T23:21:16.874063Z"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<DiploidVariantIndex>\n",
+       "  500 diploid variants on 22 chromosome(s)\n",
+       "  MAF ranges from nan to nan\n",
+       "  0 annotation(s) \n",
+       "         vid  chrom zero_allele one_allele  af hcopy  pos_bp  pos_cM\n",
+       "variant                                                             \n",
+       "0.d        0      0           A          G NaN     d     NaN     NaN\n",
+       "1.d        1      0           A          G NaN     d     NaN     NaN\n",
+       "2.d        2      0           A          G NaN     d     NaN     NaN\n",
+       "3.d        3      0           A          G NaN     d     NaN     NaN\n",
+       "4.d        4      0           A          G NaN     d     NaN     NaN\n",
+       "...      ...    ...         ...        ...  ..   ...     ...     ...\n",
+       "495.d    495     21           A          G NaN     d     NaN     NaN\n",
+       "496.d    496     21           A          G NaN     d     NaN     NaN\n",
+       "497.d    497     21           A          G NaN     d     NaN     NaN\n",
+       "498.d    498     21           A          G NaN     d     NaN     NaN\n",
+       "499.d    499     21           A          G NaN     d     NaN     NaN\n",
+       "\n",
+       "[500 rows x 8 columns]"
+      ]
+     },
+     "execution_count": 20,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "xft.index.DiploidVariantIndex(frame=vind.frame)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "0dfeec83-22dc-49c2-83a8-8b07b21d4078",
+   "metadata": {},
+   "source": [
+    "### Switching between haploid and diploid indices\n",
+    "\n",
+    "A `DiploidVariantIndex` can be converted to a haploid index and back via the `xft.index.DiploidVariantIndex.to_haploid()` and `xft.index.HaploidVariantIndex.to_diploid()` methods respectively:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 23,
+   "id": "9d2c3317-a34e-4afd-bc18-bb99b4056d7b",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-04-07T23:22:39.619467Z",
+     "iopub.status.busy": "2023-04-07T23:22:39.616517Z",
+     "iopub.status.idle": "2023-04-07T23:22:39.645126Z",
+     "shell.execute_reply": "2023-04-07T23:22:39.644180Z",
+     "shell.execute_reply.started": "2023-04-07T23:22:39.619342Z"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<HaploidVariantIndex>\n",
+       "  500 diploid variants on 22 chromosome(s)\n",
+       "  MAF ranges from nan to nan\n",
+       "  0 annotation(s) \n",
+       "         vid  chrom zero_allele one_allele  af hcopy  pos_bp  pos_cM\n",
+       "variant                                                             \n",
+       "0.0        0      0           A          G NaN     0     NaN     NaN\n",
+       "0.1        0      0           A          G NaN     1     NaN     NaN\n",
+       "1.0        1      0           A          G NaN     0     NaN     NaN\n",
+       "1.1        1      0           A          G NaN     1     NaN     NaN\n",
+       "2.0        2      0           A          G NaN     0     NaN     NaN\n",
+       "...      ...    ...         ...        ...  ..   ...     ...     ...\n",
+       "497.1    497     21           A          G NaN     1     NaN     NaN\n",
+       "498.0    498     21           A          G NaN     0     NaN     NaN\n",
+       "498.1    498     21           A          G NaN     1     NaN     NaN\n",
+       "499.0    499     21           A          G NaN     0     NaN     NaN\n",
+       "499.1    499     21           A          G NaN     1     NaN     NaN\n",
+       "\n",
+       "[1000 rows x 8 columns]"
+      ]
+     },
+     "execution_count": 23,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "hvind = vind.to_haploid()\n",
+    "hvind"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 24,
+   "id": "62f9ab73-267f-4958-927b-e48b1fc64784",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-04-07T23:22:50.352353Z",
+     "iopub.status.busy": "2023-04-07T23:22:50.351566Z",
+     "iopub.status.idle": "2023-04-07T23:22:50.367578Z",
+     "shell.execute_reply": "2023-04-07T23:22:50.366880Z",
+     "shell.execute_reply.started": "2023-04-07T23:22:50.352278Z"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<DiploidVariantIndex>\n",
+       "  500 diploid variants on 22 chromosome(s)\n",
+       "  MAF ranges from nan to nan\n",
+       "  0 annotation(s) \n",
+       "         vid  chrom zero_allele one_allele  af hcopy  pos_bp  pos_cM\n",
+       "variant                                                             \n",
+       "0.d        0      0           A          G NaN     d     NaN     NaN\n",
+       "1.d        1      0           A          G NaN     d     NaN     NaN\n",
+       "2.d        2      0           A          G NaN     d     NaN     NaN\n",
+       "3.d        3      0           A          G NaN     d     NaN     NaN\n",
+       "4.d        4      0           A          G NaN     d     NaN     NaN\n",
+       "...      ...    ...         ...        ...  ..   ...     ...     ...\n",
+       "495.d    495     21           A          G NaN     d     NaN     NaN\n",
+       "496.d    496     21           A          G NaN     d     NaN     NaN\n",
+       "497.d    497     21           A          G NaN     d     NaN     NaN\n",
+       "498.d    498     21           A          G NaN     d     NaN     NaN\n",
+       "499.d    499     21           A          G NaN     d     NaN     NaN\n",
+       "\n",
+       "[500 rows x 8 columns]"
+      ]
+     },
+     "execution_count": 24,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "hvind.to_diploid()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "ecf64985-4538-46ee-ab15-6bccbebd1836",
+   "metadata": {},
+   "source": [
+    "## Sample indexing\n",
+    "\n",
+    "We reference specific individuals using the `xft.index.SampleIndex` class which includes three individual-level pieces of information:\n",
+    " \n",
+    " - `iid`, a vector of individual IDs\n",
+    " - `fid`, a vector of family IDs\n",
+    " - `sex`, a vector of biological sexes, with 0 and 1 encoding female and male respectively,\n",
+    " \n",
+    "as well as the `generation` of the sample. Sample indexes are always specific to a single generation.\n",
+    "\n",
+    "There are several ways to construct a `SampleIndex`, all of which will automatically construct unique identifiers:\n",
+    "\n",
+    "### Constructing a generic sample index\n",
+    "\n",
+    "If all we want is a sample of arbitrarily-named, unrelated, sex-balanced individuals, we can simply provide the number of individuals `n` and the `generation`:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "cedba7c9-de49-4a39-8cdf-830a3cf42368",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-04-07T23:08:40.968708Z",
+     "iopub.status.busy": "2023-04-07T23:08:40.968386Z",
+     "iopub.status.idle": "2023-04-07T23:08:40.974246Z",
+     "shell.execute_reply": "2023-04-07T23:08:40.973619Z",
+     "shell.execute_reply.started": "2023-04-07T23:08:40.968684Z"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<SampleIndex>\n",
+       "  Generation 1\n",
+       "  5 indviduals from 5 families\n",
+       "  3 biological females\n",
+       "  2 biological males\n",
+       "            iid  fid  sex\n",
+       "sample                   \n",
+       "1..1_0.1_0  1_0  1_0    0\n",
+       "1..1_1.1_1  1_1  1_1    1\n",
+       "1..1_2.1_2  1_2  1_2    0\n",
+       "1..1_3.1_3  1_3  1_3    1\n",
+       "1..1_4.1_4  1_4  1_4    0"
+      ]
+     },
+     "execution_count": 10,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "xft.index.SampleIndex(n=5, generation=1)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "186346af-193b-4b26-9a37-03cc5a2db8d9",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-04-07T21:39:31.908771Z",
+     "iopub.status.busy": "2023-04-07T21:39:31.908250Z",
+     "iopub.status.idle": "2023-04-07T21:39:31.916578Z",
+     "shell.execute_reply": "2023-04-07T21:39:31.915825Z",
+     "shell.execute_reply.started": "2023-04-07T21:39:31.908742Z"
+    },
+    "tags": []
+   },
+   "source": [
+    "### Constructing a sample index for specific iids and fids\n",
+    "\n",
+    "We can alternatively provide specific iids, fids, and sexes. Here we create a sample index comprised of two families: three sisters in the first and two brothers in the second:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "ab391959-4130-4239-83d2-5245b8bd0d7d",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-04-07T23:08:40.975314Z",
+     "iopub.status.busy": "2023-04-07T23:08:40.975002Z",
+     "iopub.status.idle": "2023-04-07T23:08:40.984167Z",
+     "shell.execute_reply": "2023-04-07T23:08:40.983593Z",
+     "shell.execute_reply.started": "2023-04-07T23:08:40.975290Z"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<SampleIndex>\n",
+       "  Generation 0\n",
+       "  5 indviduals from 2 families\n",
+       "  3 biological females\n",
+       "  2 biological males\n",
+       "                        iid  fid  sex\n",
+       "sample                               \n",
+       "0..0_sister1.0    0_sister1    0    0\n",
+       "0..0_sister2.0    0_sister2    0    0\n",
+       "0..0_sister3.0    0_sister3    0    0\n",
+       "0..0_brother1.1  0_brother1    1    1\n",
+       "0..0_brother2.1  0_brother2    1    1"
+      ]
+     },
+     "execution_count": 11,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "sind = xft.index.SampleIndex(iid = ['0_sister1','0_sister2','0_sister3','0_brother1', '0_brother2'], \n",
+    "                             fid = [0,0,0,1,1],\n",
+    "                             sex = [0,0,0,1,1], generation = 0)\n",
+    "sind"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "cae1b6a4-1c41-4032-ae93-efa19c6cd2f7",
+   "metadata": {},
+   "source": [
+    "### Constructing a sample index with a DataFrame\n",
+    "\n",
+    "Finally, we can simply provide a Pandas DataFrame using the `frame` argument. In this case we also need to specify the generation."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "fbd2e495-7c7a-48de-a3c4-5df82184ddce",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-04-07T23:08:40.985367Z",
+     "iopub.status.busy": "2023-04-07T23:08:40.984998Z",
+     "iopub.status.idle": "2023-04-07T23:08:40.991004Z",
+     "shell.execute_reply": "2023-04-07T23:08:40.990468Z",
+     "shell.execute_reply.started": "2023-04-07T23:08:40.985344Z"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>iid</th>\n",
+       "      <th>fid</th>\n",
+       "      <th>sex</th>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>sample</th>\n",
+       "      <th></th>\n",
+       "      <th></th>\n",
+       "      <th></th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0..0_sister1.0</th>\n",
+       "      <td>0_sister1</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>0..0_sister2.0</th>\n",
+       "      <td>0_sister2</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>0..0_sister3.0</th>\n",
+       "      <td>0_sister3</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>0..0_brother1.1</th>\n",
+       "      <td>0_brother1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>0..0_brother2.1</th>\n",
+       "      <td>0_brother2</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "                        iid  fid  sex\n",
+       "sample                               \n",
+       "0..0_sister1.0    0_sister1    0    0\n",
+       "0..0_sister2.0    0_sister2    0    0\n",
+       "0..0_sister3.0    0_sister3    0    0\n",
+       "0..0_brother1.1  0_brother1    1    1\n",
+       "0..0_brother2.1  0_brother2    1    1"
+      ]
+     },
+     "execution_count": 12,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "sind.frame"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "eab5b756-3f12-4788-bc2c-8cf549570bfa",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2023-04-07T23:08:40.992529Z",
+     "iopub.status.busy": "2023-04-07T23:08:40.992374Z",
+     "iopub.status.idle": "2023-04-07T23:08:40.999320Z",
+     "shell.execute_reply": "2023-04-07T23:08:40.998737Z",
+     "shell.execute_reply.started": "2023-04-07T23:08:40.992514Z"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<SampleIndex>\n",
+       "  Generation 1\n",
+       "  5 indviduals from 2 families\n",
+       "  3 biological females\n",
+       "  2 biological males\n",
+       "                        iid  fid  sex\n",
+       "sample                               \n",
+       "1..0_sister1.0    0_sister1    0    0\n",
+       "1..0_sister2.0    0_sister2    0    0\n",
+       "1..0_sister3.0    0_sister3    0    0\n",
+       "1..0_brother1.1  0_brother1    1    1\n",
+       "1..0_brother2.1  0_brother2    1    1"
+      ]
+     },
+     "execution_count": 13,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "xft.index.SampleIndex(frame=sind.frame, generation = 1)"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.9.15"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
