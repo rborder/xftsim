@@ -186,6 +186,7 @@ class XftAccessor:
         return xft.index.HaploidVariantIndex(
             vid=self._obj.coords['variant'].vid.data,
             chrom=self._obj.coords['variant'].chrom.data,
+            h_copy=self._obj.coords['variant'].hcopy.data,
             zero_allele=self._obj.coords['variant'].zero_allele.data,
             one_allele=self._obj.coords['variant'].one_allele.data,
             af=self._obj.coords['variant'].af.data,

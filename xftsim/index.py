@@ -396,7 +396,7 @@ class DiploidVariantIndex(XftIndex):
     one_allele: ndarray
         Second allele of variant.
     hcopy: ndarray
-        A string indicating the haplotype of each variant.
+        A string indicating the copy of each variant.
     af: ndarray
         Allele frequency of variant.
     pos_bp: ndarray
@@ -673,6 +673,8 @@ class HaploidVariantIndex(DiploidVariantIndex):
         Minor allele frequencies.
     ploidy : str
         The ploidy of the variant index. In this case, "Haploid".
+    hcopy: ndarray
+        A string indicating the copy of each variant.
 
     Methods
     -------
