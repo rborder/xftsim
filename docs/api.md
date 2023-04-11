@@ -2,6 +2,8 @@
 
 # API reference
 
+## Submodule organization
+
 
 `xftsim` is organized into a number of submodules, the contents of which are arranged as follows:
 
@@ -25,9 +27,9 @@
 | {ref}`utils <xftsim:xftsim.utils module>`         | Utility functions and profiling                                                   |           |
 
 
-Here is an auto-generated summary of the xftsim API.
+Below is an auto-generated summary of the xftsim API.
 
-## arch module
+## arch
 
 ```{eval-rst}
 .. automodule:: xftsim.arch
@@ -36,7 +38,7 @@ Here is an auto-generated summary of the xftsim API.
    :show-inheritance:
 ```
 
-## data module
+## data
 
 ```{eval-rst}
 .. automodule:: xftsim.data
@@ -45,7 +47,7 @@ Here is an auto-generated summary of the xftsim API.
    :show-inheritance:
 ```
 
-## effect module
+## effect
 
 ```{eval-rst}
 .. automodule:: xftsim.effect
@@ -54,7 +56,7 @@ Here is an auto-generated summary of the xftsim API.
    :show-inheritance:
 ```
 
-## founders module
+## founders
 
 ```{eval-rst}
 .. automodule:: xftsim.founders
@@ -63,7 +65,7 @@ Here is an auto-generated summary of the xftsim API.
    :show-inheritance:
 ```
 
-## index module
+## index
 
 ```{eval-rst}
 .. automodule:: xftsim.index
@@ -72,7 +74,7 @@ Here is an auto-generated summary of the xftsim API.
    :show-inheritance:
 ```
 
-## io module
+## io
 
 ```{eval-rst}
 .. automodule:: xftsim.io
@@ -81,7 +83,7 @@ Here is an auto-generated summary of the xftsim API.
    :show-inheritance:
 ```
 
-## lsmate module
+## lsmate
 
 ```{eval-rst}
 .. automodule:: xftsim.lsmate
@@ -93,7 +95,7 @@ Here is an auto-generated summary of the xftsim API.
 
 ```
 
-## mate module
+## mate
 
 ```{eval-rst}
 .. automodule:: xftsim.mate
@@ -102,7 +104,7 @@ Here is an auto-generated summary of the xftsim API.
    :show-inheritance:
 ```
 
-## ped module
+## ped
 
 ```{eval-rst}
 .. automodule:: xftsim.ped
@@ -111,7 +113,7 @@ Here is an auto-generated summary of the xftsim API.
    :show-inheritance:
 ```
 
-## proc module
+## proc
 
 ```{eval-rst}
 .. automodule:: xftsim.proc
@@ -120,7 +122,7 @@ Here is an auto-generated summary of the xftsim API.
    :show-inheritance:
 ```
 
-## reproduce module
+## reproduce
 
 ```{eval-rst}
 .. automodule:: xftsim.reproduce
@@ -129,7 +131,7 @@ Here is an auto-generated summary of the xftsim API.
    :show-inheritance:
 ```
 
-## sim module
+## sim
 
 ```{eval-rst}
 .. automodule:: xftsim.sim
@@ -138,7 +140,7 @@ Here is an auto-generated summary of the xftsim API.
    :show-inheritance:
 ```
 
-## stats module
+## stats
 
 ```{eval-rst}
 .. automodule:: xftsim.stats
@@ -147,7 +149,7 @@ Here is an auto-generated summary of the xftsim API.
    :show-inheritance:
 ```
 
-## struct module
+## struct
 
 ```{eval-rst}
 .. automodule:: xftsim.struct
@@ -156,7 +158,7 @@ Here is an auto-generated summary of the xftsim API.
    :show-inheritance:
 ```
 
-## utils module
+## utils
 
 ```{eval-rst}
 .. automodule:: xftsim.utils
