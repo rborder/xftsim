@@ -8,9 +8,95 @@ from nptyping import NDArray, Int8, Int64, Float64, Bool, Shape, Float, Int
 from typing import Any, Hashable, List, Iterable, Callable, Union, Dict, Tuple
 from functools import cached_property
 from scipy import interpolate
-
 import xftsim as xft
 
+
+class GeneticMap:
+    """
+    Map between physical and genetic distances.
+
+    Parameters
+    ----------
+    chrom : Iterable
+        Chromsomes variants are located on
+    pos_bp : Iterable
+        Physical positions of variants
+    pos_cM : Iterable
+        Map distances in cM
+
+    Attributes
+    __________
+    frame : pd.DataFrame
+        Pandas DataFrame with the above columns
+    chroms : np.ndarray
+        Unique chromosomes present in map
+    """
+    def __init__(self,
+                 chrom: Iterable,
+                 pos_bp: Iterable,
+                 pos_cM: Iterable):
+        self.frame = pd.DataFrame.from_dict(dict(chrom = chrom,
+                                                 pos_bp = pos_bp,
+                                                 pos_cM = pos_cM))
+        self.chroms = np.unique(self.frame.chrom.values.astype(int)).astype(str)
+
+    @classmethod
+    def from_pyrho_maps(cls, paths: Iterable, sep='\t', **kwargs) -> "GeneticMap":
+        """Construct genetic map objects from maps provided at https://github.com/popgenmethods/pyrho
+        Please cite their work if you use their maps.
+        
+        Parameters
+        ----------
+        paths : Iterable
+            Paths for each chromosome
+        sep : str, optional
+            Passed to pd.read_csv()
+        **kwargs
+            Additional arguments to pd.read_csv()
+        
+        Returns
+        -------
+        GeneticMap
+        """
+        gmap = pd.concat([pd.read_csv(path, sep='\t', **kwargs) for path in paths])
+        chrom = np.char.lstrip(gmap.Chromosome.values.astype(str),'chr')
+        pos_bp = gmap['Position(bp)'].values
+        pos_cM = gmap['Map(cM)'].values
+        return cls(chrom, pos_bp, pos_cM)
+
+
+    def interpolate_cM_chrom(self, pos_bp: Iterable, chrom: str, **kwargs):
+        """
+        Interpolate cM values in a specified chromosome based on genetic map information.
+
+        Parameters
+        ----------
+        pos_bp : Iterable
+            Physical positions for which to interpolate cM values
+        chrom : str
+            Chromosome on which to interpolate
+        **kwargs
+            Additional keyword arguments to be passed to scipy.interpolate.interp1d.
+        """ 
+        subset = self.frame[self.frame.chrom==chrom]
+        interpolator = interpolate.interp1d(x = subset.pos_bp.values,
+                                            y = subset.pos_cM.values,
+                                            **kwargs)
+        return interpolator(pos_bp)
+
+
+        if self._col_dim != 'variant':
+            raise TypeError
+        chroms = np.unique(self._obj.chrom.values.astype(int)).astype(str)
+        for chrom in chroms:  
+            rmap_chrom = rmap_df[rmap_df['Chromosome']=='chr'+chrom]
+            interpolator = interpolate.interp1d(x = rmap_chrom['Position(bp)'].values,
+                                                y = rmap_chrom['Map(cM)'].values,
+                                                **kwargs)
+            self._obj.pos_cM[self._obj.chrom==chrom] = interpolator(self._obj.pos_bp[self._obj.chrom==chrom])
+
+ 
+                 
 
 @xr.register_dataarray_accessor("xft")
 class XftAccessor:
@@ -390,7 +476,8 @@ class XftAccessor:
     ############ HaplotypeArray properties ############
 
     def interpolate_cM(self,
-                       rmap_df: pd.DataFrame = xft.data.get_ceu_map(),
+                       gmap: GeneticMap,
+                       # rmap_df: pd.DataFrame = xft.data.get_ceu_map(),
                        **kwargs):
         """
         Interpolate cM values based on genetic map information.
@@ -398,8 +485,8 @@ class XftAccessor:
 
         Parameters
         ----------
-        rmap_df : pandas.DataFrame
-            Genetic map data as a DataFrame. Default is the CEU genetic map data.
+        gmap : GeneticMap
+            Genetic map data
         **kwargs
             Additional keyword arguments to be passed to scipy.interpolate.interp1d.
 
@@ -407,16 +494,19 @@ class XftAccessor:
         ------
         TypeError
             If the column dimension is not 'variant'.
+        ValueError
+            If not all chromosomes required are present in the genetic map
         """
         if self._col_dim != 'variant':
             raise TypeError
         chroms = np.unique(self._obj.chrom.values.astype(int)).astype(str)
+        if not (set(chroms) <= set(gmap.chroms)):
+            raise ValueError('Not all chromosomes are present on specified genetic Map')
         for chrom in chroms:  
-            rmap_chrom = rmap_df[rmap_df['Chromosome']=='chr'+chrom]
-            interpolator = interpolate.interp1d(x = rmap_chrom['Position(bp)'].values,
-                                                y = rmap_chrom['Map(cM)'].values,
-                                                **kwargs)
-            self._obj.pos_cM[self._obj.chrom==chrom] = interpolator(self._obj.pos_bp[self._obj.chrom==chrom])
+            self._obj.pos_cM[self._obj.chrom==chrom] = gmap.interpolate_cM_chrom(self._obj.pos_bp[self._obj.chrom==chrom], 
+                                      chrom=chrom,
+                                      **kwargs)
+            # self._obj.pos_cM[self._obj.chrom==chrom] = interpolator(self._obj.pos_bp[self._obj.chrom==chrom])
 
     def use_empirical_afs(self):
         """
