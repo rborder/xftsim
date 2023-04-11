@@ -25,6 +25,7 @@ html_logo = "_static/xftsimlogomediumwhite.svg"
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
+    "sphinx.ext.autosectionlabel",
     "sphinx.ext.intersphinx",
     "myst_parser",
     #"sphinx_autosummary_accessors",
@@ -45,7 +46,9 @@ extensions = [
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
+myst_enable_extensions = ['attrs_inline', 'substitution']
 
+autosectionlabel_prefix_document = True
 autosummary_generate = True
 autodoc_typehints = "none"
 

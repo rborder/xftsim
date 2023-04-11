@@ -60,6 +60,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="struct.html">Data structures</a></li>
+<li class="toctree-l3"><a class="reference internal" href="submodules.html">Organization of submodules</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="simulation.html">Anatomy of a simulation</a></li>
@@ -105,7 +106,7 @@
 </ul>
 <p>All the above are instances of the <code class="docutils literal notranslate"><span class="pre">xft.index.XftIndex</span></code> superclass and can be represented as Pandas DataFrames using the <code class="docutils literal notranslate"><span class="pre">.frame</span></code> property:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">xftsim</span> <span class="k">as</span> <span class="nn">xft</span>
@@ -121,7 +122,8 @@
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
 <div>
@@ -206,7 +208,7 @@
 </ul>
 <p>Components are essentially sub-phenotypes and include the phenotype itself. For example, euppose we assume that the phenotype height is comprised of two components: an additive genetic component and an additive, individual-specific noise component. The corresponding component index looks like this:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">xft</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">ComponentIndex</span><span class="o">.</span><span class="n">from_product</span><span class="p">(</span><span class="n">phenotype_name</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;height&#39;</span><span class="p">),</span>
@@ -216,7 +218,8 @@
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
@@ -279,7 +282,7 @@ height.phenotype.proband                      -1
 </table>
 <p>and so forth. In most cases, considering maternal or paternal effects is sufficent. Suppose we’d like to jointly analyze trio’s heights, bone mineral density (BMD), as well as the heritable and nonheritable components thereof. In this case, our component index would look like this:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">xft</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">ComponentIndex</span><span class="o">.</span><span class="n">from_product</span><span class="p">(</span><span class="n">phenotype_name</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;height&#39;</span><span class="p">,</span><span class="s1">&#39;BMD&#39;</span><span class="p">),</span>
@@ -289,7 +292,8 @@ height.phenotype.proband                      -1
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
@@ -323,7 +327,7 @@ BMD.phenotype.father                BMD      phenotype                 1
 <h3>Constructing a component index from a cartestian product<a class="headerlink" href="#Constructing-a-component-index-from-a-cartestian-product" title="Permalink to this heading"></a></h3>
 <p>To generate a component index by expanding combinations of <code class="docutils literal notranslate"><span class="pre">phenotype_name</span></code>, <code class="docutils literal notranslate"><span class="pre">component_name</span></code>, and <code class="docutils literal notranslate"><span class="pre">vorigin_relative</span></code>, we can use the <code class="docutils literal notranslate"><span class="pre">.from_product()</span></code> method:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">xft</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">ComponentIndex</span><span class="o">.</span><span class="n">from_product</span><span class="p">(</span><span class="n">phenotype_name</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;height&#39;</span><span class="p">,),</span>
@@ -333,7 +337,8 @@ BMD.phenotype.father                BMD      phenotype                 1
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
@@ -351,7 +356,7 @@ height.phenotype.father          height      phenotype                 1
 <h3>Constructing a component index for specific components<a class="headerlink" href="#Constructing-a-component-index-for-specific-components" title="Permalink to this heading"></a></h3>
 <p>We can also manually specify arguments:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cindex</span> <span class="o">=</span> <span class="n">xft</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">ComponentIndex</span><span class="p">(</span><span class="n">phenotype_name</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;height&#39;</span><span class="p">,</span><span class="s1">&#39;BMD&#39;</span><span class="p">),</span>
@@ -362,7 +367,8 @@ height.phenotype.father          height      phenotype                 1
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
@@ -376,15 +382,16 @@ BMD.genetic.father                  BMD        genetic                 1
 </div>
 <p>or provide a Pandas DataFrame with the same information:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">xft</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">ComponentIndex</span><span class="p">(</span><span class="n">frame</span> <span class="o">=</span> <span class="n">cindex</span><span class="o">.</span><span class="n">frame</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span> <span class="n">xft</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">ComponentIndex</span><span class="p">(</span><span class="n">frame</span> <span class="o">=</span> <span class="n">cindex</span><span class="o">.</span><span class="n">frame</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
@@ -401,7 +408,7 @@ BMD.genetic.father                  BMD        genetic                 1
 <h3>Constructing a generic component index<a class="headerlink" href="#Constructing-a-generic-component-index" title="Permalink to this heading"></a></h3>
 <p>Finally, we can construct a generic component index by providing the number of phenotypes, <code class="docutils literal notranslate"><span class="pre">k_total</span></code>:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">xft</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">ComponentIndex</span><span class="p">(</span><span class="n">k_total</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
@@ -409,7 +416,8 @@ BMD.genetic.father                  BMD        genetic                 1
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
@@ -440,10 +448,11 @@ component
 <li><p><code class="docutils literal notranslate"><span class="pre">pos_cM</span></code>, position as measured in centiMorgans</p></li>
 </ul>
 <p>There are several ways to construct variant indices, though you’ll rarely need to do this in practice. Typically, you’ll use an automatically generated variant index, regardless of whether you’re using real or synthethic founder data.</p>
-<p>### Constructing a variant index</p>
+<section id="Constructing-a-variant-index">
+<h3>Constructing a variant index<a class="headerlink" href="#Constructing-a-variant-index" title="Permalink to this heading"></a></h3>
 <p>To construct a generic variant index, you only need to provide the number of diploid variants <code class="docutils literal notranslate"><span class="pre">m</span></code> and the number of chromosomes <code class="docutils literal notranslate"><span class="pre">n_chrom</span></code>:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">vind</span> <span class="o">=</span> <span class="n">xft</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">DiploidVariantIndex</span><span class="p">(</span><span class="n">m</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span><span class="n">n_chrom</span><span class="o">=</span><span class="mi">22</span><span class="p">)</span>
@@ -452,7 +461,7 @@ component
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -480,7 +489,7 @@ variant
 </div>
 <p>Alternatively we can supply the above arguments individually (only <code class="docutils literal notranslate"><span class="pre">vid</span></code> is strictly necessary) or via a pandas DataFrame:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">xft</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">DiploidVariantIndex</span><span class="p">(</span><span class="n">vid</span><span class="o">=</span><span class="n">vind</span><span class="o">.</span><span class="n">vid</span><span class="p">)</span>
@@ -488,7 +497,7 @@ variant
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -515,7 +524,7 @@ variant
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">xft</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">DiploidVariantIndex</span><span class="p">(</span><span class="n">frame</span><span class="o">=</span><span class="n">vind</span><span class="o">.</span><span class="n">frame</span><span class="p">)</span>
@@ -523,7 +532,7 @@ variant
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -549,11 +558,12 @@ variant
 [500 rows x 8 columns]
 </pre></div></div>
 </div>
+</section>
 <section id="Switching-between-haploid-and-diploid-indices">
 <h3>Switching between haploid and diploid indices<a class="headerlink" href="#Switching-between-haploid-and-diploid-indices" title="Permalink to this heading"></a></h3>
 <p>A <code class="docutils literal notranslate"><span class="pre">DiploidVariantIndex</span></code> can be converted to a haploid index and back via the <code class="docutils literal notranslate"><span class="pre">xft.index.DiploidVariantIndex.to_haploid()</span></code> and <code class="docutils literal notranslate"><span class="pre">xft.index.HaploidVariantIndex.to_diploid()</span></code> methods respectively:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">hvind</span> <span class="o">=</span> <span class="n">vind</span><span class="o">.</span><span class="n">to_haploid</span><span class="p">()</span>
@@ -562,7 +572,7 @@ variant
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -589,7 +599,7 @@ variant
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">hvind</span><span class="o">.</span><span class="n">to_diploid</span><span class="p">()</span>
@@ -597,7 +607,7 @@ variant
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -639,7 +649,7 @@ variant
 <h3>Constructing a generic sample index<a class="headerlink" href="#Constructing-a-generic-sample-index" title="Permalink to this heading"></a></h3>
 <p>If all we want is a sample of arbitrarily-named, unrelated, sex-balanced individuals, we can simply provide the number of individuals <code class="docutils literal notranslate"><span class="pre">n</span></code> and the <code class="docutils literal notranslate"><span class="pre">generation</span></code>:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">xft</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">SampleIndex</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">generation</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -647,7 +657,8 @@ variant
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
@@ -670,7 +681,7 @@ sample
 <h3>Constructing a sample index for specific iids and fids<a class="headerlink" href="#Constructing-a-sample-index-for-specific-iids-and-fids" title="Permalink to this heading"></a></h3>
 <p>We can alternatively provide specific iids, fids, and sexes. Here we create a sample index comprised of two families: three sisters in the first and two brothers in the second:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sind</span> <span class="o">=</span> <span class="n">xft</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">SampleIndex</span><span class="p">(</span><span class="n">iid</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;0_sister1&#39;</span><span class="p">,</span><span class="s1">&#39;0_sister2&#39;</span><span class="p">,</span><span class="s1">&#39;0_sister3&#39;</span><span class="p">,</span><span class="s1">&#39;0_brother1&#39;</span><span class="p">,</span> <span class="s1">&#39;0_brother2&#39;</span><span class="p">],</span>
@@ -681,7 +692,8 @@ sample
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
@@ -704,7 +716,7 @@ sample
 <h3>Constructing a sample index with a DataFrame<a class="headerlink" href="#Constructing-a-sample-index-with-a-DataFrame" title="Permalink to this heading"></a></h3>
 <p>Finally, we can simply provide a Pandas DataFrame using the <code class="docutils literal notranslate"><span class="pre">frame</span></code> argument. In this case we also need to specify the generation.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sind</span><span class="o">.</span><span class="n">frame</span>
@@ -712,7 +724,8 @@ sample
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
 <div>
@@ -780,7 +793,7 @@ sample
 </div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">xft</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">SampleIndex</span><span class="p">(</span><span class="n">frame</span><span class="o">=</span><span class="n">sind</span><span class="o">.</span><span class="n">frame</span><span class="p">,</span> <span class="n">generation</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
@@ -788,7 +801,8 @@ sample
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
