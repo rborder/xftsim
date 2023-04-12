@@ -422,8 +422,8 @@ class VariableCount:
         a function that generates an array of counts
     expectation : float
         expected count
-    mating_fraction : float
-        the fraction of the population that is expected to mate
+    nonzero_fraction : float
+        the fraction of the population that is nonzero
 
     Methods
     -------
@@ -433,7 +433,7 @@ class VariableCount:
     def __init__(self,
                  draw: Callable,
                  expectation: float = None,
-                 mating_fraction: float = None):
+                 nonzero_fraction: float = None):
         """
         Constructs all the necessary attributes for the VariableCount object.
 
@@ -443,8 +443,8 @@ class VariableCount:
                 a function that generates an array of counts
             expectation : float
                 expected count
-            mating_fraction : float
-                the fraction of the population that is expected to mate
+            nonzero_fraction : float
+                the fraction of the population that is nonzero
 
         Returns
         -------
@@ -453,8 +453,8 @@ class VariableCount:
         self.draw = draw
         self._expectation = expectation
         self._expectation_impl = (expectation is not None)
-        self._mating_fraction = mating_fraction
-        self._mating_fraction_impl = (mating_fraction is not None)
+        self._nonzero_fraction = nonzero_fraction
+        self._nonzero_fraction_impl = (nonzero_fraction is not None)
 
     @property
     def expectation(self):
@@ -492,39 +492,39 @@ class VariableCount:
         self._expectation = value
 
     @property
-    def mating_fraction(self):
+    def nonzero_fraction(self):
         """
-        Getter function for mating_fraction attribute.
+        Getter function for nonzero_fraction attribute.
 
         Returns
         -------
         float
-            The fraction of the population that is expected to mate.
+            The fraction of the population that is nonzero.
         """
-        if self._mating_fraction_impl:
-            return self._mating_fraction
+        if self._nonzero_fraction_impl:
+            return self._nonzero_fraction
         else:
-            raise NotImplementedError("'mating_fraction' not implemented")
+            raise NotImplementedError("'nonzero_fraction' not implemented")
 
-    @mating_fraction.setter
-    def mating_fraction(self, value):
+    @nonzero_fraction.setter
+    def nonzero_fraction(self, value):
         """
-        Setter function for mating_fraction attribute.
+        Setter function for nonzero_fraction attribute.
 
         Parameters
         ----------
             value : float
-                The fraction of the population that is expected to mate.
+                The fraction of the population that is nonzero.
 
         Returns
         -------
             None
         """
         if value is not None:
-            self._mating_fraction_impl = True
+            self._nonzero_fraction_impl = True
         else:
-            self._mating_fraction_impl = False
-        self._mating_fraction = value
+            self._nonzero_fraction_impl = False
+        self._nonzero_fraction = value
 
 
 class ConstantCount(VariableCount):
@@ -537,8 +537,8 @@ class ConstantCount(VariableCount):
         a function that generates an array of counts
     expectation : float
         expected count
-    mating_fraction : float
-        the fraction of the population that is expected to mate
+    nonzero_fraction : float
+        the fraction of the population that is nonzero
 
     Parameters
     ----------
@@ -550,7 +550,7 @@ class ConstantCount(VariableCount):
         super().__init__(
             draw=lambda n: np.repeat(count, n),
             expectation=count,
-            mating_fraction=float(bool(count)),
+            nonzero_fraction=float(bool(count)),
         )
 
 
@@ -563,8 +563,8 @@ class PoissonCount(VariableCount):
         a function that generates an array of counts
     expectation : float
         expected count
-    mating_fraction : float
-        the fraction of the population that is expected to mate
+    nonzero_fraction : float
+        the fraction of the population that is nonzero
 
     Parameters
     ----------
@@ -576,7 +576,7 @@ class PoissonCount(VariableCount):
         super().__init__(
             draw=lambda n: np.random.poisson(rate, n),
             expectation=rate,
-            mating_fraction=1 - np.exp(-rate)
+            nonzero_fraction=1 - np.exp(-rate)
         )
 
 
@@ -590,8 +590,8 @@ class ZeroTruncatedPoissonCount(VariableCount):
         a function that generates an array of counts
     expectation : float
         expected count
-    mating_fraction : float
-        the fraction of the population that is expected to mate
+    nonzero_fraction : float
+        the fraction of the population that is nonzero
 
     Parameters
     ----------
@@ -605,7 +605,7 @@ class ZeroTruncatedPoissonCount(VariableCount):
             draw=lambda n: sp.stats.poisson.ppf(np.random.uniform(min_unif, 1, n),
                                                 mu=rate).astype(int),
             expectation=(rate) / (1 - min_unif),
-            mating_fraction=1
+            nonzero_fraction=1
         )
 
 # todo mating fraction -> nonzero fraction
@@ -621,8 +621,8 @@ class NegativeBinomialCount(VariableCount):
         a function that generates an array of counts
     expectation : float
         expected count
-    mating_fraction : float
-        the fraction of the population that is expected to mate
+    nonzero_fraction : float
+        the fraction of the population that is nonzero
 
     Parameters
     ----------
@@ -634,9 +634,9 @@ class NegativeBinomialCount(VariableCount):
     def __init__(self, r: float, p: float):
         assert r > 0 and 1 >= p >= 0, "Invalid parameters"
         super().__init__(
-            draw=lambda n: np.random.poisson(rate, r),
-            expectation=r * (1 - p) / p**2,
-            mating_fraction=1. - (1 - p) * p**r
+            draw=lambda n: np.random.negative_binomial(r, p, size=n),
+            expectation=r * (1 - p) / p,
+            nonzero_fraction=1. - (r - 1) * p**r
         )
 
 
@@ -650,8 +650,8 @@ class MixtureCount(VariableCount):
         a function that generates an array of counts
     expectation : float
         expected count
-    mating_fraction : float
-        the fraction of the population that is expected to mate
+    nonzero_fraction : float
+        the fraction of the population that is nonzero
 
     Parameters
     ----------
@@ -677,15 +677,15 @@ class MixtureCount(VariableCount):
                                   in zip(componentCounts, mixture_probabilities)])
         else:
             expectation = None
-        if all([component._mating_fraction_impl for component in componentCounts]):
-            mating_fraction = np.sum([component._mating_fraction * p for (
+        if all([component._nonzero_fraction_impl for component in componentCounts]):
+            nonzero_fraction = np.sum([component._nonzero_fraction * p for (
                 component, p) in zip(componentCounts, mixture_probabilities)])
         else:
-            mating_fraction = None
+            nonzero_fraction = None
         super().__init__(
             draw=draw,
             expectation=expectation,
-            mating_fraction=mating_fraction,
+            nonzero_fraction=nonzero_fraction,
         )
 
 

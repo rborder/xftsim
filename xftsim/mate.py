@@ -654,7 +654,7 @@ class MatingRegime:
         return .5 * self.expected_offspring_per_pair * self.expected_mates_per_female
 
 
-class BalancedRandomMatingRegime(MatingRegime):
+class RandomMatingRegime(MatingRegime):
     """
     A mating regime that randomly pairs individuals and produces offspring with balanced numbers of males and females.
 
@@ -665,7 +665,7 @@ class BalancedRandomMatingRegime(MatingRegime):
     mates_per_female : xft.utils.VariableCount, optional
         Number of males that mate with each female, by default xft.utils.ConstantCount(1)
     female_offspring_per_pair : Union[str, xft.utils.VariableCount], optional
-        The number of female offspring per mating pair. If "balanced", the number is randomly generated and balanced with
+        The number of female offspring per mating pair. If "balanced", the number is balanced with
         the number of male offspring. By default, "balanced".
     sex_aware : bool, optional
         If True, randomly paired individuals are selected so that there is an equal number of males and females.
@@ -722,7 +722,7 @@ class BalancedRandomMatingRegime(MatingRegime):
                                          phenotypes=phenotypes,
                                          )
 
-# mr = BalancedRandomMatingRegime()
+# mr =RandomMatingRegime()
 
 
 

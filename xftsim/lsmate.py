@@ -9,7 +9,7 @@ Classes:
 
     MatingRegime: Base class for defining mating regimes.
     RandomMatingRegime: A class for implementing random mating.
-    BalancedRandomMatingRegime: A class for implementing balanced random mating.
+    RandomMatingRegime: A class for implementing balanced random mating.
     LinearAssortativeMatingRegime: A class for implementing linear assortative mating.
     KAssortativeMatingRegime: A class for implementing k-assortative mating.
     BatchedMatingRegime: A class for batching individuals to improve mating regime performance.
