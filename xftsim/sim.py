@@ -388,20 +388,20 @@ class DemoSimulation(Simulation):
     demo_routines = dict(BGRM = 'Bivariate GCTA with balanced random mating demo\n')
     _demo_long = dict(BGRM = 'Two phenotypes, height and bone mineral denisty (BMD)\n'
                              'assuming bivariate GCTA infinitessimal archtecture\n'
-                             'with both h2 values set to 0.5 and a genetic effect\n'
-                             'correlation of 0.0.')
+                             'with h2 values set to 0.5 and 0.4 for height and BMD\n'
+                             'respectively and a genetic effect correlation of 0.0.')
     def __init__(self, 
                  routine: str = 'BGRM',
-                 n: int = 800, 
-                 m: int = 200) -> None:
+                 n: int = 2000, 
+                 m: int = 400) -> None:
         if routine == 'BGRM':
             founder_haplotypes = xft.founders.founder_haplotypes_uniform_AFs(n=n, m=m)
-            architecture = xft.arch.GCTA_Architecture(h2=[.5,.5], phenotype_name=['height', 'BMD'], 
+            architecture = xft.arch.GCTA_Architecture(h2=[.5,.4], phenotype_name=['height', 'BMD'], 
                                                       haplotypes=founder_haplotypes)
             recombination_map = xft.reproduce.RecombinationMap.constant_map_from_haplotypes(founder_haplotypes, 
                                                                                             p =.1)
             mating_regime = xft.mate.RandomMatingRegime(mates_per_female=2,
-                                                                offspring_per_pair=2)
+                                                        offspring_per_pair=2)
         else:
             raise NotImplementedError(f"Routine `{routine}` not implemented. See `DemoSimulation.demo_routines` for supported routines")
         ## ensure silence
@@ -410,7 +410,9 @@ class DemoSimulation(Simulation):
         super().__init__(founder_haplotypes=founder_haplotypes,
                          mating_regime=mating_regime,
                          recombination_map=recombination_map,
-                         architecture=architecture)
+                         architecture=architecture,
+                         statistics=[xft.stats.SampleStatistics(),
+                            xft.stats.MatingStatistics(full=True)])
         self.run(2)
         ## revert to user specified config
         xft.config.print_durations_threshold = old_config.print_durations_threshold
