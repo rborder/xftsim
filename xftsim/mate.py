@@ -62,7 +62,8 @@ class MateAssignment:
 
     def get_mate_phenotypes(self, 
                         phenotypes: xr.DataArray, 
-                        component_index: xft.index.ComponentIndex = None):
+                        component_index: xft.index.ComponentIndex = None,
+                        full: bool = True):
         """
         Retrieves mate phenotypes based on the given phenotypes data.
 
@@ -72,13 +73,17 @@ class MateAssignment:
             The phenotypes data array.
         component_index : xft.index.ComponentIndex, optional
             The component index for the phenotypes data array.
+        full : bool
+            Ignore component_index and get all components.
 
         Returns
         -------
         pd.DataFrame
             A DataFrame containing the mate phenotypes.
         """
-        if component_index is None:
+        if full:
+            component_index = phenotypes.xft.get_component_indexer()
+        elif component_index is None:
             component_index = phenotypes.xft.grep_component_index('phenotype')[dict(vorigin_relative=-1)]
         Y_maternal = phenotypes.xft[self._maternal_sample_index, component_index]
         Y_paternal = phenotypes.xft[self._paternal_sample_index, component_index]

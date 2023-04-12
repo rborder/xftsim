@@ -118,11 +118,13 @@ class MatingStatistics(Statistic):
     """
     Calculate and return various mating statistics for the given simulation.
 
-    Attributes
+    Parameters
     ----------
     component_index : xft.index.ComponentIndex, optional
         Index of the component for which the statistics are calculated.
-        If not provided, calculate statistics for all components.
+    full: bool
+        Ignore component_index and compute statistics for all components
+        If component_index is not provided, and full = False, calculate statistics for phenotype components only.
 
     Methods
     -------
@@ -131,8 +133,10 @@ class MatingStatistics(Statistic):
     """
     def __init__(self,
                  component_index: xft.index.ComponentIndex = None,
+                 full: bool = False,
                  ):
         self.name = 'mating_statistics'
+        self._full = full
         self.component_index = component_index
 
     @xft.utils.profiled(level=2, message = "mating statistics")
@@ -144,7 +148,7 @@ class MatingStatistics(Statistic):
                       mean_n_female_offspring_per_pair =  np.mean(sim.mating.n_females_per_pair),
                       mate_correlations = sim.mating.get_mate_phenotypes(phenotypes=sim.phenotypes,
                                                                          component_index=self.component_index,
-                                                                         ).corr(),
+                                                                         full = self._full).corr(),
                       )
         return output
 
