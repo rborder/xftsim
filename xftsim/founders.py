@@ -85,7 +85,7 @@ def founder_haplotypes_from_sgkit_dataset(gdat: xr.Dataset) ->  xr.DataArray:
         Array of founder haplotypes with samples indexed by an xftsim.index.SampleIndex object and variants indexed
         by an xftsim.index.HaploidVariantIndex object.
     """
-    return xftsim.io.haplotypes_from_sgkit_dataset(gdat, generation = 0)
+    return xft.io.haplotypes_from_sgkit_dataset(gdat, generation = 0)
 
 
 def founder_haplotypes_from_plink_bfile(path: str):
@@ -105,4 +105,4 @@ def founder_haplotypes_from_plink_bfile(path: str):
         by an xftsim.index.HaploidVariantIndex object. The "pseudo-" prefix refers to the fact that the
         plink bfile format doesn't track phase.
     """
-    return xftsim.io.read_plink1_as_pseudohaplotypes(path)
+    return xft.io.read_plink1_as_pseudohaplotypes(path)
