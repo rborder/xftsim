@@ -70,15 +70,9 @@ dask-worker-space/
 .vscode/
 
 # xarray specific
-doc/_build
-generated/
-xarray/tests/data/*.grib.*.idx
+docs/_build
 
 # Sync tools
 Icon*
 
 .ipynb_checkpoints
-doc/team-panel.txt
-doc/external-examples-gallery.txt
-doc/notebooks-examples-gallery.txt
-doc/videos-gallery.txt
