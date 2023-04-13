@@ -49,7 +49,8 @@
 <li class="toctree-l1"><a class="reference internal" href="gettingstarted/getting_started.html">Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="userguide/user_guide.html">User guide</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">API reference</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#module-xftsim.arch">arch module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#submodule-organization">Submodule organization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-xftsim.arch">arch</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#xftsim.arch.AdditiveGeneticComponent"><code class="docutils literal notranslate"><span class="pre">AdditiveGeneticComponent</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.arch.AdditiveGeneticComponent.effects"><code class="docutils literal notranslate"><span class="pre">AdditiveGeneticComponent.effects</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.arch.AdditiveGeneticComponent.compute_component"><code class="docutils literal notranslate"><span class="pre">AdditiveGeneticComponent.compute_component()</span></code></a></li>
@@ -154,11 +155,11 @@
 <li class="toctree-l3"><a class="reference internal" href="#xftsim.arch.ZeroFounderInitialization"><code class="docutils literal notranslate"><span class="pre">ZeroFounderInitialization</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#module-xftsim.data">data module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-xftsim.data">data</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#xftsim.data.get_ceu_map"><code class="docutils literal notranslate"><span class="pre">get_ceu_map()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#module-xftsim.effect">effect module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-xftsim.effect">effect</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#xftsim.effect.AdditiveEffects"><code class="docutils literal notranslate"><span class="pre">AdditiveEffects</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.effect.AdditiveEffects.AF"><code class="docutils literal notranslate"><span class="pre">AdditiveEffects.AF</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.effect.AdditiveEffects.beta_scaled_standardized_diploid"><code class="docutils literal notranslate"><span class="pre">AdditiveEffects.beta_scaled_standardized_diploid</span></code></a></li>
@@ -191,12 +192,14 @@
 <li class="toctree-l3"><a class="reference internal" href="#xftsim.effect.NonOverlappingEffects"><code class="docutils literal notranslate"><span class="pre">NonOverlappingEffects</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#module-xftsim.founders">founders module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-xftsim.founders">founders</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#xftsim.founders.founder_haplotypes_from_AFs"><code class="docutils literal notranslate"><span class="pre">founder_haplotypes_from_AFs()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#xftsim.founders.founder_haplotypes_from_plink_bfile"><code class="docutils literal notranslate"><span class="pre">founder_haplotypes_from_plink_bfile()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#xftsim.founders.founder_haplotypes_from_sgkit_dataset"><code class="docutils literal notranslate"><span class="pre">founder_haplotypes_from_sgkit_dataset()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#xftsim.founders.founder_haplotypes_uniform_AFs"><code class="docutils literal notranslate"><span class="pre">founder_haplotypes_uniform_AFs()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#module-xftsim.index">index module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-xftsim.index">index</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#xftsim.index.ComponentIndex"><code class="docutils literal notranslate"><span class="pre">ComponentIndex</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.index.ComponentIndex.phenotype_name"><code class="docutils literal notranslate"><span class="pre">ComponentIndex.phenotype_name</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.index.ComponentIndex.component_name"><code class="docutils literal notranslate"><span class="pre">ComponentIndex.component_name</span></code></a></li>
@@ -327,8 +330,9 @@
 <li class="toctree-l3"><a class="reference internal" href="#xftsim.index.variantIndex_from_plink"><code class="docutils literal notranslate"><span class="pre">variantIndex_from_plink()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#module-xftsim.io">io module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-xftsim.io">io</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#xftsim.io.genotypes_to_pseudo_haplotypes"><code class="docutils literal notranslate"><span class="pre">genotypes_to_pseudo_haplotypes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#xftsim.io.haplotypes_from_sgkit_dataset"><code class="docutils literal notranslate"><span class="pre">haplotypes_from_sgkit_dataset()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#xftsim.io.load_haplotype_zarr"><code class="docutils literal notranslate"><span class="pre">load_haplotype_zarr()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#xftsim.io.plink1_sample_index"><code class="docutils literal notranslate"><span class="pre">plink1_sample_index()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#xftsim.io.plink1_variant_index"><code class="docutils literal notranslate"><span class="pre">plink1_variant_index()</span></code></a></li>
@@ -337,12 +341,8 @@
 <li class="toctree-l3"><a class="reference internal" href="#xftsim.io.write_to_plink1"><code class="docutils literal notranslate"><span class="pre">write_to_plink1()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#module-xftsim.lsmate">lsmate module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-xftsim.mate">mate module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#xftsim.mate.BalancedRandomMatingRegime"><code class="docutils literal notranslate"><span class="pre">BalancedRandomMatingRegime</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#xftsim.mate.BalancedRandomMatingRegime.mate"><code class="docutils literal notranslate"><span class="pre">BalancedRandomMatingRegime.mate()</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-xftsim.lsmate">lsmate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-xftsim.mate">mate</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#xftsim.mate.BatchedMatingRegime"><code class="docutils literal notranslate"><span class="pre">BatchedMatingRegime</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.mate.BatchedMatingRegime.regime"><code class="docutils literal notranslate"><span class="pre">BatchedMatingRegime.regime</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.mate.BatchedMatingRegime.max_batch_size"><code class="docutils literal notranslate"><span class="pre">BatchedMatingRegime.max_batch_size</span></code></a></li>
@@ -402,9 +402,13 @@
 <li class="toctree-l4"><a class="reference internal" href="#id61"><code class="docutils literal notranslate"><span class="pre">MatingRegime.population_growth_factor</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="#xftsim.mate.RandomMatingRegime"><code class="docutils literal notranslate"><span class="pre">RandomMatingRegime</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#xftsim.mate.RandomMatingRegime.mate"><code class="docutils literal notranslate"><span class="pre">RandomMatingRegime.mate()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#module-xftsim.ped">ped module</a><ul>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-xftsim.ped">ped</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#xftsim.ped.Pedigree"><code class="docutils literal notranslate"><span class="pre">Pedigree</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.ped.Pedigree.G"><code class="docutils literal notranslate"><span class="pre">Pedigree.G</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.ped.Pedigree._generation"><code class="docutils literal notranslate"><span class="pre">Pedigree._generation</span></code></a></li>
@@ -419,7 +423,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#module-xftsim.proc">proc module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-xftsim.proc">proc</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#xftsim.proc.LimitMemory"><code class="docutils literal notranslate"><span class="pre">LimitMemory</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.proc.LimitMemory.processor"><code class="docutils literal notranslate"><span class="pre">LimitMemory.processor()</span></code></a></li>
 </ul>
@@ -431,7 +435,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#xftsim.proc.WriteToDisk"><code class="docutils literal notranslate"><span class="pre">WriteToDisk</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#module-xftsim.reproduce">reproduce module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-xftsim.reproduce">reproduce</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#xftsim.reproduce.Meiosis"><code class="docutils literal notranslate"><span class="pre">Meiosis</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.reproduce.Meiosis.recombinationMap"><code class="docutils literal notranslate"><span class="pre">Meiosis.recombinationMap</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.reproduce.Meiosis.p"><code class="docutils literal notranslate"><span class="pre">Meiosis.p</span></code></a></li>
@@ -448,7 +452,11 @@
 <li class="toctree-l3"><a class="reference internal" href="#xftsim.reproduce.transmit_parental_phenotypes"><code class="docutils literal notranslate"><span class="pre">transmit_parental_phenotypes()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#module-xftsim.sim">sim module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-xftsim.sim">sim</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#xftsim.sim.DemoSimulation"><code class="docutils literal notranslate"><span class="pre">DemoSimulation</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#xftsim.sim.DemoSimulation.demo_routines"><code class="docutils literal notranslate"><span class="pre">DemoSimulation.demo_routines</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#xftsim.sim.Simulation"><code class="docutils literal notranslate"><span class="pre">Simulation</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.sim.Simulation.mating_regime"><code class="docutils literal notranslate"><span class="pre">Simulation.mating_regime</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.sim.Simulation.recombination_map"><code class="docutils literal notranslate"><span class="pre">Simulation.recombination_map</span></code></a></li>
@@ -500,7 +508,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#module-xftsim.stats">stats module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-xftsim.stats">stats</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#xftsim.stats.GWAS_Estimator"><code class="docutils literal notranslate"><span class="pre">GWAS_Estimator</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.stats.GWAS_Estimator.component_index"><code class="docutils literal notranslate"><span class="pre">GWAS_Estimator.component_index</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.stats.GWAS_Estimator.estimator"><code class="docutils literal notranslate"><span class="pre">GWAS_Estimator.estimator()</span></code></a></li>
@@ -519,7 +527,6 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#xftsim.stats.MatingStatistics"><code class="docutils literal notranslate"><span class="pre">MatingStatistics</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#xftsim.stats.MatingStatistics.component_index"><code class="docutils literal notranslate"><span class="pre">MatingStatistics.component_index</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.stats.MatingStatistics.estimator"><code class="docutils literal notranslate"><span class="pre">MatingStatistics.estimator()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#id77"><code class="docutils literal notranslate"><span class="pre">MatingStatistics.estimator()</span></code></a></li>
 </ul>
@@ -547,7 +554,14 @@
 <li class="toctree-l3"><a class="reference internal" href="#xftsim.stats.haseman_elston"><code class="docutils literal notranslate"><span class="pre">haseman_elston()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#module-xftsim.struct">struct module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-xftsim.struct">struct</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#xftsim.struct.GeneticMap"><code class="docutils literal notranslate"><span class="pre">GeneticMap</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#xftsim.struct.GeneticMap.frame"><code class="docutils literal notranslate"><span class="pre">GeneticMap.frame</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#xftsim.struct.GeneticMap.chroms"><code class="docutils literal notranslate"><span class="pre">GeneticMap.chroms</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#xftsim.struct.GeneticMap.from_pyrho_maps"><code class="docutils literal notranslate"><span class="pre">GeneticMap.from_pyrho_maps()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#xftsim.struct.GeneticMap.interpolate_cM_chrom"><code class="docutils literal notranslate"><span class="pre">GeneticMap.interpolate_cM_chrom()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#xftsim.struct.HaplotypeArray"><code class="docutils literal notranslate"><span class="pre">HaplotypeArray</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#xftsim.struct.PhenotypeArray"><code class="docutils literal notranslate"><span class="pre">PhenotypeArray</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.struct.PhenotypeArray.from_product"><code class="docutils literal notranslate"><span class="pre">PhenotypeArray.from_product()</span></code></a></li>
@@ -619,43 +633,43 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#module-xftsim.utils">utils module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-xftsim.utils">utils</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#xftsim.utils.ConstantCount"><code class="docutils literal notranslate"><span class="pre">ConstantCount</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.utils.ConstantCount.draw"><code class="docutils literal notranslate"><span class="pre">ConstantCount.draw</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.utils.ConstantCount.expectation"><code class="docutils literal notranslate"><span class="pre">ConstantCount.expectation</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#xftsim.utils.ConstantCount.mating_fraction"><code class="docutils literal notranslate"><span class="pre">ConstantCount.mating_fraction</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#xftsim.utils.ConstantCount.nonzero_fraction"><code class="docutils literal notranslate"><span class="pre">ConstantCount.nonzero_fraction</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#xftsim.utils.MixtureCount"><code class="docutils literal notranslate"><span class="pre">MixtureCount</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.utils.MixtureCount.draw"><code class="docutils literal notranslate"><span class="pre">MixtureCount.draw</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.utils.MixtureCount.expectation"><code class="docutils literal notranslate"><span class="pre">MixtureCount.expectation</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#xftsim.utils.MixtureCount.mating_fraction"><code class="docutils literal notranslate"><span class="pre">MixtureCount.mating_fraction</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#xftsim.utils.MixtureCount.nonzero_fraction"><code class="docutils literal notranslate"><span class="pre">MixtureCount.nonzero_fraction</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#xftsim.utils.NegativeBinomialCount"><code class="docutils literal notranslate"><span class="pre">NegativeBinomialCount</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.utils.NegativeBinomialCount.draw"><code class="docutils literal notranslate"><span class="pre">NegativeBinomialCount.draw</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.utils.NegativeBinomialCount.expectation"><code class="docutils literal notranslate"><span class="pre">NegativeBinomialCount.expectation</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#xftsim.utils.NegativeBinomialCount.mating_fraction"><code class="docutils literal notranslate"><span class="pre">NegativeBinomialCount.mating_fraction</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#xftsim.utils.NegativeBinomialCount.nonzero_fraction"><code class="docutils literal notranslate"><span class="pre">NegativeBinomialCount.nonzero_fraction</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#xftsim.utils.PoissonCount"><code class="docutils literal notranslate"><span class="pre">PoissonCount</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.utils.PoissonCount.expectation"><code class="docutils literal notranslate"><span class="pre">PoissonCount.expectation</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#xftsim.utils.PoissonCount.mating_fraction"><code class="docutils literal notranslate"><span class="pre">PoissonCount.mating_fraction</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#xftsim.utils.PoissonCount.nonzero_fraction"><code class="docutils literal notranslate"><span class="pre">PoissonCount.nonzero_fraction</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#xftsim.utils.VariableCount"><code class="docutils literal notranslate"><span class="pre">VariableCount</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.utils.VariableCount.draw"><code class="docutils literal notranslate"><span class="pre">VariableCount.draw</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.utils.VariableCount.expectation"><code class="docutils literal notranslate"><span class="pre">VariableCount.expectation</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#xftsim.utils.VariableCount.mating_fraction"><code class="docutils literal notranslate"><span class="pre">VariableCount.mating_fraction</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#xftsim.utils.VariableCount.nonzero_fraction"><code class="docutils literal notranslate"><span class="pre">VariableCount.nonzero_fraction</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.utils.VariableCount.None"><code class="docutils literal notranslate"><span class="pre">VariableCount.None()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#id88"><code class="docutils literal notranslate"><span class="pre">VariableCount.expectation</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id89"><code class="docutils literal notranslate"><span class="pre">VariableCount.mating_fraction</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id89"><code class="docutils literal notranslate"><span class="pre">VariableCount.nonzero_fraction</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#xftsim.utils.ZeroTruncatedPoissonCount"><code class="docutils literal notranslate"><span class="pre">ZeroTruncatedPoissonCount</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.utils.ZeroTruncatedPoissonCount.draw"><code class="docutils literal notranslate"><span class="pre">ZeroTruncatedPoissonCount.draw</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#xftsim.utils.ZeroTruncatedPoissonCount.expectation"><code class="docutils literal notranslate"><span class="pre">ZeroTruncatedPoissonCount.expectation</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#xftsim.utils.ZeroTruncatedPoissonCount.mating_fraction"><code class="docutils literal notranslate"><span class="pre">ZeroTruncatedPoissonCount.mating_fraction</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#xftsim.utils.ZeroTruncatedPoissonCount.nonzero_fraction"><code class="docutils literal notranslate"><span class="pre">ZeroTruncatedPoissonCount.nonzero_fraction</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#xftsim.utils.cartesian_product"><code class="docutils literal notranslate"><span class="pre">cartesian_product()</span></code></a></li>
@@ -710,6 +724,8 @@
              
   <section id="api-reference">
 <h1>API reference<a class="headerlink" href="#api-reference" title="Permalink to this heading"></a></h1>
+<section id="submodule-organization">
+<h2>Submodule organization<a class="headerlink" href="#submodule-organization" title="Permalink to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">xftsim</span></code> is organized into a number of submodules, the contents of which are arranged as follows:</p>
 <table class="docutils align-default">
 <thead>
@@ -777,9 +793,10 @@
 </tr>
 </tbody>
 </table>
-<p>Here is an auto-generated summary of the xftsim API.</p>
+<p>Below is an auto-generated summary of the xftsim API.</p>
+</section>
 <section id="module-xftsim.arch">
-<span id="arch-module"></span><h2>arch module<a class="headerlink" href="#module-xftsim.arch" title="Permalink to this heading"></a></h2>
+<span id="arch"></span><h2>arch<a class="headerlink" href="#module-xftsim.arch" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="xftsim.arch.AdditiveGeneticComponent">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">xftsim.arch.</span></span><span class="sig-name descname"><span class="pre">AdditiveGeneticComponent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#xftsim.arch.AdditiveGeneticComponent" title="Permalink to this definition"></a></dt>
@@ -1762,7 +1779,7 @@ by default True.</p></li>
 
 </section>
 <section id="module-xftsim.data">
-<span id="data-module"></span><h2>data module<a class="headerlink" href="#module-xftsim.data" title="Permalink to this heading"></a></h2>
+<span id="data"></span><h2>data<a class="headerlink" href="#module-xftsim.data" title="Permalink to this heading"></a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="xftsim.data.get_ceu_map">
 <span class="sig-prename descclassname"><span class="pre">xftsim.data.</span></span><span class="sig-name descname"><span class="pre">get_ceu_map</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#xftsim.data.get_ceu_map" title="Permalink to this definition"></a></dt>
@@ -1778,7 +1795,7 @@ by default True.</p></li>
 
 </section>
 <section id="module-xftsim.effect">
-<span id="effect-module"></span><h2>effect module<a class="headerlink" href="#module-xftsim.effect" title="Permalink to this heading"></a></h2>
+<span id="effect"></span><h2>effect<a class="headerlink" href="#module-xftsim.effect" title="Permalink to this heading"></a></h2>
 <p>Summary</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="xftsim.effect.AdditiveEffects">
@@ -2063,7 +2080,7 @@ blocks, defaults to True</p></li>
 
 </section>
 <section id="module-xftsim.founders">
-<span id="founders-module"></span><h2>founders module<a class="headerlink" href="#module-xftsim.founders" title="Permalink to this heading"></a></h2>
+<span id="founders"></span><h2>founders<a class="headerlink" href="#module-xftsim.founders" title="Permalink to this heading"></a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="xftsim.founders.founder_haplotypes_from_AFs">
 <span class="sig-prename descclassname"><span class="pre">xftsim.founders.</span></span><span class="sig-name descname"><span class="pre">founder_haplotypes_from_AFs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">afs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">diploid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#xftsim.founders.founder_haplotypes_from_AFs" title="Permalink to this definition"></a></dt>
@@ -2078,6 +2095,42 @@ blocks, defaults to True</p></li>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">xft.struct.HaplotypeArray</span></code> – An object representing a set of haplotypes generated from the given allele frequencies.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="xftsim.founders.founder_haplotypes_from_plink_bfile">
+<span class="sig-prename descclassname"><span class="pre">xftsim.founders.</span></span><span class="sig-name descname"><span class="pre">founder_haplotypes_from_plink_bfile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#xftsim.founders.founder_haplotypes_from_plink_bfile" title="Permalink to this definition"></a></dt>
+<dd><p>Reads in PLINK 1 binary genotype data and returns a HaplotypeArray object containing pseudo-haplotypes by
+randomly assigning haplotypes at heterozygous sites.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>path</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – The file path to the PLINK 1 binary genotype data.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">xr.DataArray</span></code> – Founder Pseudo-haplotype array with samples indexed by an xftsim.index.SampleIndex object and variants indexed
+by an xftsim.index.HaploidVariantIndex object. The “pseudo-” prefix refers to the fact that the
+plink bfile format doesn’t track phase.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="xftsim.founders.founder_haplotypes_from_sgkit_dataset">
+<span class="sig-prename descclassname"><span class="pre">xftsim.founders.</span></span><span class="sig-name descname"><span class="pre">founder_haplotypes_from_sgkit_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gdat</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#xftsim.founders.founder_haplotypes_from_sgkit_dataset" title="Permalink to this definition"></a></dt>
+<dd><p>Construct founder haplotypes array from sgkit DataArray.
+Useful in conjuction with sgkit.io.vcf.vcf_to_zarr() and sgkit.load_dataset()</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gdat</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">xr.Dataset</span></code>) – Dataset generated by sgkit.load_dataset()</p></li>
+<li><p><strong>generation</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Used to populate the generation attribute of xftsim.index.SampleIndex</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">xr.DataArray</span></code> – Array of founder haplotypes with samples indexed by an xftsim.index.SampleIndex object and variants indexed
+by an xftsim.index.HaploidVariantIndex object.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2102,7 +2155,7 @@ blocks, defaults to True</p></li>
 
 </section>
 <section id="module-xftsim.index">
-<span id="index-module"></span><h2>index module<a class="headerlink" href="#module-xftsim.index" title="Permalink to this heading"></a></h2>
+<span id="index"></span><h2>index<a class="headerlink" href="#module-xftsim.index" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="xftsim.index.ComponentIndex">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">xftsim.index.</span></span><span class="sig-name descname"><span class="pre">ComponentIndex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phenotype_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">component_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vorigin_relative</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k_total</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#xftsim.index.ComponentIndex" title="Permalink to this definition"></a></dt>
@@ -3100,7 +3153,7 @@ Returns a new instance of the XftIndex class representing the downsampled index.
 
 </section>
 <section id="module-xftsim.io">
-<span id="io-module"></span><h2>io module<a class="headerlink" href="#module-xftsim.io" title="Permalink to this heading"></a></h2>
+<span id="io"></span><h2>io<a class="headerlink" href="#module-xftsim.io" title="Permalink to this heading"></a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="xftsim.io.genotypes_to_pseudo_haplotypes">
 <span class="sig-prename descclassname"><span class="pre">xftsim.io.</span></span><span class="sig-name descname"><span class="pre">genotypes_to_pseudo_haplotypes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#xftsim.io.genotypes_to_pseudo_haplotypes" title="Permalink to this definition"></a></dt>
@@ -3111,6 +3164,25 @@ Returns a new instance of the XftIndex class representing the downsampled index.
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">xr.DataArray</span></code> – An xarray DataArray containing pseudo-haplotype data.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="xftsim.io.haplotypes_from_sgkit_dataset">
+<span class="sig-prename descclassname"><span class="pre">xftsim.io.</span></span><span class="sig-name descname"><span class="pre">haplotypes_from_sgkit_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gdat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">generation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#xftsim.io.haplotypes_from_sgkit_dataset" title="Permalink to this definition"></a></dt>
+<dd><p>Construct haplotype array from sgkit DataArray.
+Useful in conjuction with sgkit.io.vcf.vcf_to_zarr() and sgkit.load_dataset()</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gdat</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">xr.Dataset</span></code>) – Dataset generated by sgkit.load_dataset()</p></li>
+<li><p><strong>generation</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Used to populate the generation attribute of xftsim.index.SampleIndex</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">xr.DataArray</span></code> – Haplotype array with samples indexed by an xftsim.index.SampleIndex object and variants indexed
+by an xftsim.index.HaploidVariantIndex object.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -3166,15 +3238,20 @@ Returns a new instance of the XftIndex class representing the downsampled index.
 
 <dl class="py function">
 <dt class="sig sig-object py" id="xftsim.io.read_plink1_as_pseudohaplotypes">
-<span class="sig-prename descclassname"><span class="pre">xftsim.io.</span></span><span class="sig-name descname"><span class="pre">read_plink1_as_pseudohaplotypes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#xftsim.io.read_plink1_as_pseudohaplotypes" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">xftsim.io.</span></span><span class="sig-name descname"><span class="pre">read_plink1_as_pseudohaplotypes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">generation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#xftsim.io.read_plink1_as_pseudohaplotypes" title="Permalink to this definition"></a></dt>
 <dd><p>Reads in PLINK 1 binary genotype data and returns a HaplotypeArray object containing pseudo-haplotypes by
 randomly assigning haplotypes at heterozygous sites.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>path</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – The file path to the PLINK 1 binary genotype data.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – The file path to the PLINK 1 binary genotype data.</p></li>
+<li><p><strong>generation</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Used to populate the generation attribute of xftsim.index.SampleIndex</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">xft.struct.HaplotypeArray</span></code> – A HaplotypeArray object containing pseudo-haplotypes.</p>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">xr.DataArray</span></code> – Pseudo-haplotype array with samples indexed by an xftsim.index.SampleIndex object and variants indexed
+by an xftsim.index.HaploidVariantIndex object. The “pseudo-” prefix refers to the fact that the
+plink bfile format doesn’t track phase.</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>ValueError</strong> – If the specified file path does not exist or is not in the expected format.</p>
@@ -3220,7 +3297,7 @@ randomly assigning haplotypes at heterozygous sites.</p>
 
 </section>
 <section id="module-xftsim.lsmate">
-<span id="lsmate-module"></span><h2>lsmate module<a class="headerlink" href="#module-xftsim.lsmate" title="Permalink to this heading"></a></h2>
+<span id="lsmate"></span><h2>lsmate<a class="headerlink" href="#module-xftsim.lsmate" title="Permalink to this heading"></a></h2>
 <p>This module contains functions and classes for implementing different mating regimes in the context of population genetics simulations.</p>
 <p>Functions:</p>
 <blockquote>
@@ -3230,7 +3307,7 @@ randomly assigning haplotypes at heterozygous sites.</p>
 <blockquote>
 <div><p>MatingRegime: Base class for defining mating regimes.
 RandomMatingRegime: A class for implementing random mating.
-BalancedRandomMatingRegime: A class for implementing balanced random mating.
+RandomMatingRegime: A class for implementing balanced random mating.
 LinearAssortativeMatingRegime: A class for implementing linear assortative mating.
 KAssortativeMatingRegime: A class for implementing k-assortative mating.
 BatchedMatingRegime: A class for batching individuals to improve mating regime performance.</p>
@@ -3241,46 +3318,7 @@ BatchedMatingRegime: A class for batching individuals to improve mating regime p
 </table>
 </section>
 <section id="module-xftsim.mate">
-<span id="mate-module"></span><h2>mate module<a class="headerlink" href="#module-xftsim.mate" title="Permalink to this heading"></a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="xftsim.mate.BalancedRandomMatingRegime">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">xftsim.mate.</span></span><span class="sig-name descname"><span class="pre">BalancedRandomMatingRegime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">offspring_per_pair=&lt;xftsim.utils.ConstantCount</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mates_per_female=&lt;xftsim.utils.ConstantCount</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">female_offspring_per_pair='balanced'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sex_aware=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exhaustive=True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#xftsim.mate.BalancedRandomMatingRegime" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="xftsim.html#xftsim.mate.MatingRegime" title="xftsim.mate.MatingRegime"><code class="xref py py-class docutils literal notranslate"><span class="pre">MatingRegime</span></code></a></p>
-<p>A mating regime that randomly pairs individuals and produces offspring with balanced numbers of males and females.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>offspring_per_pair</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">xft.utils.VariableCount</span></code>, <em>optional</em>) – Number of offspring produced per mating pair, by default xft.utils.ConstantCount(1)</p></li>
-<li><p><strong>mates_per_female</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">xft.utils.VariableCount</span></code>, <em>optional</em>) – Number of males that mate with each female, by default xft.utils.ConstantCount(1)</p></li>
-<li><p><strong>female_offspring_per_pair</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Union[str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">xft.utils.VariableCount]</span></code>, <em>optional</em>) – The number of female offspring per mating pair. If “balanced”, the number is randomly generated and balanced with
-the number of male offspring. By default, “balanced”.</p></li>
-<li><p><strong>sex_aware</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <em>optional</em>) – If True, randomly paired individuals are selected so that there is an equal number of males and females.
-Otherwise, random pairing is performed. By default, False.</p></li>
-<li><p><strong>exhaustive</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <em>optional</em>) – If True, perform exhaustive enumeration of potential mates. If False, perform random sampling. By default, True.</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="xftsim.mate.BalancedRandomMatingRegime.mate">
-<span class="sig-name descname"><span class="pre">mate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">haplotypes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phenotypes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#xftsim.mate.BalancedRandomMatingRegime.mate" title="Permalink to this definition"></a></dt>
-<dd><p>Mate individuals randomly with balanced numbers of males and females.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>haplotypes</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">xr.DataArray</span></code>, <em>optional</em>) – Array containing haplotypes, by default None</p></li>
-<li><p><strong>phenotypes</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">xr.DataArray</span></code>, <em>optional</em>) – Array containing phenotypes, by default None</p></li>
-<li><p><strong>control</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>, <em>optional</em>) – Control dictionary, by default None</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="xftsim.html#xftsim.mate.MateAssignment" title="xftsim.mate.MateAssignment"><code class="xref py py-class docutils literal notranslate"><span class="pre">MateAssignment</span></code></a> – An object containing the maternal and paternal sample indices, the number of offspring per pair,
-and the number of female offspring per pair.</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+<span id="mate"></span><h2>mate<a class="headerlink" href="#module-xftsim.mate" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="xftsim.mate.BatchedMatingRegime">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">xftsim.mate.</span></span><span class="sig-name descname"><span class="pre">BatchedMatingRegime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">regime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_batch_size</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#xftsim.mate.BatchedMatingRegime" title="Permalink to this definition"></a></dt>
@@ -3440,13 +3478,14 @@ Defaults to True.</p></li>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="xftsim.mate.MateAssignment.get_mate_phenotypes">
-<span class="sig-name descname"><span class="pre">get_mate_phenotypes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phenotypes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">component_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#xftsim.mate.MateAssignment.get_mate_phenotypes" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_mate_phenotypes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phenotypes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">component_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">full</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#xftsim.mate.MateAssignment.get_mate_phenotypes" title="Permalink to this definition"></a></dt>
 <dd><p>Retrieves mate phenotypes based on the given phenotypes data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>phenotypes</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">xr.DataArray</span></code>) – The phenotypes data array.</p></li>
 <li><p><strong>component_index</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">xft.index.ComponentIndex</span></code>, <em>optional</em>) – The component index for the phenotypes data array.</p></li>
+<li><p><strong>full</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – Ignore component_index and get all components.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -3918,9 +3957,48 @@ in the same order as the order of offspring in this MateAssignment.</p>
 
 </dd></dl>
 
+<dl class="py class">
+<dt class="sig sig-object py" id="xftsim.mate.RandomMatingRegime">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">xftsim.mate.</span></span><span class="sig-name descname"><span class="pre">RandomMatingRegime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">offspring_per_pair=&lt;xftsim.utils.ConstantCount</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mates_per_female=&lt;xftsim.utils.ConstantCount</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">female_offspring_per_pair='balanced'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sex_aware=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exhaustive=True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#xftsim.mate.RandomMatingRegime" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="xftsim.html#xftsim.mate.MatingRegime" title="xftsim.mate.MatingRegime"><code class="xref py py-class docutils literal notranslate"><span class="pre">MatingRegime</span></code></a></p>
+<p>A mating regime that randomly pairs individuals and produces offspring with balanced numbers of males and females.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>offspring_per_pair</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">xft.utils.VariableCount</span></code>, <em>optional</em>) – Number of offspring produced per mating pair, by default xft.utils.ConstantCount(1)</p></li>
+<li><p><strong>mates_per_female</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">xft.utils.VariableCount</span></code>, <em>optional</em>) – Number of males that mate with each female, by default xft.utils.ConstantCount(1)</p></li>
+<li><p><strong>female_offspring_per_pair</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Union[str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">xft.utils.VariableCount]</span></code>, <em>optional</em>) – The number of female offspring per mating pair. If “balanced”, the number is balanced with
+the number of male offspring. By default, “balanced”.</p></li>
+<li><p><strong>sex_aware</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <em>optional</em>) – If True, randomly paired individuals are selected so that there is an equal number of males and females.
+Otherwise, random pairing is performed. By default, False.</p></li>
+<li><p><strong>exhaustive</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <em>optional</em>) – If True, perform exhaustive enumeration of potential mates. If False, perform random sampling. By default, True.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="xftsim.mate.RandomMatingRegime.mate">
+<span class="sig-name descname"><span class="pre">mate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">haplotypes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phenotypes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#xftsim.mate.RandomMatingRegime.mate" title="Permalink to this definition"></a></dt>
+<dd><p>Mate individuals randomly with balanced numbers of males and females.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>haplotypes</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">xr.DataArray</span></code>, <em>optional</em>) – Array containing haplotypes, by default None</p></li>
+<li><p><strong>phenotypes</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">xr.DataArray</span></code>, <em>optional</em>) – Array containing phenotypes, by default None</p></li>
+<li><p><strong>control</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>, <em>optional</em>) – Control dictionary, by default None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="xftsim.html#xftsim.mate.MateAssignment" title="xftsim.mate.MateAssignment"><code class="xref py py-class docutils literal notranslate"><span class="pre">MateAssignment</span></code></a> – An object containing the maternal and paternal sample indices, the number of offspring per pair,
+and the number of female offspring per pair.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 <section id="module-xftsim.ped">
-<span id="ped-module"></span><h2>ped module<a class="headerlink" href="#module-xftsim.ped" title="Permalink to this heading"></a></h2>
+<span id="ped"></span><h2>ped<a class="headerlink" href="#module-xftsim.ped" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="xftsim.ped.Pedigree">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">xftsim.ped.</span></span><span class="sig-name descname"><span class="pre">Pedigree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">founder_sample_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">founder_generation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#xftsim.ped.Pedigree" title="Permalink to this definition"></a></dt>
@@ -4080,7 +4158,7 @@ in the same order as the order of offspring in this MateAssignment.</p>
 
 </section>
 <section id="module-xftsim.proc">
-<span id="proc-module"></span><h2>proc module<a class="headerlink" href="#module-xftsim.proc" title="Permalink to this heading"></a></h2>
+<span id="proc"></span><h2>proc<a class="headerlink" href="#module-xftsim.proc" title="Permalink to this heading"></a></h2>
 <p>Module to define classes for post-processing xft simulation data.
 Classes:</p>
 <p>PostProcessor:
@@ -4180,7 +4258,7 @@ processor: Callable</p>
 
 </section>
 <section id="module-xftsim.reproduce">
-<span id="reproduce-module"></span><h2>reproduce module<a class="headerlink" href="#module-xftsim.reproduce" title="Permalink to this heading"></a></h2>
+<span id="reproduce"></span><h2>reproduce<a class="headerlink" href="#module-xftsim.reproduce" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="xftsim.reproduce.Meiosis">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">xftsim.reproduce.</span></span><span class="sig-name descname"><span class="pre">Meiosis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#xftsim.reproduce.Meiosis" title="Permalink to this definition"></a></dt>
@@ -4347,7 +4425,18 @@ between specified loci</p></li>
 
 </section>
 <section id="module-xftsim.sim">
-<span id="sim-module"></span><h2>sim module<a class="headerlink" href="#module-xftsim.sim" title="Permalink to this heading"></a></h2>
+<span id="sim"></span><h2>sim<a class="headerlink" href="#module-xftsim.sim" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="xftsim.sim.DemoSimulation">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">xftsim.sim.</span></span><span class="sig-name descname"><span class="pre">DemoSimulation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">routine</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'BGRM'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">400</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#xftsim.sim.DemoSimulation" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="xftsim.html#xftsim.sim.Simulation" title="xftsim.sim.Simulation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Simulation</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="xftsim.sim.DemoSimulation.demo_routines">
+<span class="sig-name descname"><span class="pre">demo_routines</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'BGRM':</span> <span class="pre">'Bivariate</span> <span class="pre">GCTA</span> <span class="pre">with</span> <span class="pre">balanced</span> <span class="pre">random</span> <span class="pre">mating</span> <span class="pre">demo\n'}</span></em><a class="headerlink" href="#xftsim.sim.DemoSimulation.demo_routines" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="xftsim.sim.Simulation">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">xftsim.sim.</span></span><span class="sig-name descname"><span class="pre">Simulation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">founder_haplotypes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mating_regime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recombination_map</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">architecture</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">statistics=[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">post_processors=[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">generation=-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control={}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reproduction_method=&lt;class</span> <span class="pre">'xftsim.reproduce.Meiosis'&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#xftsim.sim.Simulation" title="Permalink to this definition"></a></dt>
@@ -4804,7 +4893,7 @@ between specified loci</p></li>
 
 </section>
 <section id="module-xftsim.stats">
-<span id="stats-module"></span><h2>stats module<a class="headerlink" href="#module-xftsim.stats" title="Permalink to this heading"></a></h2>
+<span id="stats"></span><h2>stats<a class="headerlink" href="#module-xftsim.stats" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="xftsim.stats.GWAS_Estimator">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">xftsim.stats.</span></span><span class="sig-name descname"><span class="pre">GWAS_Estimator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">component_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#xftsim.stats.GWAS_Estimator" title="Permalink to this definition"></a></dt>
@@ -4931,21 +5020,18 @@ If not provided, calculate statistics for all components.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="xftsim.stats.MatingStatistics">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">xftsim.stats.</span></span><span class="sig-name descname"><span class="pre">MatingStatistics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">component_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#xftsim.stats.MatingStatistics" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">xftsim.stats.</span></span><span class="sig-name descname"><span class="pre">MatingStatistics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">component_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">full</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#xftsim.stats.MatingStatistics" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="xftsim.html#xftsim.stats.Statistic" title="xftsim.stats.Statistic"><code class="xref py py-class docutils literal notranslate"><span class="pre">Statistic</span></code></a></p>
 <p>Calculate and return various mating statistics for the given simulation.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="xftsim.stats.MatingStatistics.component_index">
-<span class="sig-name descname"><span class="pre">component_index</span></span><a class="headerlink" href="#xftsim.stats.MatingStatistics.component_index" title="Permalink to this definition"></a></dt>
-<dd><p>Index of the component for which the statistics are calculated.
-If not provided, calculate statistics for all components.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">xft.index.ComponentIndex</span></code>, <em>optional</em></p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>component_index</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">xft.index.ComponentIndex</span></code>, <em>optional</em>) – Index of the component for which the statistics are calculated.</p></li>
+<li><p><strong>full</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – Ignore component_index and compute statistics for all components
+If component_index is not provided, and full = False, calculate statistics for phenotype components only.</p></li>
+</ul>
 </dd>
 </dl>
-</dd></dl>
-
 <dl class="py method">
 <dt class="sig sig-object py" id="xftsim.stats.MatingStatistics.estimator">
 <span class="sig-name descname"><span class="pre">estimator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">xft.sim.Simulation</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="headerlink" href="#xftsim.stats.MatingStatistics.estimator" title="Permalink to this definition"></a></dt>
@@ -5116,7 +5202,79 @@ If not provided, calculate statistics for all components.</p>
 
 </section>
 <section id="module-xftsim.struct">
-<span id="struct-module"></span><h2>struct module<a class="headerlink" href="#module-xftsim.struct" title="Permalink to this heading"></a></h2>
+<span id="struct"></span><h2>struct<a class="headerlink" href="#module-xftsim.struct" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="xftsim.struct.GeneticMap">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">xftsim.struct.</span></span><span class="sig-name descname"><span class="pre">GeneticMap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chrom</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos_bp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos_cM</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#xftsim.struct.GeneticMap" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Map between physical and genetic distances.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>chrom</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code>) – Chromsomes variants are located on</p></li>
+<li><p><strong>pos_bp</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code>) – Physical positions of variants</p></li>
+<li><p><strong>pos_cM</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code>) – Map distances in cM</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="xftsim.struct.GeneticMap.frame">
+<span class="sig-name descname"><span class="pre">frame</span></span><a class="headerlink" href="#xftsim.struct.GeneticMap.frame" title="Permalink to this definition"></a></dt>
+<dd><p>Pandas DataFrame with the above columns</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">pd.DataFrame</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="xftsim.struct.GeneticMap.chroms">
+<span class="sig-name descname"><span class="pre">chroms</span></span><a class="headerlink" href="#xftsim.struct.GeneticMap.chroms" title="Permalink to this definition"></a></dt>
+<dd><p>Unique chromosomes present in map</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">np.ndarray</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="xftsim.struct.GeneticMap.from_pyrho_maps">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_pyrho_maps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'\t'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#xftsim.struct.GeneticMap.from_pyrho_maps" title="Permalink to this definition"></a></dt>
+<dd><p>Construct genetic map objects from maps provided at <a class="reference external" href="https://github.com/popgenmethods/pyrho">https://github.com/popgenmethods/pyrho</a>
+Please cite their work if you use their maps.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>paths</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code>) – Paths for each chromosome</p></li>
+<li><p><strong>sep</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <em>optional</em>) – Passed to pd.read_csv()</p></li>
+<li><p><strong>**kwargs</strong> – Additional arguments to pd.read_csv()</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="xftsim.html#xftsim.struct.GeneticMap" title="xftsim.struct.GeneticMap"><code class="xref py py-class docutils literal notranslate"><span class="pre">GeneticMap</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="xftsim.struct.GeneticMap.interpolate_cM_chrom">
+<span class="sig-name descname"><span class="pre">interpolate_cM_chrom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos_bp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chrom</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#xftsim.struct.GeneticMap.interpolate_cM_chrom" title="Permalink to this definition"></a></dt>
+<dd><p>Interpolate cM values in a specified chromosome based on genetic map information.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pos_bp</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code>) – Physical positions for which to interpolate cM values</p></li>
+<li><p><strong>chrom</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Chromosome on which to interpolate</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments to be passed to scipy.interpolate.interp1d.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="xftsim.struct.HaplotypeArray">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">xftsim.struct.</span></span><span class="sig-name descname"><span class="pre">HaplotypeArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">haplotypes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variant_indexer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_indexer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">generation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#xftsim.struct.HaplotypeArray" title="Permalink to this definition"></a></dt>
@@ -5673,18 +5831,21 @@ Specific to PhenotypeArray objects.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="xftsim.struct.XftAccessor.interpolate_cM">
-<span class="sig-name descname"><span class="pre">interpolate_cM</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">rmap_df=</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">Unnamed:</span> <span class="pre">0</span> <span class="pre">Chromosome</span>&#160; <span class="pre">Position(bp)</span>&#160; <span class="pre">Rate(cM/Mb)</span>&#160;&#160;&#160; <span class="pre">Map(cM)</span> <span class="pre">0</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">0</span>&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">chr1</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">11007</span>&#160;&#160;&#160;&#160; <span class="pre">4.597120</span>&#160;&#160; <span class="pre">0.000000</span> <span class="pre">1</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">1</span>&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">chr1</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">49297</span>&#160;&#160;&#160;&#160; <span class="pre">4.597120</span>&#160;&#160; <span class="pre">0.176024</span> <span class="pre">2</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">2</span>&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">chr1</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">49553</span>&#160;&#160;&#160;&#160; <span class="pre">3.153924</span>&#160;&#160; <span class="pre">0.177201</span> <span class="pre">3</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">3</span>&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">chr1</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">51478</span>&#160;&#160;&#160;&#160; <span class="pre">3.153924</span>&#160;&#160; <span class="pre">0.183272</span> <span class="pre">4</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">4</span>&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">chr1</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">58813</span>&#160;&#160;&#160;&#160; <span class="pre">3.153924</span>&#160;&#160; <span class="pre">0.206406</span> <span class="pre">...</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">...</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">...</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">...</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">...</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">...</span> <span class="pre">1038982</span>&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">15334</span>&#160;&#160;&#160;&#160;&#160; <span class="pre">chr22</span>&#160;&#160;&#160;&#160;&#160; <span class="pre">51229804</span>&#160;&#160;&#160;&#160; <span class="pre">1.054407</span>&#160; <span class="pre">58.431645</span> <span class="pre">1038983</span>&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">15335</span>&#160;&#160;&#160;&#160;&#160; <span class="pre">chr22</span>&#160;&#160;&#160;&#160;&#160; <span class="pre">51229854</span>&#160;&#160;&#160;&#160; <span class="pre">1.088816</span>&#160; <span class="pre">58.431698</span> <span class="pre">1038984</span>&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">15336</span>&#160;&#160;&#160;&#160;&#160; <span class="pre">chr22</span>&#160;&#160;&#160;&#160;&#160; <span class="pre">51230393</span>&#160;&#160;&#160;&#160; <span class="pre">1.185188</span>&#160; <span class="pre">58.432284</span> <span class="pre">1038985</span>&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">15337</span>&#160;&#160;&#160;&#160;&#160; <span class="pre">chr22</span>&#160;&#160;&#160;&#160;&#160; <span class="pre">51241385</span>&#160;&#160;&#160;&#160; <span class="pre">1.185188</span>&#160; <span class="pre">58.445312</span> <span class="pre">1038986</span>&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">15338</span>&#160;&#160;&#160;&#160;&#160; <span class="pre">chr22</span>&#160;&#160;&#160;&#160;&#160; <span class="pre">51244236</span>&#160;&#160;&#160;&#160; <span class="pre">0.000000</span>&#160; <span class="pre">58.448691</span>&#160; <span class="pre">[1038987</span> <span class="pre">rows</span> <span class="pre">x</span> <span class="pre">5</span> <span class="pre">columns],</span> <span class="pre">**kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#xftsim.struct.XftAccessor.interpolate_cM" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">interpolate_cM</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gmap</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#xftsim.struct.XftAccessor.interpolate_cM" title="Permalink to this definition"></a></dt>
 <dd><p>Interpolate cM values based on genetic map information.
 Specific to HaplotypeArray objects.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>rmap_df</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>) – Genetic map data as a DataFrame. Default is the CEU genetic map data.</p></li>
+<li><p><strong>gmap</strong> (<a class="reference internal" href="xftsim.html#xftsim.struct.GeneticMap" title="xftsim.struct.GeneticMap"><code class="xref py py-class docutils literal notranslate"><span class="pre">GeneticMap</span></code></a>) – Genetic map data</p></li>
 <li><p><strong>**kwargs</strong> – Additional keyword arguments to be passed to scipy.interpolate.interp1d.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>TypeError</strong> – If the column dimension is not ‘variant’.</p>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – If the column dimension is not ‘variant’.</p></li>
+<li><p><strong>ValueError</strong> – If not all chromosomes required are present in the genetic map</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -6004,7 +6165,7 @@ Specific to HaplotypeArray objects.</p>
 
 </section>
 <section id="module-xftsim.utils">
-<span id="utils-module"></span><h2>utils module<a class="headerlink" href="#module-xftsim.utils" title="Permalink to this heading"></a></h2>
+<span id="utils"></span><h2>utils<a class="headerlink" href="#module-xftsim.utils" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="xftsim.utils.ConstantCount">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">xftsim.utils.</span></span><span class="sig-name descname"><span class="pre">ConstantCount</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">count</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#xftsim.utils.ConstantCount" title="Permalink to this definition"></a></dt>
@@ -6033,9 +6194,9 @@ Specific to HaplotypeArray objects.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="xftsim.utils.ConstantCount.mating_fraction">
-<span class="sig-name descname"><span class="pre">mating_fraction</span></span><a class="headerlink" href="#xftsim.utils.ConstantCount.mating_fraction" title="Permalink to this definition"></a></dt>
-<dd><p>the fraction of the population that is expected to mate</p>
+<dt class="sig sig-object py" id="xftsim.utils.ConstantCount.nonzero_fraction">
+<span class="sig-name descname"><span class="pre">nonzero_fraction</span></span><a class="headerlink" href="#xftsim.utils.ConstantCount.nonzero_fraction" title="Permalink to this definition"></a></dt>
+<dd><p>the fraction of the population that is nonzero</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
@@ -6078,9 +6239,9 @@ Specific to HaplotypeArray objects.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="xftsim.utils.MixtureCount.mating_fraction">
-<span class="sig-name descname"><span class="pre">mating_fraction</span></span><a class="headerlink" href="#xftsim.utils.MixtureCount.mating_fraction" title="Permalink to this definition"></a></dt>
-<dd><p>the fraction of the population that is expected to mate</p>
+<dt class="sig sig-object py" id="xftsim.utils.MixtureCount.nonzero_fraction">
+<span class="sig-name descname"><span class="pre">nonzero_fraction</span></span><a class="headerlink" href="#xftsim.utils.MixtureCount.nonzero_fraction" title="Permalink to this definition"></a></dt>
+<dd><p>the fraction of the population that is nonzero</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
@@ -6126,9 +6287,9 @@ Specific to HaplotypeArray objects.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="xftsim.utils.NegativeBinomialCount.mating_fraction">
-<span class="sig-name descname"><span class="pre">mating_fraction</span></span><a class="headerlink" href="#xftsim.utils.NegativeBinomialCount.mating_fraction" title="Permalink to this definition"></a></dt>
-<dd><p>the fraction of the population that is expected to mate</p>
+<dt class="sig sig-object py" id="xftsim.utils.NegativeBinomialCount.nonzero_fraction">
+<span class="sig-name descname"><span class="pre">nonzero_fraction</span></span><a class="headerlink" href="#xftsim.utils.NegativeBinomialCount.nonzero_fraction" title="Permalink to this definition"></a></dt>
+<dd><p>the fraction of the population that is nonzero</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
@@ -6172,9 +6333,9 @@ Specific to HaplotypeArray objects.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="xftsim.utils.PoissonCount.mating_fraction">
-<span class="sig-name descname"><span class="pre">mating_fraction</span></span><a class="headerlink" href="#xftsim.utils.PoissonCount.mating_fraction" title="Permalink to this definition"></a></dt>
-<dd><p>the fraction of the population that is expected to mate</p>
+<dt class="sig sig-object py" id="xftsim.utils.PoissonCount.nonzero_fraction">
+<span class="sig-name descname"><span class="pre">nonzero_fraction</span></span><a class="headerlink" href="#xftsim.utils.PoissonCount.nonzero_fraction" title="Permalink to this definition"></a></dt>
+<dd><p>the fraction of the population that is nonzero</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
@@ -6191,7 +6352,7 @@ Specific to HaplotypeArray objects.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="xftsim.utils.VariableCount">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">xftsim.utils.</span></span><span class="sig-name descname"><span class="pre">VariableCount</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">draw</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expectation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mating_fraction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#xftsim.utils.VariableCount" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">xftsim.utils.</span></span><span class="sig-name descname"><span class="pre">VariableCount</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">draw</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expectation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nonzero_fraction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#xftsim.utils.VariableCount" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A class to represent random count variables</p>
 <p>…</p>
@@ -6218,9 +6379,9 @@ Specific to HaplotypeArray objects.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="xftsim.utils.VariableCount.mating_fraction">
-<span class="sig-name descname"><span class="pre">mating_fraction</span></span><a class="headerlink" href="#xftsim.utils.VariableCount.mating_fraction" title="Permalink to this definition"></a></dt>
-<dd><p>the fraction of the population that is expected to mate</p>
+<dt class="sig sig-object py" id="xftsim.utils.VariableCount.nonzero_fraction">
+<span class="sig-name descname"><span class="pre">nonzero_fraction</span></span><a class="headerlink" href="#xftsim.utils.VariableCount.nonzero_fraction" title="Permalink to this definition"></a></dt>
+<dd><p>the fraction of the population that is nonzero</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
@@ -6246,11 +6407,11 @@ Specific to HaplotypeArray objects.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="id89">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mating_fraction</span></span><a class="headerlink" href="#id89" title="Permalink to this definition"></a></dt>
-<dd><p>Getter function for mating_fraction attribute.</p>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">nonzero_fraction</span></span><a class="headerlink" href="#id89" title="Permalink to this definition"></a></dt>
+<dd><p>Getter function for nonzero_fraction attribute.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code> – The fraction of the population that is expected to mate.</p>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code> – The fraction of the population that is nonzero.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -6285,9 +6446,9 @@ Specific to HaplotypeArray objects.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="xftsim.utils.ZeroTruncatedPoissonCount.mating_fraction">
-<span class="sig-name descname"><span class="pre">mating_fraction</span></span><a class="headerlink" href="#xftsim.utils.ZeroTruncatedPoissonCount.mating_fraction" title="Permalink to this definition"></a></dt>
-<dd><p>the fraction of the population that is expected to mate</p>
+<dt class="sig sig-object py" id="xftsim.utils.ZeroTruncatedPoissonCount.nonzero_fraction">
+<span class="sig-name descname"><span class="pre">nonzero_fraction</span></span><a class="headerlink" href="#xftsim.utils.ZeroTruncatedPoissonCount.nonzero_fraction" title="Permalink to this definition"></a></dt>
+<dd><p>the fraction of the population that is nonzero</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>

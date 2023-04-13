@@ -4,9 +4,10 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>&lt;no title&gt; &mdash; xftsim 0.0.1-dev9 documentation</title>
+  <title>Simulating mating &mdash; xftsim 0.0.1-dev9 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/nbsphinx-code-cells.css" type="text/css" />
       <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
@@ -19,6 +20,8 @@
         <script src="../_static/doctools.js"></script>
         <script src="../_static/sphinx_highlight.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -46,9 +49,32 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul>
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../gettingstarted/getting_started.html">Getting started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="user_guide.html">User guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="user_guide.html">User guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="nutsandbolts.html">Nuts and bolts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="simulation.html">Anatomy of a simulation</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Mating regimes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Mating-and-offspring-counts">Mating and offspring counts</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Variable-counts">Variable counts</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#Who-with-whom?">Who with whom?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Random-mating">Random mating</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Mate-assignments">Mate assignments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Nonrandom-mating-regimes">Nonrandom mating regimes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Linear-assortative-mating">Linear assortative mating</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Univariate-primary-phenotypic-assortment">Univariate primary phenotypic assortment</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Univariate-social-/-genetic-homogamy">Univariate social / genetic homogamy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Exchangeable-bivariate-phenotypic-assortment">Exchangeable bivariate phenotypic assortment</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#Generalized-assortive-mating">Generalized assortive mating</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Batched-mating-regimes">Batched mating regimes</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../api.html">API reference</a></li>
 </ul>
 
@@ -67,9 +93,9 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="user_guide.html">User guide</a></li>
-      <li class="breadcrumb-item active">&lt;no title&gt;</li>
+      <li class="breadcrumb-item active">Simulating mating</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/userguide/mate.md.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/userguide/mate.ipynb.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -77,7 +103,1108 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <p>coming soon</p>
+  <section id="Simulating-mating">
+<h1>Simulating mating<a class="headerlink" href="#Simulating-mating" title="Permalink to this heading"></a></h1>
+<p>Mating regimes (<code class="docutils literal notranslate"><span class="pre">xftsim.mate.MatingRegime</span></code>) serve two primary functions:</p>
+<ol class="arabic simple">
+<li><p>the mates per female the number and offspring count / sex per mating</p></li>
+<li><p>deciding who mates with whom</p></li>
+</ol>
+<section id="Mating-and-offspring-counts">
+<h2>Mating and offspring counts<a class="headerlink" href="#Mating-and-offspring-counts" title="Permalink to this heading"></a></h2>
+<p>The first (the mates per female the number and offspring count / sex per mating) is determined by the following arguments to the <code class="docutils literal notranslate"><span class="pre">MatingRegime</span></code> constructor:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">mates_per_female</span></code> - the number of mating partners per female</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">offspring_per_pair</span></code> - the number of offspring per mate pair</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">female_offspring_per_pair</span></code> - the number of female offspring per mate pair</p></li>
+</ul>
+<p>Each of this can be constant or variable.</p>
+<section id="Variable-counts">
+<h3>Variable counts<a class="headerlink" href="#Variable-counts" title="Permalink to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">xftsim.utils</span></code> provides the <code class="docutils literal notranslate"><span class="pre">VariableCount</span></code> class for random counts which include a <code class="docutils literal notranslate"><span class="pre">draw</span></code> method for generating random variates, an <code class="docutils literal notranslate"><span class="pre">expectation</span></code> property that returns the expected value, and a <code class="docutils literal notranslate"><span class="pre">nonzero_fraction</span></code> property that returns the expected number of nonzero counts. The later is useful for determining, e.g., the fraction of couples expected to produce offspring.</p>
+<p>The simplest <code class="docutils literal notranslate"><span class="pre">VariableCount</span></code> subclass is the <code class="docutils literal notranslate"><span class="pre">ConstantCount</span></code>:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">xftsim</span> <span class="k">as</span> <span class="nn">xft</span>
+
+<span class="n">ccount</span> <span class="o">=</span> <span class="n">xft</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">ConstantCount</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">ccount</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="n">ccount</span><span class="o">.</span><span class="n">expectation</span><span class="p">,</span> <span class="n">ccount</span><span class="o">.</span><span class="n">nonzero_fraction</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+(array([2, 2, 2]), 2, 1.0)
+</pre></div></div>
+</div>
+<p>Other useful <code class="docutils literal notranslate"><span class="pre">VariableCount</span></code> subclasses are demonstrated below:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pcount</span> <span class="o">=</span> <span class="n">xft</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">PoissonCount</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">nbcount</span> <span class="o">=</span> <span class="n">xft</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">NegativeBinomialCount</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mf">.5</span><span class="p">)</span>
+<span class="n">ztpcount</span> <span class="o">=</span> <span class="n">xft</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">ZeroTruncatedPoissonCount</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">mixcount</span> <span class="o">=</span> <span class="n">xft</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">MixtureCount</span><span class="p">(</span><span class="n">componentCounts</span><span class="o">=</span><span class="p">[</span><span class="n">xft</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">ConstantCount</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span>
+                                                   <span class="n">xft</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">ConstantCount</span><span class="p">(</span><span class="mi">3</span><span class="p">)],</span>
+                                  <span class="n">mixture_probabilities</span><span class="o">=</span> <span class="p">[</span><span class="mf">.4</span><span class="p">,</span><span class="mf">.6</span><span class="p">])</span>
+
+<span class="k">for</span> <span class="n">count</span> <span class="ow">in</span> <span class="p">[</span><span class="n">pcount</span><span class="p">,</span> <span class="n">nbcount</span><span class="p">,</span> <span class="n">ztpcount</span><span class="p">,</span> <span class="n">mixcount</span><span class="p">]:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">count</span><span class="o">.</span><span class="n">expectation</span><span class="p">,</span> <span class="n">count</span><span class="o">.</span><span class="n">nonzero_fraction</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2 0.8646647167633873
+2.0 0.75
+2.3130352854993315 1
+1.7999999999999998 0.6
+</pre></div></div>
+</div>
+</section>
+</section>
+<section id="Who-with-whom?">
+<h2>Who with whom?<a class="headerlink" href="#Who-with-whom?" title="Permalink to this heading"></a></h2>
+<p>The second (who mates with whom) is mostly determined by the <code class="docutils literal notranslate"><span class="pre">.mate()</span></code> method of the <code class="docutils literal notranslate"><span class="pre">MatingRegime</span></code> but also by two boolean flags provided to the <code class="docutils literal notranslate"><span class="pre">MatingRegime</span></code> constructor:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">sex_aware</span></code> if <code class="docutils literal notranslate"><span class="pre">True</span></code>, enforces a regime where males may only mate with females and vice versa. In many cases, we have no interest in sex effects and it is therefore convenient to set this to <code class="docutils literal notranslate"><span class="pre">False</span></code> to increase the effective population size.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">exhaustive</span></code> if <code class="docutils literal notranslate"><span class="pre">False</span></code> when assigning mates, male mates are sampled with replacement. This too is convenient to set to <code class="docutils literal notranslate"><span class="pre">False</span></code> but should have little impact either way in sufficiently large simulations.</p></li>
+</ul>
+<p>The <code class="docutils literal notranslate"><span class="pre">mate()</span></code> methods are specific each <code class="docutils literal notranslate"><span class="pre">MatingRegime</span></code> subclass. Generally speaking, they map haplotype and phenotype arrays to a <code class="docutils literal notranslate"><span class="pre">MateAssignment</span></code> object.</p>
+<p>In what follows, we first introduce simple random mating regimes, then <code class="docutils literal notranslate"><span class="pre">MateAssignment</span></code> objects, and finally we’ll move on to more complex mating regimes.</p>
+<p>Throughout, we’ll reference the toy dataset below:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">xftsim</span> <span class="k">as</span> <span class="nn">xft</span>
+
+<span class="n">demo</span> <span class="o">=</span> <span class="n">xft</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">DemoSimulation</span><span class="p">(</span><span class="s1">&#39;BGRM&#39;</span><span class="p">)</span>
+<span class="n">demo</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;DemoSimulation&gt;
+Bivariate GCTA with balanced random mating demo
+
+n = 2000; m = 400
+Two phenotypes, height and bone mineral denisty (BMD)
+assuming bivariate GCTA infinitessimal archtecture
+with h2 values set to 0.5 and 0.4 for height and BMD
+respectively and a genetic effect correlation of 0.0.
+</pre></div></div>
+</div>
+</section>
+<section id="Random-mating">
+<h2>Random mating<a class="headerlink" href="#Random-mating" title="Permalink to this heading"></a></h2>
+<p>The simplest mating regime is that of random mating.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">xftsim.mate</span> <span class="kn">import</span> <span class="n">RandomMatingRegime</span>
+<span class="kn">from</span> <span class="nn">xftsim.utils</span> <span class="kn">import</span> <span class="n">ConstantCount</span><span class="p">,</span> <span class="n">PoissonCount</span>
+
+<span class="n">rm_regime</span> <span class="o">=</span> <span class="n">RandomMatingRegime</span><span class="p">(</span><span class="n">offspring_per_pair</span> <span class="o">=</span> <span class="n">ConstantCount</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span>
+                                <span class="n">mates_per_female</span> <span class="o">=</span> <span class="n">ConstantCount</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span>
+                                <span class="n">female_offspring_per_pair</span> <span class="o">=</span> <span class="s1">&#39;balanced&#39;</span><span class="p">,</span>
+                                <span class="n">sex_aware</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                                <span class="n">exhaustive</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Setting <code class="docutils literal notranslate"><span class="pre">female_offspring_per_pair</span></code> to <code class="docutils literal notranslate"><span class="pre">&quot;balanced&quot;</span></code> rather than a <code class="docutils literal notranslate"><span class="pre">VariableCount</span></code> object will result in a equal number of male and female offspring.</p>
+<p>It is sometimes useful to predict how the population size will change across generations. The <code class="docutils literal notranslate"><span class="pre">MatingRegime.population_growth_factor</span></code> property reveals the expected multiplicative change in population size each generation.</p>
+<p>As we specified <code class="docutils literal notranslate"><span class="pre">rm_regime</span></code> such that each female is paired with exactly one male and each mating will produce exactly one offspring, we expect constant population size:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">rm_regime</span><span class="o">.</span><span class="n">population_growth_factor</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+1.0
+</pre></div></div>
+</div>
+<p>Of course, this is not always the case, as we demonstrate below:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">rm_regime2</span> <span class="o">=</span> <span class="n">RandomMatingRegime</span><span class="p">(</span><span class="n">offspring_per_pair</span> <span class="o">=</span> <span class="n">PoissonCount</span><span class="p">(</span><span class="mf">2.2</span><span class="p">),</span>
+                                <span class="n">mates_per_female</span> <span class="o">=</span> <span class="n">PoissonCount</span><span class="p">(</span><span class="mf">1.1</span><span class="p">),</span>
+                                <span class="n">female_offspring_per_pair</span> <span class="o">=</span> <span class="s1">&#39;balanced&#39;</span><span class="p">,</span>
+                                <span class="n">sex_aware</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                                <span class="n">exhaustive</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+
+<span class="n">rm_regime2</span><span class="o">.</span><span class="n">population_growth_factor</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+1.2100000000000002
+</pre></div></div>
+</div>
+</section>
+<section id="Mate-assignments">
+<h2>Mate assignments<a class="headerlink" href="#Mate-assignments" title="Permalink to this heading"></a></h2>
+<p>Mating regime objects map haplotypes and phenotypes to a <code class="docutils literal notranslate"><span class="pre">MateAssignment</span></code> object, which stores information about who mates with whom and the offspring such matings produce:</p>
+<div class="note docutils container">
+<p>In practice, users will rarely call <code class="docutils literal notranslate"><span class="pre">MateAssignment.mate()</span></code> directly as this occurs automatically when running a simulation.</p>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mate_assignment</span> <span class="o">=</span> <span class="n">rm_regime</span><span class="o">.</span><span class="n">mate</span><span class="p">(</span><span class="n">haplotypes</span><span class="o">=</span><span class="n">demo</span><span class="o">.</span><span class="n">haplotypes</span><span class="p">,</span>
+                                 <span class="n">phenotypes</span><span class="o">=</span><span class="n">demo</span><span class="o">.</span><span class="n">phenotypes</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="note docutils container">
+<p>Since the mating regime we’re using is random, the only information the <code class="docutils literal notranslate"><span class="pre">mate</span></code> method uses from either the haplotypes or phenotypes would be the associated <code class="docutils literal notranslate"><span class="pre">index.SampleIndex</span></code> object.</p>
+</div>
+<p>Two useful perspectives for viewing a <code class="docutils literal notranslate"><span class="pre">MateAssignment</span></code> are the <code class="docutils literal notranslate"><span class="pre">mating_frame</span></code>, which is indexed by couple, and the <code class="docutils literal notranslate"><span class="pre">reproduction_frame</span></code>, which is indexed by offspring:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mate_assignment</span><span class="o">.</span><span class="n">get_mating_frame</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>maternal_sample</th>
+      <th>maternal_iid</th>
+      <th>maternal_fid</th>
+      <th>maternal_sex</th>
+      <th>paternal_sample</th>
+      <th>paternal_iid</th>
+      <th>paternal_fid</th>
+      <th>paternal_sex</th>
+      <th>n_offspring</th>
+      <th>n_female_spring</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0..1_182.1_91</td>
+      <td>1_182</td>
+      <td>1_91</td>
+      <td>0</td>
+      <td>0..1_3033.1_1516</td>
+      <td>1_3033</td>
+      <td>1_1516</td>
+      <td>0</td>
+      <td>2</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>0..1_2275.1_1137</td>
+      <td>1_2275</td>
+      <td>1_1137</td>
+      <td>1</td>
+      <td>0..1_398.1_199</td>
+      <td>1_398</td>
+      <td>1_199</td>
+      <td>0</td>
+      <td>2</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>0..1_2040.1_1020</td>
+      <td>1_2040</td>
+      <td>1_1020</td>
+      <td>0</td>
+      <td>0..1_3189.1_1594</td>
+      <td>1_3189</td>
+      <td>1_1594</td>
+      <td>0</td>
+      <td>2</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>0..1_2345.1_1172</td>
+      <td>1_2345</td>
+      <td>1_1172</td>
+      <td>1</td>
+      <td>0..1_796.1_398</td>
+      <td>1_796</td>
+      <td>1_398</td>
+      <td>1</td>
+      <td>2</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>0..1_1687.1_843</td>
+      <td>1_1687</td>
+      <td>1_843</td>
+      <td>1</td>
+      <td>0..1_2154.1_1077</td>
+      <td>1_2154</td>
+      <td>1_1077</td>
+      <td>0</td>
+      <td>2</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>1995</th>
+      <td>0..1_3329.1_1664</td>
+      <td>1_3329</td>
+      <td>1_1664</td>
+      <td>1</td>
+      <td>0..1_1168.1_584</td>
+      <td>1_1168</td>
+      <td>1_584</td>
+      <td>1</td>
+      <td>2</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1996</th>
+      <td>0..1_920.1_460</td>
+      <td>1_920</td>
+      <td>1_460</td>
+      <td>0</td>
+      <td>0..1_2262.1_1131</td>
+      <td>1_2262</td>
+      <td>1_1131</td>
+      <td>0</td>
+      <td>2</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>1997</th>
+      <td>0..1_877.1_438</td>
+      <td>1_877</td>
+      <td>1_438</td>
+      <td>0</td>
+      <td>0..1_1204.1_602</td>
+      <td>1_1204</td>
+      <td>1_602</td>
+      <td>1</td>
+      <td>2</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>1998</th>
+      <td>0..1_2531.1_1265</td>
+      <td>1_2531</td>
+      <td>1_1265</td>
+      <td>1</td>
+      <td>0..1_2171.1_1085</td>
+      <td>1_2171</td>
+      <td>1_1085</td>
+      <td>1</td>
+      <td>2</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>1999</th>
+      <td>0..1_729.1_364</td>
+      <td>1_729</td>
+      <td>1_364</td>
+      <td>1</td>
+      <td>0..1_2622.1_1311</td>
+      <td>1_2622</td>
+      <td>1_1311</td>
+      <td>1</td>
+      <td>2</td>
+      <td>2</td>
+    </tr>
+  </tbody>
+</table>
+<p>2000 rows × 10 columns</p>
+</div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mate_assignment</span><span class="o">.</span><span class="n">get_reproduction_frame</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>iid</th>
+      <th>fid</th>
+      <th>sex</th>
+      <th>maternal_sample</th>
+      <th>maternal_iid</th>
+      <th>maternal_fid</th>
+      <th>maternal_sex</th>
+      <th>paternal_sample</th>
+      <th>paternal_iid</th>
+      <th>paternal_fid</th>
+      <th>paternal_sex</th>
+    </tr>
+    <tr>
+      <th>sample</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0..2_0.2_0</th>
+      <td>2_0</td>
+      <td>2_0</td>
+      <td>1</td>
+      <td>0..1_182.1_91</td>
+      <td>1_182</td>
+      <td>1_91</td>
+      <td>0</td>
+      <td>0..1_3033.1_1516</td>
+      <td>1_3033</td>
+      <td>1_1516</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>0..2_1.2_0</th>
+      <td>2_1</td>
+      <td>2_0</td>
+      <td>1</td>
+      <td>0..1_182.1_91</td>
+      <td>1_182</td>
+      <td>1_91</td>
+      <td>0</td>
+      <td>0..1_3033.1_1516</td>
+      <td>1_3033</td>
+      <td>1_1516</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>0..2_2.2_1</th>
+      <td>2_2</td>
+      <td>2_1</td>
+      <td>0</td>
+      <td>0..1_2275.1_1137</td>
+      <td>1_2275</td>
+      <td>1_1137</td>
+      <td>1</td>
+      <td>0..1_398.1_199</td>
+      <td>1_398</td>
+      <td>1_199</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>0..2_3.2_1</th>
+      <td>2_3</td>
+      <td>2_1</td>
+      <td>0</td>
+      <td>0..1_2275.1_1137</td>
+      <td>1_2275</td>
+      <td>1_1137</td>
+      <td>1</td>
+      <td>0..1_398.1_199</td>
+      <td>1_398</td>
+      <td>1_199</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>0..2_4.2_2</th>
+      <td>2_4</td>
+      <td>2_2</td>
+      <td>0</td>
+      <td>0..1_2040.1_1020</td>
+      <td>1_2040</td>
+      <td>1_1020</td>
+      <td>0</td>
+      <td>0..1_3189.1_1594</td>
+      <td>1_3189</td>
+      <td>1_1594</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>0..2_3995.2_1997</th>
+      <td>2_3995</td>
+      <td>2_1997</td>
+      <td>0</td>
+      <td>0..1_877.1_438</td>
+      <td>1_877</td>
+      <td>1_438</td>
+      <td>0</td>
+      <td>0..1_1204.1_602</td>
+      <td>1_1204</td>
+      <td>1_602</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>0..2_3996.2_1998</th>
+      <td>2_3996</td>
+      <td>2_1998</td>
+      <td>0</td>
+      <td>0..1_2531.1_1265</td>
+      <td>1_2531</td>
+      <td>1_1265</td>
+      <td>1</td>
+      <td>0..1_2171.1_1085</td>
+      <td>1_2171</td>
+      <td>1_1085</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>0..2_3997.2_1998</th>
+      <td>2_3997</td>
+      <td>2_1998</td>
+      <td>0</td>
+      <td>0..1_2531.1_1265</td>
+      <td>1_2531</td>
+      <td>1_1265</td>
+      <td>1</td>
+      <td>0..1_2171.1_1085</td>
+      <td>1_2171</td>
+      <td>1_1085</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>0..2_3998.2_1999</th>
+      <td>2_3998</td>
+      <td>2_1999</td>
+      <td>0</td>
+      <td>0..1_729.1_364</td>
+      <td>1_729</td>
+      <td>1_364</td>
+      <td>1</td>
+      <td>0..1_2622.1_1311</td>
+      <td>1_2622</td>
+      <td>1_1311</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>0..2_3999.2_1999</th>
+      <td>2_3999</td>
+      <td>2_1999</td>
+      <td>0</td>
+      <td>0..1_729.1_364</td>
+      <td>1_729</td>
+      <td>1_364</td>
+      <td>1</td>
+      <td>0..1_2622.1_1311</td>
+      <td>1_2622</td>
+      <td>1_1311</td>
+      <td>1</td>
+    </tr>
+  </tbody>
+</table>
+<p>4000 rows × 11 columns</p>
+</div></div>
+</div>
+</section>
+<section id="Nonrandom-mating-regimes">
+<h2>Nonrandom mating regimes<a class="headerlink" href="#Nonrandom-mating-regimes" title="Permalink to this heading"></a></h2>
+<div class="warning docutils container">
+<p>It will be challenging to to understand this information if you haven’t read <a class="reference internal" href="indexing.html"><span class="doc">the tutorial on indexing</span></a>! Specifically, understanding <code class="docutils literal notranslate"><span class="pre">xftsim.index.ComponentIndex</span></code> is essential.</p>
+</div>
+<p>As <code class="docutils literal notranslate"><span class="pre">xftsim</span></code> mating regimes are privy to haplotypes and phenotypes, the can be very general. Here we present a few commonly used regimes.</p>
+<section id="Linear-assortative-mating">
+<h3>Linear assortative mating<a class="headerlink" href="#Linear-assortative-mating" title="Permalink to this heading"></a></h3>
+<p>By “linear assortative mating”, we refer to mating mediated through a linear combination of phenotypic components. An exchangeable linear regime is provided by <code class="docutils literal notranslate"><span class="pre">xft.mate.LinearAssortativeMatingRegime</span></code>. Concretely, assume we want an exchangeable regime for <span class="math notranslate nohighlight">\(k\)</span> phenotypes with cross-mate correlations fixed at <code class="docutils literal notranslate"><span class="pre">r</span></code>. That is, given female and male phenotypes <span class="math notranslate nohighlight">\(Y,\tilde{Y}\in R^{n\times k}\)</span>, respectively, this regime will generate a mating permutation <span class="math notranslate nohighlight">\(P\)</span></p>
+<p>such that the empirical correlation is</p>
+<div class="math notranslate nohighlight">
+\[\text{corr}(Y,P\tilde{Y})\approx r\cdot1_{k\times k}.\]</div>
+</section>
+<section id="Univariate-primary-phenotypic-assortment">
+<h3>Univariate primary phenotypic assortment<a class="headerlink" href="#Univariate-primary-phenotypic-assortment" title="Permalink to this heading"></a></h3>
+<p>We can implement univariate assortative mating mediated through a single phenotype via <code class="docutils literal notranslate"><span class="pre">LinearAssortativeMatingRegime</span></code>. Below we do this for height, setting the cross-mate correlation to 0.5. We iterate for a single generation and then observe the sample mating statstics:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">xftsim.mate</span> <span class="kn">import</span> <span class="n">LinearAssortativeMatingRegime</span>
+
+<span class="n">reg_pp</span> <span class="o">=</span> <span class="n">LinearAssortativeMatingRegime</span><span class="p">(</span><span class="n">r</span><span class="o">=</span><span class="mf">.5</span><span class="p">,</span>
+    <span class="n">component_index</span><span class="o">=</span><span class="n">xft</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">ComponentIndex</span><span class="o">.</span><span class="n">from_product</span><span class="p">(</span><span class="n">phenotype_name</span><span class="o">=</span><span class="s1">&#39;height&#39;</span><span class="p">,</span>
+                                                          <span class="n">component_name</span><span class="o">=</span><span class="s1">&#39;phenotype&#39;</span><span class="p">))</span>
+
+<span class="n">demo_pp</span> <span class="o">=</span> <span class="n">xft</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">DemoSimulation</span><span class="p">()</span>
+<span class="n">demo_pp</span><span class="o">.</span><span class="n">mating_regime</span> <span class="o">=</span> <span class="n">reg_pp</span>
+<span class="n">demo_pp</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">xmate_corr</span> <span class="o">=</span> <span class="n">demo_pp</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;mating_statistics&#39;</span><span class="p">][</span><span class="s1">&#39;mate_correlations&#39;</span><span class="p">]</span>
+<span class="n">xmate_corr</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:</span><span class="n">xmate_corr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">//</span><span class="mi">2</span><span class="p">,</span><span class="n">xmate_corr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">//</span><span class="mi">2</span><span class="p">:]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>component</th>
+      <th>height.additiveGenetic.father</th>
+      <th>BMD.additiveGenetic.father</th>
+      <th>height.additiveNoise.father</th>
+      <th>BMD.additiveNoise.father</th>
+      <th>height.phenotype.father</th>
+      <th>BMD.phenotype.father</th>
+    </tr>
+    <tr>
+      <th>component</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>height.additiveGenetic.mother</th>
+      <td>0.242735</td>
+      <td>-0.003983</td>
+      <td>0.229452</td>
+      <td>0.012198</td>
+      <td>0.334080</td>
+      <td>0.006560</td>
+    </tr>
+    <tr>
+      <th>BMD.additiveGenetic.mother</th>
+      <td>-0.006012</td>
+      <td>0.011312</td>
+      <td>-0.009585</td>
+      <td>0.023872</td>
+      <td>-0.010987</td>
+      <td>0.025515</td>
+    </tr>
+    <tr>
+      <th>height.additiveNoise.mother</th>
+      <td>0.283236</td>
+      <td>-0.017278</td>
+      <td>0.248033</td>
+      <td>0.007626</td>
+      <td>0.376128</td>
+      <td>-0.005711</td>
+    </tr>
+    <tr>
+      <th>BMD.additiveNoise.mother</th>
+      <td>0.005301</td>
+      <td>-0.011793</td>
+      <td>-0.000940</td>
+      <td>0.022259</td>
+      <td>0.003159</td>
+      <td>0.008969</td>
+    </tr>
+    <tr>
+      <th>height.phenotype.mother</th>
+      <td>0.373033</td>
+      <td>-0.015124</td>
+      <td>0.338575</td>
+      <td>0.014036</td>
+      <td>0.503650</td>
+      <td>0.000554</td>
+    </tr>
+    <tr>
+      <th>BMD.phenotype.mother</th>
+      <td>0.000195</td>
+      <td>-0.001742</td>
+      <td>-0.006786</td>
+      <td>0.031953</td>
+      <td>-0.004576</td>
+      <td>0.022950</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+</section>
+<section id="Univariate-social-/-genetic-homogamy">
+<h3>Univariate social / genetic homogamy<a class="headerlink" href="#Univariate-social-/-genetic-homogamy" title="Permalink to this heading"></a></h3>
+<p>Social or genetic homogamy can be modeled by specifying that mating operates only on the non-heritable or heritable components respectively:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">xftsim.mate</span> <span class="kn">import</span> <span class="n">LinearAssortativeMatingRegime</span>
+
+<span class="n">reg_social</span> <span class="o">=</span> <span class="n">LinearAssortativeMatingRegime</span><span class="p">(</span><span class="n">r</span><span class="o">=</span><span class="mf">.5</span><span class="p">,</span>
+    <span class="n">component_index</span><span class="o">=</span><span class="n">xft</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">ComponentIndex</span><span class="o">.</span><span class="n">from_product</span><span class="p">(</span><span class="n">phenotype_name</span><span class="o">=</span><span class="s1">&#39;height&#39;</span><span class="p">,</span>
+                                                          <span class="n">component_name</span><span class="o">=</span><span class="s1">&#39;additiveNoise&#39;</span><span class="p">))</span>
+
+<span class="n">reg_genetic</span> <span class="o">=</span> <span class="n">LinearAssortativeMatingRegime</span><span class="p">(</span><span class="n">r</span><span class="o">=</span><span class="mf">.5</span><span class="p">,</span>
+    <span class="n">component_index</span><span class="o">=</span><span class="n">xft</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">ComponentIndex</span><span class="o">.</span><span class="n">from_product</span><span class="p">(</span><span class="n">phenotype_name</span><span class="o">=</span><span class="s1">&#39;height&#39;</span><span class="p">,</span>
+                                                          <span class="n">component_name</span><span class="o">=</span><span class="s1">&#39;additiveGenetic&#39;</span><span class="p">))</span>
+
+
+<span class="n">demo_soc</span> <span class="o">=</span> <span class="n">xft</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">DemoSimulation</span><span class="p">();</span> <span class="n">demo_gen</span> <span class="o">=</span> <span class="n">xft</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">DemoSimulation</span><span class="p">()</span>
+<span class="n">demo_soc</span><span class="o">.</span><span class="n">mating_regime</span> <span class="o">=</span> <span class="n">reg_social</span><span class="p">;</span> <span class="n">demo_gen</span><span class="o">.</span><span class="n">mating_regime</span> <span class="o">=</span> <span class="n">reg_genetic</span><span class="p">;</span>
+<span class="n">demo_soc</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span> <span class="n">demo_gen</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">xmate_corr_soc</span> <span class="o">=</span> <span class="n">demo_soc</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;mating_statistics&#39;</span><span class="p">][</span><span class="s1">&#39;mate_correlations&#39;</span><span class="p">]</span>
+<span class="n">xmate_corr_soc</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:</span><span class="n">xmate_corr_soc</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">//</span><span class="mi">2</span><span class="p">,</span><span class="n">xmate_corr_soc</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">//</span><span class="mi">2</span><span class="p">:]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>component</th>
+      <th>height.additiveGenetic.father</th>
+      <th>BMD.additiveGenetic.father</th>
+      <th>height.additiveNoise.father</th>
+      <th>BMD.additiveNoise.father</th>
+      <th>height.phenotype.father</th>
+      <th>BMD.phenotype.father</th>
+    </tr>
+    <tr>
+      <th>component</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>height.additiveGenetic.mother</th>
+      <td>0.013878</td>
+      <td>-0.032360</td>
+      <td>-0.014410</td>
+      <td>0.028975</td>
+      <td>-0.000577</td>
+      <td>0.000741</td>
+    </tr>
+    <tr>
+      <th>BMD.additiveGenetic.mother</th>
+      <td>0.029287</td>
+      <td>0.014812</td>
+      <td>0.005467</td>
+      <td>-0.014103</td>
+      <td>0.024533</td>
+      <td>-0.000973</td>
+    </tr>
+    <tr>
+      <th>height.additiveNoise.mother</th>
+      <td>0.004405</td>
+      <td>-0.010921</td>
+      <td>0.508129</td>
+      <td>-0.014149</td>
+      <td>0.367805</td>
+      <td>-0.017805</td>
+    </tr>
+    <tr>
+      <th>BMD.additiveNoise.mother</th>
+      <td>0.021196</td>
+      <td>0.009432</td>
+      <td>0.014848</td>
+      <td>-0.002474</td>
+      <td>0.025572</td>
+      <td>0.004290</td>
+    </tr>
+    <tr>
+      <th>height.phenotype.mother</th>
+      <td>0.012626</td>
+      <td>-0.029914</td>
+      <td>0.360482</td>
+      <td>0.009350</td>
+      <td>0.267618</td>
+      <td>-0.012471</td>
+    </tr>
+    <tr>
+      <th>BMD.phenotype.mother</th>
+      <td>0.035198</td>
+      <td>0.016823</td>
+      <td>0.014845</td>
+      <td>-0.011075</td>
+      <td>0.035423</td>
+      <td>0.002625</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">xmate_corr_gen</span> <span class="o">=</span> <span class="n">demo_gen</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;mating_statistics&#39;</span><span class="p">][</span><span class="s1">&#39;mate_correlations&#39;</span><span class="p">]</span>
+<span class="n">xmate_corr_gen</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:</span><span class="n">xmate_corr_gen</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">//</span><span class="mi">2</span><span class="p">,</span><span class="n">xmate_corr_gen</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">//</span><span class="mi">2</span><span class="p">:]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>component</th>
+      <th>height.additiveGenetic.father</th>
+      <th>BMD.additiveGenetic.father</th>
+      <th>height.additiveNoise.father</th>
+      <th>BMD.additiveNoise.father</th>
+      <th>height.phenotype.father</th>
+      <th>BMD.phenotype.father</th>
+    </tr>
+    <tr>
+      <th>component</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>height.additiveGenetic.mother</th>
+      <td>0.507781</td>
+      <td>0.034394</td>
+      <td>-0.000434</td>
+      <td>0.002611</td>
+      <td>0.370425</td>
+      <td>0.024729</td>
+    </tr>
+    <tr>
+      <th>BMD.additiveGenetic.mother</th>
+      <td>0.021875</td>
+      <td>0.007018</td>
+      <td>0.012762</td>
+      <td>0.006168</td>
+      <td>0.024902</td>
+      <td>0.009160</td>
+    </tr>
+    <tr>
+      <th>height.additiveNoise.mother</th>
+      <td>-0.029332</td>
+      <td>-0.006682</td>
+      <td>0.020333</td>
+      <td>-0.004088</td>
+      <td>-0.007184</td>
+      <td>-0.007418</td>
+    </tr>
+    <tr>
+      <th>BMD.additiveNoise.mother</th>
+      <td>-0.017322</td>
+      <td>0.003566</td>
+      <td>0.019329</td>
+      <td>0.006404</td>
+      <td>0.000881</td>
+      <td>0.007042</td>
+    </tr>
+    <tr>
+      <th>height.phenotype.mother</th>
+      <td>0.350034</td>
+      <td>0.020425</td>
+      <td>0.013906</td>
+      <td>-0.000954</td>
+      <td>0.265291</td>
+      <td>0.012857</td>
+    </tr>
+    <tr>
+      <th>BMD.phenotype.mother</th>
+      <td>0.002095</td>
+      <td>0.007431</td>
+      <td>0.023026</td>
+      <td>0.008952</td>
+      <td>0.017644</td>
+      <td>0.011467</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+</section>
+<section id="Exchangeable-bivariate-phenotypic-assortment">
+<h3>Exchangeable bivariate phenotypic assortment<a class="headerlink" href="#Exchangeable-bivariate-phenotypic-assortment" title="Permalink to this heading"></a></h3>
+<p>Exchangeable bivariate phenotypic assortment is also easily accommodated in this framework. Here we implement such a regime for <span class="math notranslate nohighlight">\(r\)</span>=.1 across height and bone mineral density (BMD):</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">reg_biv</span> <span class="o">=</span> <span class="n">LinearAssortativeMatingRegime</span><span class="p">(</span><span class="n">r</span><span class="o">=</span><span class="mf">.1</span><span class="p">,</span>
+    <span class="n">component_index</span><span class="o">=</span><span class="n">xft</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">ComponentIndex</span><span class="o">.</span><span class="n">from_product</span><span class="p">(</span><span class="n">phenotype_name</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;height&#39;</span><span class="p">,</span><span class="s1">&#39;BMD&#39;</span><span class="p">],</span>
+                                                          <span class="n">component_name</span><span class="o">=</span><span class="s1">&#39;phenotype&#39;</span><span class="p">))</span>
+
+<span class="n">demo_biv</span> <span class="o">=</span> <span class="n">xft</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">DemoSimulation</span><span class="p">()</span>
+<span class="n">demo_biv</span><span class="o">.</span><span class="n">mating_regime</span> <span class="o">=</span> <span class="n">reg_biv</span>
+<span class="n">demo_biv</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">xmate_corr</span> <span class="o">=</span> <span class="n">demo_biv</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;mating_statistics&#39;</span><span class="p">][</span><span class="s1">&#39;mate_correlations&#39;</span><span class="p">]</span>
+<span class="n">xmate_corr</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:</span><span class="n">xmate_corr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">//</span><span class="mi">2</span><span class="p">,</span><span class="n">xmate_corr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">//</span><span class="mi">2</span><span class="p">:]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>component</th>
+      <th>height.additiveGenetic.father</th>
+      <th>BMD.additiveGenetic.father</th>
+      <th>height.additiveNoise.father</th>
+      <th>BMD.additiveNoise.father</th>
+      <th>height.phenotype.father</th>
+      <th>BMD.phenotype.father</th>
+    </tr>
+    <tr>
+      <th>component</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>height.additiveGenetic.mother</th>
+      <td>0.033304</td>
+      <td>0.049230</td>
+      <td>0.058150</td>
+      <td>0.048000</td>
+      <td>0.065181</td>
+      <td>0.068972</td>
+    </tr>
+    <tr>
+      <th>BMD.additiveGenetic.mother</th>
+      <td>0.054839</td>
+      <td>0.064500</td>
+      <td>0.020884</td>
+      <td>0.054396</td>
+      <td>0.052817</td>
+      <td>0.083750</td>
+    </tr>
+    <tr>
+      <th>height.additiveNoise.mother</th>
+      <td>0.055989</td>
+      <td>0.050736</td>
+      <td>0.061472</td>
+      <td>0.053519</td>
+      <td>0.083158</td>
+      <td>0.074237</td>
+    </tr>
+    <tr>
+      <th>BMD.additiveNoise.mother</th>
+      <td>0.037729</td>
+      <td>0.060261</td>
+      <td>0.041121</td>
+      <td>0.053044</td>
+      <td>0.055817</td>
+      <td>0.079977</td>
+    </tr>
+    <tr>
+      <th>height.phenotype.mother</th>
+      <td>0.062385</td>
+      <td>0.069489</td>
+      <td>0.083174</td>
+      <td>0.070627</td>
+      <td>0.103346</td>
+      <td>0.099594</td>
+    </tr>
+    <tr>
+      <th>BMD.phenotype.mother</th>
+      <td>0.064538</td>
+      <td>0.088454</td>
+      <td>0.045707</td>
+      <td>0.076353</td>
+      <td>0.077543</td>
+      <td>0.116220</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+</section>
+</section>
+<section id="Generalized-assortive-mating">
+<h2>Generalized assortive mating<a class="headerlink" href="#Generalized-assortive-mating" title="Permalink to this heading"></a></h2>
+<div class="note docutils container">
+<p>Coming soon</p>
+</div>
+</section>
+<section id="Batched-mating-regimes">
+<h2>Batched mating regimes<a class="headerlink" href="#Batched-mating-regimes" title="Permalink to this heading"></a></h2>
+<div class="note docutils container">
+<p>Coming soon</p>
+</div>
+</section>
+</section>
 
 
            </div>

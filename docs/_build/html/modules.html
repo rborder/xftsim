@@ -224,6 +224,8 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="xftsim.html#module-xftsim.founders">xftsim.founders module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="xftsim.html#xftsim.founders.founder_haplotypes_from_AFs"><code class="docutils literal notranslate"><span class="pre">founder_haplotypes_from_AFs()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="xftsim.html#xftsim.founders.founder_haplotypes_from_plink_bfile"><code class="docutils literal notranslate"><span class="pre">founder_haplotypes_from_plink_bfile()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="xftsim.html#xftsim.founders.founder_haplotypes_from_sgkit_dataset"><code class="docutils literal notranslate"><span class="pre">founder_haplotypes_from_sgkit_dataset()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="xftsim.html#xftsim.founders.founder_haplotypes_uniform_AFs"><code class="docutils literal notranslate"><span class="pre">founder_haplotypes_uniform_AFs()</span></code></a></li>
 </ul>
 </li>
@@ -360,6 +362,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="xftsim.html#module-xftsim.io">xftsim.io module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="xftsim.html#xftsim.io.genotypes_to_pseudo_haplotypes"><code class="docutils literal notranslate"><span class="pre">genotypes_to_pseudo_haplotypes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="xftsim.html#xftsim.io.haplotypes_from_sgkit_dataset"><code class="docutils literal notranslate"><span class="pre">haplotypes_from_sgkit_dataset()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="xftsim.html#xftsim.io.load_haplotype_zarr"><code class="docutils literal notranslate"><span class="pre">load_haplotype_zarr()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="xftsim.html#xftsim.io.plink1_sample_index"><code class="docutils literal notranslate"><span class="pre">plink1_sample_index()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="xftsim.html#xftsim.io.plink1_variant_index"><code class="docutils literal notranslate"><span class="pre">plink1_variant_index()</span></code></a></li>
@@ -380,10 +383,6 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="xftsim.html#module-xftsim.mate">xftsim.mate module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="xftsim.html#xftsim.mate.BalancedRandomMatingRegime"><code class="docutils literal notranslate"><span class="pre">BalancedRandomMatingRegime</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="xftsim.html#xftsim.mate.BalancedRandomMatingRegime.mate"><code class="docutils literal notranslate"><span class="pre">BalancedRandomMatingRegime.mate()</span></code></a></li>
-</ul>
-</li>
 <li class="toctree-l3"><a class="reference internal" href="xftsim.html#xftsim.mate.BatchedMatingRegime"><code class="docutils literal notranslate"><span class="pre">BatchedMatingRegime</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="xftsim.html#xftsim.mate.BatchedMatingRegime.regime"><code class="docutils literal notranslate"><span class="pre">BatchedMatingRegime.regime</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="xftsim.html#xftsim.mate.BatchedMatingRegime.max_batch_size"><code class="docutils literal notranslate"><span class="pre">BatchedMatingRegime.max_batch_size</span></code></a></li>
@@ -443,6 +442,10 @@
 <li class="toctree-l4"><a class="reference internal" href="xftsim.html#id62"><code class="docutils literal notranslate"><span class="pre">MatingRegime.population_growth_factor</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="xftsim.html#xftsim.mate.RandomMatingRegime"><code class="docutils literal notranslate"><span class="pre">RandomMatingRegime</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="xftsim.html#xftsim.mate.RandomMatingRegime.mate"><code class="docutils literal notranslate"><span class="pre">RandomMatingRegime.mate()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="xftsim.html#module-xftsim.ped">xftsim.ped module</a><ul>
@@ -490,6 +493,10 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="xftsim.html#module-xftsim.sim">xftsim.sim module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="xftsim.html#xftsim.sim.DemoSimulation"><code class="docutils literal notranslate"><span class="pre">DemoSimulation</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="xftsim.html#xftsim.sim.DemoSimulation.demo_routines"><code class="docutils literal notranslate"><span class="pre">DemoSimulation.demo_routines</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="xftsim.html#xftsim.sim.Simulation"><code class="docutils literal notranslate"><span class="pre">Simulation</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="xftsim.html#xftsim.sim.Simulation.mating_regime"><code class="docutils literal notranslate"><span class="pre">Simulation.mating_regime</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="xftsim.html#xftsim.sim.Simulation.recombination_map"><code class="docutils literal notranslate"><span class="pre">Simulation.recombination_map</span></code></a></li>
@@ -560,7 +567,6 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="xftsim.html#xftsim.stats.MatingStatistics"><code class="docutils literal notranslate"><span class="pre">MatingStatistics</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="xftsim.html#xftsim.stats.MatingStatistics.component_index"><code class="docutils literal notranslate"><span class="pre">MatingStatistics.component_index</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="xftsim.html#xftsim.stats.MatingStatistics.estimator"><code class="docutils literal notranslate"><span class="pre">MatingStatistics.estimator()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="xftsim.html#id78"><code class="docutils literal notranslate"><span class="pre">MatingStatistics.estimator()</span></code></a></li>
 </ul>
@@ -589,6 +595,13 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="xftsim.html#module-xftsim.struct">xftsim.struct module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="xftsim.html#xftsim.struct.GeneticMap"><code class="docutils literal notranslate"><span class="pre">GeneticMap</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="xftsim.html#xftsim.struct.GeneticMap.frame"><code class="docutils literal notranslate"><span class="pre">GeneticMap.frame</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="xftsim.html#xftsim.struct.GeneticMap.chroms"><code class="docutils literal notranslate"><span class="pre">GeneticMap.chroms</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="xftsim.html#xftsim.struct.GeneticMap.from_pyrho_maps"><code class="docutils literal notranslate"><span class="pre">GeneticMap.from_pyrho_maps()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="xftsim.html#xftsim.struct.GeneticMap.interpolate_cM_chrom"><code class="docutils literal notranslate"><span class="pre">GeneticMap.interpolate_cM_chrom()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="xftsim.html#xftsim.struct.HaplotypeArray"><code class="docutils literal notranslate"><span class="pre">HaplotypeArray</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="xftsim.html#xftsim.struct.PhenotypeArray"><code class="docutils literal notranslate"><span class="pre">PhenotypeArray</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="xftsim.html#xftsim.struct.PhenotypeArray.from_product"><code class="docutils literal notranslate"><span class="pre">PhenotypeArray.from_product()</span></code></a></li>
@@ -664,39 +677,39 @@
 <li class="toctree-l3"><a class="reference internal" href="xftsim.html#xftsim.utils.ConstantCount"><code class="docutils literal notranslate"><span class="pre">ConstantCount</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="xftsim.html#xftsim.utils.ConstantCount.draw"><code class="docutils literal notranslate"><span class="pre">ConstantCount.draw</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="xftsim.html#xftsim.utils.ConstantCount.expectation"><code class="docutils literal notranslate"><span class="pre">ConstantCount.expectation</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="xftsim.html#xftsim.utils.ConstantCount.mating_fraction"><code class="docutils literal notranslate"><span class="pre">ConstantCount.mating_fraction</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="xftsim.html#xftsim.utils.ConstantCount.nonzero_fraction"><code class="docutils literal notranslate"><span class="pre">ConstantCount.nonzero_fraction</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="xftsim.html#xftsim.utils.MixtureCount"><code class="docutils literal notranslate"><span class="pre">MixtureCount</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="xftsim.html#xftsim.utils.MixtureCount.draw"><code class="docutils literal notranslate"><span class="pre">MixtureCount.draw</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="xftsim.html#xftsim.utils.MixtureCount.expectation"><code class="docutils literal notranslate"><span class="pre">MixtureCount.expectation</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="xftsim.html#xftsim.utils.MixtureCount.mating_fraction"><code class="docutils literal notranslate"><span class="pre">MixtureCount.mating_fraction</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="xftsim.html#xftsim.utils.MixtureCount.nonzero_fraction"><code class="docutils literal notranslate"><span class="pre">MixtureCount.nonzero_fraction</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="xftsim.html#xftsim.utils.NegativeBinomialCount"><code class="docutils literal notranslate"><span class="pre">NegativeBinomialCount</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="xftsim.html#xftsim.utils.NegativeBinomialCount.draw"><code class="docutils literal notranslate"><span class="pre">NegativeBinomialCount.draw</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="xftsim.html#xftsim.utils.NegativeBinomialCount.expectation"><code class="docutils literal notranslate"><span class="pre">NegativeBinomialCount.expectation</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="xftsim.html#xftsim.utils.NegativeBinomialCount.mating_fraction"><code class="docutils literal notranslate"><span class="pre">NegativeBinomialCount.mating_fraction</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="xftsim.html#xftsim.utils.NegativeBinomialCount.nonzero_fraction"><code class="docutils literal notranslate"><span class="pre">NegativeBinomialCount.nonzero_fraction</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="xftsim.html#xftsim.utils.PoissonCount"><code class="docutils literal notranslate"><span class="pre">PoissonCount</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="xftsim.html#xftsim.utils.PoissonCount.expectation"><code class="docutils literal notranslate"><span class="pre">PoissonCount.expectation</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="xftsim.html#xftsim.utils.PoissonCount.mating_fraction"><code class="docutils literal notranslate"><span class="pre">PoissonCount.mating_fraction</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="xftsim.html#xftsim.utils.PoissonCount.nonzero_fraction"><code class="docutils literal notranslate"><span class="pre">PoissonCount.nonzero_fraction</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="xftsim.html#xftsim.utils.VariableCount"><code class="docutils literal notranslate"><span class="pre">VariableCount</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="xftsim.html#xftsim.utils.VariableCount.draw"><code class="docutils literal notranslate"><span class="pre">VariableCount.draw</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="xftsim.html#xftsim.utils.VariableCount.expectation"><code class="docutils literal notranslate"><span class="pre">VariableCount.expectation</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="xftsim.html#xftsim.utils.VariableCount.mating_fraction"><code class="docutils literal notranslate"><span class="pre">VariableCount.mating_fraction</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="xftsim.html#xftsim.utils.VariableCount.nonzero_fraction"><code class="docutils literal notranslate"><span class="pre">VariableCount.nonzero_fraction</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="xftsim.html#xftsim.utils.VariableCount.None"><code class="docutils literal notranslate"><span class="pre">VariableCount.None()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="xftsim.html#id89"><code class="docutils literal notranslate"><span class="pre">VariableCount.expectation</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="xftsim.html#id90"><code class="docutils literal notranslate"><span class="pre">VariableCount.mating_fraction</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="xftsim.html#id90"><code class="docutils literal notranslate"><span class="pre">VariableCount.nonzero_fraction</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="xftsim.html#xftsim.utils.ZeroTruncatedPoissonCount"><code class="docutils literal notranslate"><span class="pre">ZeroTruncatedPoissonCount</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="xftsim.html#xftsim.utils.ZeroTruncatedPoissonCount.draw"><code class="docutils literal notranslate"><span class="pre">ZeroTruncatedPoissonCount.draw</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="xftsim.html#xftsim.utils.ZeroTruncatedPoissonCount.expectation"><code class="docutils literal notranslate"><span class="pre">ZeroTruncatedPoissonCount.expectation</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="xftsim.html#xftsim.utils.ZeroTruncatedPoissonCount.mating_fraction"><code class="docutils literal notranslate"><span class="pre">ZeroTruncatedPoissonCount.mating_fraction</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="xftsim.html#xftsim.utils.ZeroTruncatedPoissonCount.nonzero_fraction"><code class="docutils literal notranslate"><span class="pre">ZeroTruncatedPoissonCount.nonzero_fraction</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="xftsim.html#xftsim.utils.cartesian_product"><code class="docutils literal notranslate"><span class="pre">cartesian_product()</span></code></a></li>
