@@ -9,5 +9,5 @@ In this tutorial we'll learn about the basic data structures used for representi
 
 Indexing <indexing>
 Data structures <struct>
-Organization of submodules <submodules>
+<!-- Organization of submodules <submodules> -->
 ```
