@@ -658,8 +658,21 @@ class XftAccessor:
         """
         if self._col_dim != 'variant':
             raise TypeError
-        # tmp = self._obj[:, 0::2].data + self._obj[:, 1::2].
-        # self.get_variant_indexer()
+        data = self._obj[:, 0::2].data + self._obj[:, 1::2].data
+        vind = self.get_variant_indexer().to_diploid()
+        sind = self.get_sample_indexer()
+
+        coord_dict = sind.coord_dict.copy()
+        coord_dict.update(vind.coord_dict)
+        ## convert to dask array if necessary
+        return xr.DataArray(data=data,
+                            dims=['sample', 'variant'],
+                            coords=coord_dict,
+                            name='GenotypeArray',
+                            attrs={
+                                'generation': self._obj.generation,
+                            })
+
         # tmp = haplo[:,0::2].data + haplo[:,1::2].data
         # ind = haplo.xft.get_variant_indexer().to_diploid()
         # xft.struct.HaplotypeArray(tmp,sample_indexer=haplo.xft.get_sample_indexer(),
