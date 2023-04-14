@@ -385,16 +385,27 @@ class Simulation():
 
 
 class DemoSimulation(Simulation):
-    demo_routines = dict(BGRM = 'Bivariate GCTA with balanced random mating demo\n')
+    demo_routines = dict(UGRM = 'Univariate GCTA with balanced random mating demo\n',
+                         BGRM = 'Bivariate GCTA with balanced random mating demo\n')
     _demo_long = dict(BGRM = 'Two phenotypes, height and bone mineral denisty (BMD)\n'
                              'assuming bivariate GCTA infinitessimal archtecture\n'
                              'with h2 values set to 0.5 and 0.4 for height and BMD\n'
-                             'respectively and a genetic effect correlation of 0.0.')
+                             'respectively and a genetic effect correlation of 0.0.',
+                      UGRM = 'A single phenotype, height, assuming univariate GCTA\n'
+                             'infinitessimal archtecture with h2 = 0.5.')
     def __init__(self, 
                  routine: str = 'BGRM',
                  n: int = 2000, 
                  m: int = 400) -> None:
-        if routine == 'BGRM':
+        if routine == 'UGRM':
+            founder_haplotypes = xft.founders.founder_haplotypes_uniform_AFs(n=n, m=m)
+            architecture = xft.arch.GCTA_Architecture(h2=[.5], phenotype_name=['height'], 
+                                                      haplotypes=founder_haplotypes)
+            recombination_map = xft.reproduce.RecombinationMap.constant_map_from_haplotypes(founder_haplotypes, 
+                                                                                            p =.1)
+            mating_regime = xft.mate.RandomMatingRegime(mates_per_female=2,
+                                                        offspring_per_pair=2)
+        elif routine == 'BGRM':
             founder_haplotypes = xft.founders.founder_haplotypes_uniform_AFs(n=n, m=m)
             architecture = xft.arch.GCTA_Architecture(h2=[.5,.4], phenotype_name=['height', 'BMD'], 
                                                       haplotypes=founder_haplotypes)
