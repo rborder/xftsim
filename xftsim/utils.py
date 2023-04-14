@@ -892,3 +892,23 @@ def to_proportions(*args):
         if np.any(simplex < 1):
             simplex *= 1/np.min(simplex)
     return simplex
+
+
+
+def print_tree(x, depth=0):
+    """Print dict of dict(of dict(...)s)s in easy to read tree similar to bash program 'tree'
+    Modified from https://stackoverflow.com/questions/47131263/python-3-6-print-dictionary-data-in-readable-tree-structure
+
+    Parameters
+    ----------
+    x : Any
+        Dict of dicts
+    """
+    if not isinstance(x, dict):
+        pass
+    else:
+        for key in x:
+            print("|"*int(depth>0)+"__"*depth + str(key)+': ' + str(x[key].__class__)*(not isinstance(x[key], dict)))
+            print_tree(x[key], depth+1)
+
+
