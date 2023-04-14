@@ -327,6 +327,19 @@ class ArchitectureComponent:
     def vorigin_relative(self):
         return self.merged_phenotype_indexer.vorigin_relative
 
+    def __repr__(self):
+        output = [f"{ self.__class__ }",
+                  "",
+                  "## INPUTS:",
+                  f" - haplotypes: {self.input_haplotypes}",
+                  " - phenotype components:",
+                  self.input_cindex.__repr__(),
+                  "",
+                  "## OUTPUTS:",
+                  " - phenotype components:",
+                  self.output_cindex.__repr__()]
+        return '\n'.join(output)
+
 
 # Functions / classes for creating phenogenetic architectures
 class PlaceholderComponent(ArchitectureComponent):
