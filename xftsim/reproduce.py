@@ -5,7 +5,7 @@ import dask.array as da
 import nptyping as npt
 import xarray as xr
 from nptyping import NDArray, Int8, Int64, Float64, Bool, Shape
-from typing import Any, Hashable, List, Iterable
+from typing import Any, Hashable, List, Iterable, Union
 from functools import cached_property
 import numba as nb
 import math
@@ -30,6 +30,8 @@ class RecombinationMap:  # diploid recombination map
         Probabilities, either a float or a numpy.ndarray, default is None. A single value
         results in an exchangle map, an array corresponds to probabilities of recombination
         between specified loci
+    vindex: xft.index.HaploidVariantIndex | xft.index.DiploidVariantIndex
+        Variant index. Only provide if not providing vid / chrom
     vid : NDArray[Shape["*"], Any], optional
         Variant IDs, default is None.
     chrom : NDArray[Shape["*"], Int64], optional
@@ -37,16 +39,22 @@ class RecombinationMap:  # diploid recombination map
     """
     def __init__(self,
                  p=None,  # probabilities numpy.ndarray or float
+                 vindex: Union[xft.index.HaploidVariantIndex, xft.index.DiploidVariantIndex] = None,
                  vid: NDArray[Shape["*"], Any] = None,  # variant id,
                  chrom: NDArray[Shape["*"], Int64] = None,  # chromosome
                  ):
+        if vindex is not None:
+            vid = vindex.vid
+            chrom = vindex.chrom
         # enforce haploid
         if len(vid) == 2 * len(np.unique(vid)):
             vid = vid[::2]
             chrom = chrom[::2]
+        self.vid = vid
+        self.chrom = chrom
         self.m = vid.shape[0]
         self._chrom_boundary = np.concatenate(
-            [[0], np.where(chrom[1:] != chrom[:-1])[0]])
+            [[0], 1+np.where(chrom[1:] != chrom[:-1])[0]])
         if type(p) is float:
             assert p <= 1 and p >= 0, "Provide a valid probability"
             self._probabilities = np.ones(self.m) * p
@@ -115,6 +123,12 @@ class RecombinationMap:  # diploid recombination map
         pp[vi_dip.chrom[1:]!=vi_dip.chrom[:-1]] = .5 
         pp = np.concatenate([[.5], pp])
         return RecombinationMap(pp, vid=vi_dip.vid, chrom=vi_dip.chrom)
+
+    def __repr__(self):
+        df = pd.DataFrame.from_dict(dict(vid=self.vid,
+                                         chrom=self.chrom,
+                                         p=self._probabilities))
+        return df.__repr__()
 
 def transmit_parental_phenotypes(
     mating: MateAssignment,
