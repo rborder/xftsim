@@ -447,7 +447,10 @@ class AdditiveNoiseComponent(ArchitectureComponent):
     sds : Iterable, optional
         Standard deviations of the noise components, by default None.
     phenotype_name : Iterable, optional
-        Names of the phenotypes, by default None.
+        Names of the phenotypes, by default None. Included for backwards compatability.
+        Do not specify if providing component_index
+    component_index : xftsim.index.ComponentIndex, optional
+        Alternatively, provide output component index
 
     Attributes
     ----------
@@ -460,22 +463,13 @@ class AdditiveNoiseComponent(ArchitectureComponent):
     def __init__(self,
                  variances: Iterable = None,
                  sds: Iterable = None,
-                 phenotype_name: Iterable = None
+                 phenotype_name: Iterable = None,
+                 component_index: xft.index.ComponentIndex = None,
                  ) -> None:
-        """
-        Initialize a new AdditiveNoiseComponent object.
-
-        Parameters
-        ----------
-        variances : Iterable, optional
-            Variances of the noise components, by default None.
-        sds : Iterable, optional
-            Standard deviations of the noise components, by default None.
-        phenotype_name : Iterable, optional
-            Names of the phenotypes, by default None.
-        """
         assert (variances is None) ^ (
             sds is None), "Provide only variances or sds"
+        assert (phenotype_name is None) ^ (
+            component_index is None), "Provide only phenotype_name or component_index"
         self.variances = variances
         self.sds = sds
         if variances is None:
@@ -483,11 +477,14 @@ class AdditiveNoiseComponent(ArchitectureComponent):
         if sds is None:
             self.sds = np.array(variances)**.5
         input_cindex = xft.index.ComponentIndex.from_product([], [], [])
-        output_cindex = xft.index.ComponentIndex.from_product(
-            np.array(phenotype_name),
-            ['additiveNoise'],
-            [-1],
-        )
+        if component_index is None:
+            output_cindex = xft.index.ComponentIndex.from_product(
+                np.array(phenotype_name),
+                ['additiveNoise'],
+                [-1],
+            )
+        else:
+            output_cindex = component_index
         super().__init__(input_cindex=input_cindex,
                          output_cindex=output_cindex,
                          input_haplotypes=False,
@@ -509,6 +506,65 @@ class AdditiveNoiseComponent(ArchitectureComponent):
         n = phenotypes.shape[0]
         noise = np.hstack([np.random.normal(0, scale, (n, 1))
                            for scale in self.sds])
+        phenotypes.loc[:, self.output_cindex.unique_identifier] = noise
+
+
+
+
+class CorrelatedNoiseComponent(ArchitectureComponent):
+    """
+    Multivariate Gaussian noise component.
+
+    Parameters
+    ----------
+    vcov : ndarray, optional
+        variance covariance matrix 
+    phenotype_name : Iterable, optional
+        Names of the phenotypes, by default None. Included for backwards compatability.
+        Do not specify if providing component_index
+    component_index : xftsim.index.ComponentIndex, optional
+        Alternatively, provide output component index
+    """
+
+    def __init__(self,
+                 vcov: NDArray = None,
+                 phenotype_name: Iterable = None,
+                 component_index: xft.index.ComponentIndex = None,
+                 ) -> None:
+
+        self.vcov = vcov
+        assert (phenotype_name is None) ^ (
+            component_index is None), "Provide only phenotype_name or component_index"
+        input_cindex = xft.index.ComponentIndex.from_product([], [], [])
+        if component_index is None:
+            output_cindex = xft.index.ComponentIndex.from_product(
+                np.array(phenotype_name),
+                ['correlatedNoise'],
+                [-1],
+            )
+        else:
+            output_cindex = component_index
+        super().__init__(input_cindex=input_cindex,
+                         output_cindex=output_cindex,
+                         input_haplotypes=False,
+                         )
+
+    def compute_component(self,
+                          haplotypes: xr.DataArray,
+                          phenotypes: xr.DataArray) -> None:
+        """
+        Compute the noise component of the phenotype.
+
+        Parameters
+        ----------
+        haplotypes : xr.DataArray
+            Haplotypes, not used in the computation.
+        phenotypes : xr.DataArray
+            Phenotypes to be modified.
+        """
+        n = phenotypes.shape[0]
+        k = self.output_cindex.k_total
+        noise = np.random.multivariate_normal(np.zeros(k), self.vcov, size = n)
         phenotypes.loc[:, self.output_cindex.unique_identifier] = noise
 
 
