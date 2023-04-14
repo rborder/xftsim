@@ -620,7 +620,7 @@ class GWAS_Estimator(Statistic):
         coord_dict = component_index.coord_dict.copy()
         coord_dict.update(sim.haplotypes.xft.get_variant_indexer().to_diploid().coord_dict)
         coord_dict.update({'statistic':('statistic', ['beta', 'se', 't', 'p'])})
-        output = dict(GWAS=xr.DataArray(sum_stats,dims=('variant', 'statistic', 'component'), 
+        output = dict(estimates=xr.DataArray(sum_stats,dims=('variant', 'statistic', 'component'), 
                                         coords=coord_dict))
         return output
 
