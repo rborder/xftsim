@@ -76,15 +76,15 @@ def plink1_variant_index(ppxr: xr.DataArray) -> xft.index.DiploidVariantIndex:
     xft.index.DiploidVariantIndex
         A DiploidVariantIndex object.
     """
-    if np.all(ppxr.cm==0):
-        cm = np.full_like(ppxr.cm, fill_value=np.NaN)
+    if np.all(ppxr.cm.values==0):
+        cm = np.full(ppxr.cm.shape, fill_value=np.NaN)
     return xft.index.DiploidVariantIndex(
                                          vid = ppxr.snp.values,
                                          chrom = ppxr.chrom.values,
                                          zero_allele = ppxr.a0.values,
                                          one_allele = ppxr.a1.values,
                                          pos_bp = ppxr.pos,
-                                         pos_cM = ppxr.cm,
+                                         pos_cM = cm,
                                          )
 
 def plink1_sample_index(ppxr: xr.DataArray, 
