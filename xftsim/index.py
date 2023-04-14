@@ -867,25 +867,28 @@ class ComponentIndex(XftIndex):
             return np.NaN 
 
     def __repr__(self):
-        mi_repr = self.frame.__repr__().split("\n")
-        if len(mi_repr) > 50:
-            mi_repr = mi_repr[:4] + ["            ..."] + mi_repr[-2:]
-        if self.depth == 1:
-            depth_str = f"{self.depth} generation"
+        if self.frame.shape[0] == 0:
+            return "<Empty ComponentIndex>"
         else:
-            depth_str = f"{self.depth} generations"
-        if self.k_components == 1:
-            kcomp_str = f"{self.k_components} component"
-        else:
-            kcomp_str = f"{self.k_components} components"
-        if self.k_phenotypes == 1:
-            kphen_str = f"{self.k_phenotypes} phenotype"
-        else:
-            kphen_str = f"{self.k_phenotypes} phenotypes"      
-        return "\n".join([
-                         "<ComponentIndex>",
-                         f"  {kcomp_str} of {kphen_str} spanning {depth_str}",
-                         ] + mi_repr)
+            mi_repr = self.frame.__repr__().split("\n")
+            if len(mi_repr) > 50:
+                mi_repr = mi_repr[:4] + ["            ..."] + mi_repr[-2:]
+            if self.depth == 1:
+                depth_str = f"{self.depth} generation"
+            else:
+                depth_str = f"{self.depth} generations"
+            if self.k_components == 1:
+                kcomp_str = f"{self.k_components} component"
+            else:
+                kcomp_str = f"{self.k_components} components"
+            if self.k_phenotypes == 1:
+                kphen_str = f"{self.k_phenotypes} phenotype"
+            else:
+                kphen_str = f"{self.k_phenotypes} phenotypes"      
+            return "\n".join([
+                             "<ComponentIndex>",
+                             f"  {kcomp_str} of {kphen_str} spanning {depth_str}",
+                             ] + mi_repr)
 
     def __eq__(self, other):
         return np.all(self.coord_frame == other.coord_frame)
