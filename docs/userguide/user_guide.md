@@ -8,9 +8,10 @@
 Nuts and bolts <nutsandbolts>
 Anatomy of a simulation <simulation>
 Founder data <founder>
+Mating regimes <mate>
 Recombination maps <rmaps>
 Phenogenetic archetectures <arch>
-Mating regimes <mate>
-Statistics and post-processors <stats>
+Statistics <stats>
+Post-processing <proc>
 Extending `xftsim` <extensions>
 ```
