@@ -403,7 +403,7 @@ class DemoSimulation(Simulation):
                                                       haplotypes=founder_haplotypes)
             recombination_map = xft.reproduce.RecombinationMap.constant_map_from_haplotypes(founder_haplotypes, 
                                                                                             p =.1)
-            mating_regime = xft.mate.RandomMatingRegime(mates_per_female=2,
+            mating_regime = xft.mate.RandomMatingRegime(mates_per_female=1,
                                                         offspring_per_pair=2)
         elif routine == 'BGRM':
             founder_haplotypes = xft.founders.founder_haplotypes_uniform_AFs(n=n, m=m)
@@ -411,7 +411,7 @@ class DemoSimulation(Simulation):
                                                       haplotypes=founder_haplotypes)
             recombination_map = xft.reproduce.RecombinationMap.constant_map_from_haplotypes(founder_haplotypes, 
                                                                                             p =.1)
-            mating_regime = xft.mate.RandomMatingRegime(mates_per_female=2,
+            mating_regime = xft.mate.RandomMatingRegime(mates_per_female=1,
                                                         offspring_per_pair=2)
         else:
             raise NotImplementedError(f"Routine `{routine}` not implemented. See `DemoSimulation.demo_routines` for supported routines")
