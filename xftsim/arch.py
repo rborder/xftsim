@@ -656,8 +656,8 @@ class LinearTransformationComponent(ArchitectureComponent):
         y = phenotypes.loc[:, self.input_cindex.unique_identifier]
         if self.normalize:
             y = np.apply_along_axis(lambda x: (
-                x - np.mean(x)) / np.std(x), 1, y)
-        new_component = y @ self.coefficient_matrix
+                x - np.mean(x)) / np.std(x), 0, y)
+        new_component = xft.utils.ensure2D(y) @ xft.utils.ensure2D(self.coefficient_matrix)
         phenotypes.loc[:, self.output_cindex.unique_identifier] = new_component
 
     def __repr__(self):

@@ -355,13 +355,13 @@ def matching_indices_conditional(
 
 
 # make sure arrays are 2d, but preserve None
-def ensure2D(x: NDArray[Any, Any] = None):
+def ensure2D(x):
     """
     Ensures the input array is 2D, by adding a new dimension if needed.
     
     Parameters
     ----------
-    x : NDArray[Any, Any], optional
+    x : arraylike
         The input array, by default None.
     
     Returns
@@ -381,6 +381,8 @@ def ensure2D(x: NDArray[Any, Any] = None):
         return x
     elif len(x.shape) == 1:
         return x[:, None]
+    elif len(x.shape) == 0:
+        return x[None, None]
     else:
         raise ValueError("Invalid array")
 
