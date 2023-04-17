@@ -163,7 +163,7 @@ class GCTAEffects(AdditiveEffects):
     
     Parameters
     ----------
-    vg : Iterable
+    vg : Iterable | NDArray
         Vector of genetic variances or genetic variance/covariance matrix
     variant_indexer : xft.index.HaploidVariantIndex | xft.index.DiploidVariantIndex
         Variant indexer, will determine ploidy automatically
@@ -171,7 +171,7 @@ class GCTAEffects(AdditiveEffects):
         Phenotype component indexer, defaults to xft.index.ComponentIndex.RangeIndex if not provided
     """
     def __init__(self,
-        vg: Iterable,  # either genetic variances or genetic variance/covariance matrix
+        vg: Union[Iterable, NDArray],  # either genetic variances or genetic variance/covariance matrix
         variant_indexer: Union[xft.index.HaploidVariantIndex,
             xft.index.DiploidVariantIndex] = None,
         component_indexer: xft.index.ComponentIndex = None,

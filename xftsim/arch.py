@@ -807,6 +807,7 @@ class SumTransformation(ArchitectureComponent):
                                 sum_components: Iterable = [
                                     'additiveGenetic', 'additiveNoise'],
                                 vorigin_relative: Iterable = [-1],
+                                comp_type ='outcome',
                                 output_name='phenotype') -> xft.index.ComponentIndex:
         """
         Construct output component index.
@@ -833,6 +834,7 @@ class SumTransformation(ArchitectureComponent):
         output_frame = input_frame.copy(
         ).loc[~input_frame[['phenotype_name', 'vorigin_relative']].duplicated()]
         output_frame['component_name'] = output_name
+        output_frame['comp_type'] = comp_type
         return xft.index.ComponentIndex.from_frame(output_frame)
 
     @staticmethod
@@ -841,6 +843,7 @@ class SumTransformation(ArchitectureComponent):
                                'additiveGenetic', 'additiveNoise'],
                            vorigin_relative: Iterable = [-1],
                            output_component: str = 'phenotype',
+                           comp_type ='outcome',     
                            ) -> Tuple[xft.index.ComponentIndex, xft.index.ComponentIndex]:
         """
         Construct input and output ComponentIndex objects for SumTransformation.
@@ -861,13 +864,14 @@ class SumTransformation(ArchitectureComponent):
         Tuple[xft.index.ComponentIndex, xft.index.ComponentIndex]:
             A tuple containing input and output ComponentIndex objects.
         """
-        input_cindex = SumTransformation.construct_input_cindex(phenotype_name,
-                                                                sum_components,
-                                                                vorigin_relative)
-        output_cindex = SumTransformation.construct_output_cindex(phenotype_name,
-                                                                  sum_components,
-                                                                  vorigin_relative,
-                                                                  output_component)
+        input_cindex = SumTransformation.construct_input_cindex(phenotype_name=phenotype_name,
+                                                                sum_components=sum_components,
+                                                                vorigin_relative=vorigin_relative)
+        output_cindex = SumTransformation.construct_output_cindex(phenotype_name=phenotype_name,
+                                                                  sum_components=sum_components,
+                                                                  vorigin_relative=vorigin_relative,
+                                                                  comp_type=comp_type,
+                                                                  output_name=output_component,)
         return (input_cindex, output_cindex)
 
     def compute_component(self,
@@ -900,6 +904,119 @@ class SumTransformation(ArchitectureComponent):
             assignment_indicies = output_index.loc[new_data.phenotype_name.values,
                                                    :].component.values
             phenotypes.loc[:, assignment_indicies] = new_data.values
+
+
+
+
+
+
+class SumAllTransformation(ArchitectureComponent):
+    """
+    Sum all intermediate phenotype components to generate outcome phenotype components.
+
+    Parameters
+    ----------
+    input_cindex : xft.index.ComponentIndex
+        Input component index.
+
+    Attributes
+    ----------
+    input_haplotypes : bool
+        If True, haplotypes are input.
+    input_cindex : xft.index.ComponentIndex
+        Input component index.
+    output_cindex : xft.index.ComponentIndex
+        Output component index.
+    founder_initialization : None
+        Founder initialization.
+    """
+    def __init__(self,
+                 input_cindex: xft.index.ComponentIndex,
+                 output_component_name: str = 'phenotype',
+                 output_comp_type: str ='outcome',
+                 ):
+        """
+        Initialize a new SumTransformation object.
+
+        Parameters
+        ----------
+        input_cindex : xft.index.ComponentIndex
+            Input component index.
+        output_cindex : xft.index.ComponentIndex
+            Output component index.
+        """
+        self.input_haplotypes = False
+        self.input_cindex = input_cindex
+
+        input_frame = input_cindex.coord_frame
+        output_frame = input_frame.copy(
+        ).loc[~input_frame[['phenotype_name', 'vorigin_relative']].duplicated()]
+        output_frame['component_name'] = output_component_name
+        output_frame['comp_type'] = output_comp_type
+        self.output_cindex = xft.index.ComponentIndex.from_frame(output_frame)
+        self.founder_initialization = None
+
+    @staticmethod
+    def construct_input_cindex(phenotype_name: Iterable,
+                               sum_components: Iterable = [
+                                   'additiveGenetic', 'additiveNoise'],
+                               vorigin_relative: Iterable = [-1],
+                               ) -> xft.index.ComponentIndex:
+        """
+        Construct input component index.
+
+        Parameters
+        ----------
+        phenotype_name : Iterable
+            Phenotype name.
+        sum_components : Iterable, optional
+            Components to sum, by default ['additiveGenetic', 'additiveNoise'].
+        vorigin_relative : Iterable, optional
+            Relative vorigins, by default [-1].
+
+        Returns
+        -------
+        xft.index.ComponentIndex
+            Component index.
+        """
+        return xft.index.ComponentIndex.from_product(phenotype_name,
+                                                     sum_components,
+                                                     vorigin_relative)
+
+    def compute_component(self,
+                          haplotypes: xr.DataArray,
+                          phenotypes: xr.DataArray) -> None:
+        """
+        Compute the sum of the input components and assign them to the output component.
+
+        Parameters:
+        -----------
+        haplotypes : xr.DataArray
+            Haplotypes.
+        phenotypes : xr.DataArray
+            Phenotypes.
+
+        Returns:
+        --------
+        None
+        """
+        # TODO make faster later, UGLY atm
+        inputs = self.input_cindex.coord_frame
+        outputs = self.output_cindex.coord_frame
+        outputs.set_index('phenotype_name', inplace=True, drop=False)
+        # iterate over vorigin
+        for vo in np.unique(self.input_cindex.vorigin_relative.values):
+            input_index = inputs.loc[inputs.vorigin_relative.values == vo, :]
+            output_index = outputs.loc[outputs.vorigin_relative.values == vo, :]
+            new_data = phenotypes.loc[:, inputs.component.values].groupby(
+                'phenotype_name').sum(skipna=False)
+            assignment_indicies = output_index.loc[new_data.phenotype_name.values,
+                                                   :].component.values
+            phenotypes.loc[:, assignment_indicies] = new_data.values
+
+
+
+
 
 
 class BinarizingTransformation(ArchitectureComponent):
@@ -1375,7 +1492,8 @@ class GCTA_Architecture(Architecture):
                                                           phenotype_name=phenotype_name)
 
         iind,oind=xft.arch.SumTransformation.construct_cindexes(phenotype_name)
-        sum_transformation = xft.arch.SumTransformation(iind,oind)
+        # sum_transformation = xft.arch.SumTransformation(iind,oind)
+        sum_transformation = xft.arch.SumAllTransformation(iind)
         super().__init__(components = [additive_component,
                                        noise_component,
                                        sum_transformation])

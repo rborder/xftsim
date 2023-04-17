@@ -717,6 +717,9 @@ class ComponentIndex(XftIndex):
         Names of phenotype components.
     vorigin_relative : iterable, optional
         Relative origin of phenotype component. -1 for proband, 0 for mother, 1 for father.
+    comp_type: iterable, optional
+        Elements are either 'intermediate' or 'outcome' to distinguish between phenotype components
+        versus phenotypes themselves
     frame : pandas.DataFrame, optional
         Pre-existing frame to initialize index.
     k_total : int, optional
@@ -763,12 +766,13 @@ class ComponentIndex(XftIndex):
                  phenotype_name: Iterable = None, # names of phenotypes
                  component_name: Iterable = None, # names of phenotype components
                  vorigin_relative: Iterable = None, # relative of phenotype origin
+                 comp_type: Iterable = None, # elements are either 'intermediate' or 'outcome'
                  frame: pd.DataFrame = None,
                  k_total: int = None,
                  ):
         self._dimension = "component"
         self._index_variables = np.array(['phenotype_name', 'component_name', 'vorigin_relative'])
-        self._coord_variables = np.array(['phenotype_name', 'component_name', 'vorigin_relative'])
+        self._coord_variables = np.array(['phenotype_name', 'component_name', 'vorigin_relative', 'comp_type'])
 
         ## provide phenotype_name XOR frame XOR k_total
         assert (phenotype_name is not None) ^ (k_total is not None)^ (frame is not None), "provide phenotype_name OR k_total OR frame"
@@ -789,13 +793,18 @@ class ComponentIndex(XftIndex):
                 vorigin_relative = np.repeat(-1, k_total).astype(int)
             else:
                 vorigin_relative = np.array(vorigin_relative)
+            if comp_type is None:
+                comp_type = np.repeat('intermediate', k_total)
+            else:
+                comp_type = np.array(comp_type)
             ## check for duplicates:
             # phenotype_name,component_name,vorigin_relative = merge_duplicates([phenotype_name,
             #                                                                    component_name,
             #                                                                    vorigin_relative])
             self.frame = pd.DataFrame.from_dict({'phenotype_name':phenotype_name,
                                                  'component_name':component_name,
-                                                 'vorigin_relative':vorigin_relative.astype(int)})
+                                                 'vorigin_relative':vorigin_relative.astype(int),
+                                                 'comp_type':comp_type})
         elif frame is not None:
             self.frame = frame
 
@@ -824,9 +833,20 @@ class ComponentIndex(XftIndex):
 
     @property
     def unique_identifier(self):
-        fr = self.frame[['phenotype_name','component_name','vorigin_relative']]
-        fr['vorigin_relative'].replace([-1,0,1],['proband','mother','father'], inplace=True)
+        fr = self.frame.loc[:,['phenotype_name','component_name']]
+        # print(fr)
+        fr['vorigin_relative'] = self.frame.vorigin_relative.values.astype(int).astype(str)
+        # fr.vorigin_relative.values=fr['vorigin_relative'].replace([-1,0,1],['proband','mother','father'])
+        # fr.vorigin_relative.values[fr.vorigin_relative=='-1'] = 'proband'
+        fr['vorigin_relative'].replace(['-1','0','1'],['proband','mother','father'], inplace=True)
         return xft.utils.unique_identifier(fr, ['phenotype_name','component_name','vorigin_relative'])
+
+    @property
+    def comp_type(self):
+        return self.frame['comp_type']
+    @comp_type.setter
+    def comp_type(self, value):
+        self._frame['comp_type'] = value
 
     @property
     def component_name(self):
@@ -898,7 +918,11 @@ class ComponentIndex(XftIndex):
         phenotype_name = df.phenotype_name.values
         component_name = df.component_name.values
         vorigin_relative = df.vorigin_relative.values
-        return ComponentIndex(phenotype_name, component_name, vorigin_relative)
+        if 'comp_type' in df.columns:
+            comp_type = df.comp_type.values
+        else:
+            comp_type = None
+        return ComponentIndex(phenotype_name, component_name, vorigin_relative, comp_type)
 
     @staticmethod
     def from_arrays(phenotype_name: Iterable,

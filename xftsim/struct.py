@@ -299,6 +299,7 @@ class XftAccessor:
             phenotype_name=self._obj.coords['component'].phenotype_name.data,
             component_name=self._obj.coords['component'].component_name.data,
             vorigin_relative=self._obj.coords['component'].vorigin_relative.data,
+            comp_type=self._obj.coords['component'].comp_type.data,
         )
 
     def reindex_components(self, value):
@@ -775,6 +776,65 @@ class XftAccessor:
         component_index = self._obj.xft.get_component_indexer()[
             dict(component_name=pheno_cols)]
         return component_index
+
+
+    def get_comp_type(self, ctype='intermediate'):
+        """
+        Returns the index array of components with comp_type==ctype
+        Specific to PhenotypeArray objects.
+
+        Returns
+        -------
+        XftIndex
+            The index of components that match the given keyword.
+
+        Raises
+        ------
+        TypeError
+            If the column dimension is not 'component'.
+        """
+        if self._col_dim != 'component':
+            raise TypeError
+        pheno_cols = self._obj.component_name.values[self._obj.comp_type.str.contains(
+            ctype).values]
+        component_index = self._obj.xft.get_component_indexer()[
+            dict(component_name=pheno_cols)]
+        return component_index
+
+    def get_intermediate_components(self):
+        """
+        Returns the index array of components with comp_type=='intermediate'
+        Specific to PhenotypeArray objects.
+
+        Returns
+        -------
+        XftIndex
+            The index of components that match the given keyword.
+
+        Raises
+        ------
+        TypeError
+            If the column dimension is not 'component'.
+        """
+        return self.get_comp_type('intermediate')
+
+    def get_outcome_components(self):
+        """
+        Returns the index array of components with comp_type=='outcome'
+        Specific to PhenotypeArray objects.
+
+        Returns
+        -------
+        XftIndex
+            The index of components that match the given keyword.
+
+        Raises
+        ------
+        TypeError
+            If the column dimension is not 'component'.
+        """
+        return self.get_comp_type('outcome')
+
 
     @property
     def k_total(self):
