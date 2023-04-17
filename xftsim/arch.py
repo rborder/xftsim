@@ -657,7 +657,8 @@ class LinearTransformationComponent(ArchitectureComponent):
         if self.normalize:
             y = np.apply_along_axis(lambda x: (
                 x - np.mean(x)) / np.std(x), 0, y)
-        new_component = xft.utils.ensure2D(y) @ xft.utils.ensure2D(self.coefficient_matrix)
+        new_component = xft.utils.ensure2D(y) @ self.coefficient_matrix.T
+        # new_component = xft.utils.ensure2D(y) @ xft.utils.ensure2D(self.coefficient_matrix)
         phenotypes.loc[:, self.output_cindex.unique_identifier] = new_component
 
     def __repr__(self):
@@ -665,7 +666,7 @@ class LinearTransformationComponent(ArchitectureComponent):
         return "<" + self.__class__.__name__ + ">" + "\n" + self.linear_transformation.__repr__()
 
 
-class VerticalComponent(LinearTransformationComponent):
+class LinearVerticalComponent(LinearTransformationComponent):
     """
     A vertical transmission component. Requires a way to generate "transmitted" components 
     in the founder generation. 
@@ -718,6 +719,7 @@ class VerticalComponent(LinearTransformationComponent):
                          normalize=normalize,
                          )
 
+VerticalComponent = LinearVerticalComponent
 
 class HorizontalComponent(LinearTransformationComponent):
     def __init__(self,
