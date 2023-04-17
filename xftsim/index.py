@@ -4,8 +4,8 @@ import pandas as pd
 import math
 import functools
 
-from typing import Iterable, Union
-from nptyping import NDArray, Shape, Float, Int, Object 
+from typing import Iterable, Union, Dict
+from nptyping import NDArray, Shape, Float, Int, Object
 from collections.abc import Sequence
 
 import xftsim as xft
@@ -767,6 +767,7 @@ class ComponentIndex(XftIndex):
                  component_name: Iterable = None, # names of phenotype components
                  vorigin_relative: Iterable = None, # relative of phenotype origin
                  comp_type: Iterable = None, # elements are either 'intermediate' or 'outcome'
+                 comp_type_map: Dict = dict(phenotype='outcome'),
                  frame: pd.DataFrame = None,
                  k_total: int = None,
                  ):
@@ -795,6 +796,8 @@ class ComponentIndex(XftIndex):
                 vorigin_relative = np.array(vorigin_relative)
             if comp_type is None:
                 comp_type = np.repeat('intermediate', k_total)
+                for (key,value) in comp_type_map.items():
+                    comp_type[component_name==key] = value
             else:
                 comp_type = np.array(comp_type)
             ## check for duplicates:
@@ -928,22 +931,31 @@ class ComponentIndex(XftIndex):
     def from_arrays(phenotype_name: Iterable,
                                    component_name: Iterable,
                                    vorigin_relative: Iterable = None,
+                                   comp_type: Iterable = None,
                                    ):
         if vorigin_relative is None:
             vorigin_relative = [-1]
-        return ComponentIndex(phenotype_name, component_name, vorigin_relative)
+        if comp_type is None:
+            return ComponentIndex(phenotype_name, component_name, vorigin_relative)
+        else:
+            return ComponentIndex(phenotype_name, component_name, vorigin_relative, comp_type)
+
 
     @staticmethod
     def from_product(phenotype_name: Iterable,
-                                    component_name: Iterable,
-                                    vorigin_relative: Iterable = None,
+                     component_name: Iterable,
+                     vorigin_relative: Iterable = None,
+                     comp_type_map: Dict = dict(phenotype='outcome')
                                    ):
         if vorigin_relative is None:
             vorigin_relative = [-1]
         phenotype_name, component_name, vorigin_relative = cartesian_product(phenotype_name, 
                                                                                component_name, 
                                                                                vorigin_relative)
-        return ComponentIndex(phenotype_name, component_name, vorigin_relative)
+        comp_type = np.repeat('intermediate', len(phenotype_name))
+        for (key,value) in comp_type_map.items():
+            comp_type[component_name==key] = value
+        return ComponentIndex(phenotype_name, component_name, vorigin_relative, comp_type=comp_type)
 
     @staticmethod
     def range_index(c: int,
