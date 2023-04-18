@@ -216,6 +216,9 @@ class XftIndex:
         else: 
             return self.__class__(frame=frame)
 
+    def __len__(self):
+        return self.frame.shape[0]
+
 
 class SampleIndex(XftIndex):
     """Index for individual samples.
@@ -953,8 +956,9 @@ class ComponentIndex(XftIndex):
                                                                                component_name, 
                                                                                vorigin_relative)
         comp_type = np.repeat('intermediate', len(phenotype_name))
-        for (key,value) in comp_type_map.items():
-            comp_type[component_name==key] = value
+        if len(component_name)>0:
+            for (key,value) in comp_type_map.items():
+                comp_type[component_name==key] = value
         return ComponentIndex(phenotype_name, component_name, vorigin_relative, comp_type=comp_type)
 
     @staticmethod
@@ -964,6 +968,21 @@ class ComponentIndex(XftIndex):
                     prefix: str = 'phenotype',):
         phenotype_name = np.char.add(prefix, np.arange(c).astype(str))
         return ComponentIndex.from_product(phenotype_name, component_name, vorigin_relative)
+
+
+    @property
+    def _pretty_vorigin_relative(self):
+        output = np.repeat('proband', self.vorigin_relative.shape[0]).astype('<U8')
+        output[self.vorigin_relative==0] = 'maternal' 
+        output[self.vorigin_relative==1] = 'paternal' 
+        return output
+    @property
+    def _nodes(self):
+        return xft.utils.paste([self._pretty_vorigin_relative,
+                               self.phenotype_name.values,
+                               self.component_name.values], sep ='\n')
+
+
 
 ## TODO
 def sampleIndex_from_plink():
