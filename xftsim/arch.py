@@ -240,13 +240,26 @@ class ArchitectureComponent:
                  output_cindex: xft.index.ComponentIndex = None,
                  input_haplotypes: Union[Bool,
                                          xft.index.HaploidVariantIndex] = False,
-                 founder_initialization: Callable = None
+                 founder_initialization: Callable = None,
                  ):
         self._compute_component = compute_component
         self.input_haplotypes = input_haplotypes
         self.input_cindex = input_cindex
         self.output_cindex = output_cindex
         self.founder_initialization = founder_initialization
+
+    def _dependency_graph(self):
+        edge_list = []
+        for outcome in self.output_cindex._nodes:
+            if self.input_haplotypes:
+                edge_list.append(('proband\nhaplotypes', outcome))
+            for inpt in self.input_cindex._nodes:
+                edge_list.append((inpt, outcome))
+            return edge_list
+
+    @property
+    def dependency_graph_edges(self):
+        return self._dependency_graph()
 
     @staticmethod
     def default_input_cindex(*args, **kwargs):
@@ -340,19 +353,44 @@ class ArchitectureComponent:
                   self.output_cindex.__repr__()]
         return '\n'.join(output)
 
+    @property
+    def dependency_graph(self):
+        import networkx as nx
+        G = nx.DiGraph()
+        G.add_edges_from(self.dependency_graph_edges)
+        pos = nx.nx_agraph.graphviz_layout(G, prog='dot')
+        return (G,pos)
 
-# Functions / classes for creating phenogenetic architectures
-class PlaceholderComponent(ArchitectureComponent):
-    def __init__(self,
-                 components: xft.index.ComponentIndex = None,
-                 metadata: Dict = dict(),
-                 ):
-        input_cindex = components
-        output_cindex = components
-        super().__init__(input_cindex=input_cindex,
-                         output_cindex=output_cindex,
-                         input_haplotypes=False,
-                         )
+    def draw_dependency_graph(self, 
+                              node_color='#FFFFFF', 
+                              node_size = 1500, 
+                              font_size=6, 
+                              margins=.1, 
+                              **kwargs):
+        import networkx as nx
+        G,pos = self.dependency_graph
+        nx.draw_networkx(G,pos, 
+                         node_color=node_color, 
+                         node_size = node_size, 
+                         font_size=font_size,
+                         margins=margins,
+                         **kwargs)
+
+
+
+
+# # Functions / classes for creating phenogenetic architectures
+# class PlaceholderComponent(ArchitectureComponent):
+#     def __init__(self,
+#                  components: xft.index.ComponentIndex = None,
+#                  metadata: Dict = dict(),
+#                  ):
+#         input_cindex = components
+#         output_cindex = components
+#         super().__init__(input_cindex=input_cindex,
+#                          output_cindex=output_cindex,
+#                          input_haplotypes=False,
+#                          )
 
 class AdditiveGeneticComponent(ArchitectureComponent):
     """
@@ -666,6 +704,25 @@ class LinearTransformationComponent(ArchitectureComponent):
         return "<" + self.__class__.__name__ + ">" + "\n" + self.linear_transformation.__repr__()
 
 
+    def _dependency_graph(self):
+        input_cindex,output_cindex = self.input_cindex,self.output_cindex
+        edges = []
+        ## iterate over input / output pairs
+        input_dim = len(input_cindex)
+        output_dim = len(output_cindex)
+        input_nodes = input_cindex._nodes
+        output_nodes = output_cindex._nodes
+        for j in range(input_dim):
+            for i in range(output_dim):
+                if self.coefficient_matrix[i,j] != 0:
+                    print(i,j)
+                    edges.append((input_nodes[j],output_nodes[i]))
+        return edges
+
+
+
+
+
 class LinearVerticalComponent(LinearTransformationComponent):
     """
     A vertical transmission component. Requires a way to generate "transmitted" components 
@@ -772,6 +829,7 @@ class SumTransformation(ArchitectureComponent):
         output_cindex : xft.index.ComponentIndex
             Output component index.
         """
+        warnings.warn("Deprecated, use SumAllTransformation")
         self.input_haplotypes = False
         self.input_cindex = input_cindex
         self.output_cindex = output_cindex
@@ -957,6 +1015,7 @@ class SumAllTransformation(ArchitectureComponent):
         output_frame['comp_type'] = output_comp_type
         self.output_cindex = xft.index.ComponentIndex.from_frame(output_frame)
         self.founder_initialization = None
+        # self._dependency_graph = None
 
     @staticmethod
     def construct_input_cindex(phenotype_name: Iterable,
@@ -1015,6 +1074,25 @@ class SumAllTransformation(ArchitectureComponent):
             assignment_indicies = output_index.loc[new_data.phenotype_name.values,
                                                    :].component.values
             phenotypes.loc[:, assignment_indicies] = new_data.values
+
+    def _dependency_graph(self):
+        input_cindex,output_cindex = self.input_cindex,self.output_cindex
+        edges = []
+        ## iterate over vorigin_relative
+        # for vo in np.unique(input_cindex.vorigin_relative.values):
+        # for vo in np.unique(input_cindex.vorigin_relative.values):
+        input_cindex_vo = input_cindex[{'vorigin_relative':[-1]}]
+        output_cindex_vo = output_cindex[{'vorigin_relative':[-1]}]
+        ## iterate over phenotypes within vorigin_relative
+        for phenotype in np.unique(input_cindex_vo.phenotype_name.values):
+            ## iterate over input/output pairs
+            input_cindex_vo_pheno = input_cindex_vo[{'phenotype_name':phenotype}]
+            output_cindex_vo_pheno = output_cindex_vo[{'phenotype_name':phenotype}]
+            for inpt_node in input_cindex_vo_pheno._nodes:
+                for otpt_node in output_cindex_vo_pheno._nodes:
+                    edges.append((inpt_node,otpt_node))
+        return edges
+
 
 
 
@@ -1355,6 +1433,40 @@ class Architecture:
             raise NotImplementedError
         for component in self.components:
             component.compute_component(haplotypes, phenotypes)
+
+    @property
+    def dependency_graph_edges(self):
+        edges = []
+        for component in self.components:
+            edges += component.dependency_graph_edges
+        if 'proband\nhaplotypes' in [edge[0] for edge in edges]:
+            edges += [('maternal\nhaplotypes','proband\nhaplotypes'),
+                      ('paternal\nhaplotypes','proband\nhaplotypes')]
+        return edges
+
+    @property
+    def dependency_graph(self):
+        import networkx as nx
+        G = nx.DiGraph()
+        G.add_edges_from(self.dependency_graph_edges)
+        pos = nx.nx_agraph.graphviz_layout(G, prog='dot')
+        return (G,pos)
+
+    def draw_dependency_graph(self, 
+                              node_color='#FFFFFF', 
+                              node_size = 1500, 
+                              font_size=6, 
+                              margins=.1, 
+                              **kwargs):
+        import networkx as nx
+        G,pos = self.dependency_graph
+        nx.draw_networkx(G,pos, 
+                         node_color=node_color, 
+                         node_size = node_size, 
+                         font_size=font_size,
+                         margins=margins,
+                         **kwargs)
+
 
 
 class InfinitessimalArchitecture:
