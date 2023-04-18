@@ -1355,6 +1355,7 @@ class Architecture:
         self.components = components
         self.depth = depth
         self.expand_components = expand_components
+        self.check_circular_dependencies()
 
     @property
     def founder_initializations(self) -> List:
@@ -1482,9 +1483,12 @@ class Architecture:
                               font_size=6, 
                               margins=.1,
                               edge_color="#222222", 
+                              number_edges: bool = True,
                               **kwargs):
         import networkx as nx
         G,pos,colors,edges,edge_labels = self.dependency_graph
+        if number_edges:
+            edge_labels = xft.utils.paste([colors.astype(str),edge_labels],sep=':')
         color_dict = {a:b for a,b in zip(edges, colors)}
         label_dict = {a:b for a,b in zip(edges, edge_labels)}
         new_colors = [color_dict[edge] for edge in G.edges]
@@ -1504,6 +1508,20 @@ class Architecture:
                  bbox={'boxstyle':'round', 'ec':'none', 'fc':(1.0, 1.0, 1.0)},
                  # font_color=colors/np.max(colors),
                  )
+
+    def check_circular_dependencies(self):
+        G,pos,colors,edges,edge_labels = self.dependency_graph
+        edge_array = np.vstack(edges)
+        import networkx as nx
+        G = nx.DiGraph()
+        for i in range(edge_array.shape[0]):
+            for j in range(edge_array.shape[0]):
+                if edge_array[j,0]==edge_array[i,1]:
+                    G.add_edges_from([(colors[i],colors[j])])
+        if len(list(nx.simple_cycles(G)))>0:
+            warnings.warn('Architecture contains circular dependencies! This is probably a mistake, check dependency_graph using xft.arch.Architecture.draw_dependency_graph()')
+        else:
+            pass
 
 
 

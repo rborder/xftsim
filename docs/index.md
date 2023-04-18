@@ -36,7 +36,8 @@ Founder data <userguide/founder>
 Recombination maps <userguide/rmaps>
 Phenogenetic archetectures <userguide/arch>
 Mating regimes <userguide/mate>
-Statistics and post-processors <userguide/stats>
+Statistics <userguide/stats>
+Post-processing <userguide/proc>
 Extending `xftsim` <userguide/extensions>
 ```
 
