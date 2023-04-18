@@ -241,12 +241,14 @@ class ArchitectureComponent:
                  input_haplotypes: Union[Bool,
                                          xft.index.HaploidVariantIndex] = False,
                  founder_initialization: Callable = None,
+                 component_name: str = 'generic',
                  ):
         self._compute_component = compute_component
         self.input_haplotypes = input_haplotypes
         self.input_cindex = input_cindex
         self.output_cindex = output_cindex
         self.founder_initialization = founder_initialization
+        self._component_name = component_name
 
     def _dependency_graph(self):
         edge_list = []
@@ -362,7 +364,7 @@ class ArchitectureComponent:
         return (G,pos)
 
     def draw_dependency_graph(self, 
-                              node_color='#FFFFFF', 
+                              node_color='none', 
                               node_size = 1500, 
                               font_size=6, 
                               margins=.1, 
@@ -412,6 +414,7 @@ class AdditiveGeneticComponent(ArchitectureComponent):
     def __init__(self,
                  beta: xft.effect.AdditiveEffects = None,
                  metadata: Dict = dict(),
+                 component_name = 'addGenetic',
                  ) -> None:
         """
         Initialize a new AdditiveGeneticComponent object.
@@ -429,6 +432,7 @@ class AdditiveGeneticComponent(ArchitectureComponent):
         super().__init__(input_cindex=input_cindex,
                          output_cindex=output_cindex,
                          input_haplotypes=True,
+                         component_name=component_name,
                          )
 
     def compute_component(self,
@@ -503,6 +507,7 @@ class AdditiveNoiseComponent(ArchitectureComponent):
                  sds: Iterable = None,
                  phenotype_name: Iterable = None,
                  component_index: xft.index.ComponentIndex = None,
+                 component_name: str = 'addNoise',
                  ) -> None:
         assert (variances is None) ^ (
             sds is None), "Provide only variances or sds"
@@ -526,6 +531,7 @@ class AdditiveNoiseComponent(ArchitectureComponent):
         super().__init__(input_cindex=input_cindex,
                          output_cindex=output_cindex,
                          input_haplotypes=False,
+                         component_name = component_name,
                          )
 
     def compute_component(self,
@@ -568,6 +574,7 @@ class CorrelatedNoiseComponent(ArchitectureComponent):
                  vcov: NDArray = None,
                  phenotype_name: Iterable = None,
                  component_index: xft.index.ComponentIndex = None,
+                 component_name: str = 'corrNoise',
                  ) -> None:
 
         self.vcov = vcov
@@ -585,6 +592,7 @@ class CorrelatedNoiseComponent(ArchitectureComponent):
         super().__init__(input_cindex=input_cindex,
                          output_cindex=output_cindex,
                          input_haplotypes=False,
+                         component_name = component_name,
                          )
 
     def compute_component(self,
@@ -642,6 +650,7 @@ class LinearTransformationComponent(ArchitectureComponent):
                  coefficient_matrix: NDArray=None,
                  normalize: bool = True,
                  founder_initialization: FounderInitialization = None,
+                 component_name: str = 'linear',
                  ):
         self.v_input_dimension = input_cindex.k_total
         self.v_output_dimension = output_cindex.k_total
@@ -655,6 +664,7 @@ class LinearTransformationComponent(ArchitectureComponent):
         super().__init__(input_cindex=input_cindex,
                          output_cindex=output_cindex,
                          founder_initialization=founder_initialization,
+                         component_name = component_name,
                          )
 
     @property
@@ -715,7 +725,6 @@ class LinearTransformationComponent(ArchitectureComponent):
         for j in range(input_dim):
             for i in range(output_dim):
                 if self.coefficient_matrix[i,j] != 0:
-                    print(i,j)
                     edges.append((input_nodes[j],output_nodes[i]))
         return edges
 
@@ -763,6 +772,7 @@ class LinearVerticalComponent(LinearTransformationComponent):
                  normalize: bool = True,
                  founder_variances: Iterable = None,
                  founder_initialization: FounderInitialization = None,
+                 component_name: str ='linVert',
                  ):
         assert (founder_variances is None) ^ (
             founder_initialization is None), "provide founder_initialization XOR founder_variances"
@@ -774,6 +784,7 @@ class LinearVerticalComponent(LinearTransformationComponent):
                          founder_initialization=founder_initialization,
                          coefficient_matrix=coefficient_matrix,
                          normalize=normalize,
+                         component_name=component_name,
                          )
 
 VerticalComponent = LinearVerticalComponent
@@ -784,12 +795,14 @@ class HorizontalComponent(LinearTransformationComponent):
                  output_cindex: xft.index.ComponentIndex,
                  coefficient_matrix: NDArray=None,
                  normalize: bool = True,
+                 component_name:str ='linHoriz',
                  ):
 
         super().__init__(input_cindex=input_cindex,
                          output_cindex=output_cindex,
                          coefficient_matrix=coefficient_matrix,
                          normalize=normalize,
+                         component_name=component_name,
                          )
 
 
@@ -818,6 +831,7 @@ class SumTransformation(ArchitectureComponent):
     def __init__(self,
                  input_cindex: xft.index.ComponentIndex,
                  output_cindex: xft.index.ComponentIndex,
+                 component_name ='sumTrans',
                  ):
         """
         Initialize a new SumTransformation object.
@@ -834,6 +848,7 @@ class SumTransformation(ArchitectureComponent):
         self.input_cindex = input_cindex
         self.output_cindex = output_cindex
         self.founder_initialization = None
+        self._component_name = component_name
 
     @staticmethod
     def construct_input_cindex(phenotype_name: Iterable,
@@ -994,6 +1009,7 @@ class SumAllTransformation(ArchitectureComponent):
                  input_cindex: xft.index.ComponentIndex,
                  output_component_name: str = 'phenotype',
                  output_comp_type: str ='outcome',
+                 component_name: str ='sumAll',
                  ):
         """
         Initialize a new SumTransformation object.
@@ -1015,6 +1031,7 @@ class SumAllTransformation(ArchitectureComponent):
         output_frame['comp_type'] = output_comp_type
         self.output_cindex = xft.index.ComponentIndex.from_frame(output_frame)
         self.founder_initialization = None
+        self._component_name = component_name
         # self._dependency_graph = None
 
     @staticmethod
@@ -1437,35 +1454,56 @@ class Architecture:
     @property
     def dependency_graph_edges(self):
         edges = []
-        for component in self.components:
+        colors = []
+        edge_labels = []
+        for i,component in enumerate(self.components):
             edges += component.dependency_graph_edges
+            colors += [i+1 for j in range(len(component.dependency_graph_edges))]
+            edge_labels += [component._component_name for j in range(len(component.dependency_graph_edges))]
         if 'proband\nhaplotypes' in [edge[0] for edge in edges]:
             edges += [('maternal\nhaplotypes','proband\nhaplotypes'),
                       ('paternal\nhaplotypes','proband\nhaplotypes')]
-        return edges
+            colors += [0, 0]
+            edge_labels += ['meiosis', 'meiosis']
+        return (edges,np.array(colors), edge_labels)
 
     @property
     def dependency_graph(self):
         import networkx as nx
         G = nx.DiGraph()
-        G.add_edges_from(self.dependency_graph_edges)
+        edges, colors, edge_labels = self.dependency_graph_edges
+        G.add_edges_from(edges)
         pos = nx.nx_agraph.graphviz_layout(G, prog='dot')
-        return (G,pos)
+        return (G,pos,colors,edges,edge_labels)
 
     def draw_dependency_graph(self, 
-                              node_color='#FFFFFF', 
+                              node_color='none', 
                               node_size = 1500, 
                               font_size=6, 
-                              margins=.1, 
+                              margins=.1,
+                              edge_color="#222222", 
                               **kwargs):
         import networkx as nx
-        G,pos = self.dependency_graph
+        G,pos,colors,edges,edge_labels = self.dependency_graph
+        color_dict = {a:b for a,b in zip(edges, colors)}
+        label_dict = {a:b for a,b in zip(edges, edge_labels)}
+        new_colors = [color_dict[edge] for edge in G.edges]
+        # new_labels = [label_dict[edge] for edge in G.edges]
+        # labels = {key:str(value) for (key,value) in zip(G.edges, colors)}
         nx.draw_networkx(G,pos, 
                          node_color=node_color, 
                          node_size = node_size, 
                          font_size=font_size,
                          margins=margins,
+                         edge_color=new_colors,
                          **kwargs)
+        nx.draw_networkx_edge_labels(G,pos, 
+                 font_size=font_size//1.3,
+                 edge_labels=label_dict,
+                 rotate=False,
+                 bbox={'boxstyle':'round', 'ec':'none', 'fc':(1.0, 1.0, 1.0)},
+                 # font_color=colors/np.max(colors),
+                 )
 
 
 
