@@ -257,7 +257,7 @@ class ArchitectureComponent:
                 edge_list.append(('proband\nhaplotypes', outcome))
             for inpt in self.input_cindex._nodes:
                 edge_list.append((inpt, outcome))
-            return edge_list
+        return edge_list
 
     @property
     def dependency_graph_edges(self):
@@ -552,8 +552,14 @@ class AdditiveNoiseComponent(ArchitectureComponent):
                            for scale in self.sds])
         phenotypes.loc[:, self.output_cindex.unique_identifier] = noise
 
-
-
+    def _dependency_graph(self):
+        ## this is a hack that will break if there's more than one component
+        output_cindex = self.output_cindex
+        edges = []
+        import time
+        for (i,node) in enumerate(output_cindex._nodes):
+            edges.append(( "#"+str(int(time.perf_counter() * 1e9 % 1e8)),node))
+        return edges
 
 class CorrelatedNoiseComponent(ArchitectureComponent):
     """
@@ -613,6 +619,15 @@ class CorrelatedNoiseComponent(ArchitectureComponent):
         noise = np.random.multivariate_normal(np.zeros(k), self.vcov, size = n)
         phenotypes.loc[:, self.output_cindex.unique_identifier] = noise
 
+    def _dependency_graph(self):
+        ## this is a hack that will break if there's more than one component
+        output_cindex = self.output_cindex
+        edges = []
+        import time
+        noise = "#"+str(int(time.perf_counter() * 1e9 % 1e8))
+        for (i,node) in enumerate(output_cindex._nodes):
+            edges.append((noise,node))
+        return edges
 
 class LinearTransformationComponent(ArchitectureComponent):
     """
@@ -1355,7 +1370,7 @@ class Architecture:
         self.components = components
         self.depth = depth
         self.expand_components = expand_components
-        self.check_circular_dependencies()
+        self.check_dependencies()
 
     @property
     def founder_initializations(self) -> List:
@@ -1466,6 +1481,14 @@ class Architecture:
                       ('paternal\nhaplotypes','proband\nhaplotypes')]
             colors += [0, 0]
             edge_labels += ['meiosis', 'meiosis']
+        ## hack to ensure noise nodes (labelled #\d+) have unique blank labels
+        import re
+        noise_nodes = [x[0] for x in [re.findall('^#\\d+$', node,) for node in [edge[0] for edge in edges]] if x != []]
+        noise_dict = {x:' '*(i+1) for i,x in enumerate(np.unique(noise_nodes))}
+        for i in range(len(edges)):
+            edge = edges[i]
+            if edge[0] in noise_nodes:
+                edges[i] = (noise_dict[edge[0]],edge[1])
         return (edges,np.array(colors), edge_labels)
 
     @property
@@ -1479,8 +1502,8 @@ class Architecture:
 
     def draw_dependency_graph(self, 
                               node_color='none', 
-                              node_size = 1500, 
-                              font_size=6, 
+                              node_size = 1200, 
+                              font_size=5, 
                               margins=.1,
                               edge_color="#222222", 
                               number_edges: bool = True,
@@ -1509,7 +1532,7 @@ class Architecture:
                  # font_color=colors/np.max(colors),
                  )
 
-    def check_circular_dependencies(self):
+    def check_dependencies(self):
         G,pos,colors,edges,edge_labels = self.dependency_graph
         edge_array = np.vstack(edges)
         import networkx as nx
@@ -1518,6 +1541,8 @@ class Architecture:
             for j in range(edge_array.shape[0]):
                 if edge_array[j,0]==edge_array[i,1]:
                     G.add_edges_from([(colors[i],colors[j])])
+        if np.any(np.array([x[1]-x[0] for x in G.edges]) <= 0):
+            warnings.warn('Architecture contains out-of-order dependencies! This is probably a mistake, check dependency_graph using xft.arch.Architecture.draw_dependency_graph()')
         if len(list(nx.simple_cycles(G)))>0:
             warnings.warn('Architecture contains circular dependencies! This is probably a mistake, check dependency_graph using xft.arch.Architecture.draw_dependency_graph()')
         else:
