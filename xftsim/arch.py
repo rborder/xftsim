@@ -631,6 +631,77 @@ class CorrelatedNoiseComponent(ArchitectureComponent):
             edges.append((noise,node))
         return edges
 
+
+
+class ProductComponent(ArchitectureComponent):
+    """
+    Multiplies existing components
+
+    Parameters
+    ----------
+    input_cindex : xft.index.ComponentIndex
+        Index of components to multiply
+    output_cindex : xft.index.ComponentIndex
+        Output component index
+    output_coef : float, options
+        Coefficent to multiply output by, by default 1.0
+    coefficient_vector : ndarray, optional
+        Coefficients to premultiply inputs by, by default all ones.
+    mean_deviate : bool, optional
+        If True, mean deviate the inputs by subtracting the mean. Defaults to True.
+    normalize : bool, optional
+        If True, normalize the inputs by subtracting the mean and dividing by the standard deviation
+        prior to multiply. Defaults to False.
+
+    """
+
+    def __init__(self,
+                 input_cindex: xft.index.ComponentIndex,
+                 output_cindex: xft.index.ComponentIndex,
+                 output_coef: float = 1.0,
+                 coefficient_vector: NDArray=None,
+                 mean_deviate: bool = True,
+                 normalize: bool = False,
+                 ) -> None:
+        self.input_cindex = input_cindex
+        self.output_cindex = output_cindex
+        if coefficient_vector is None:
+            coefficient_vector = np.ones(len(input_cindex))
+        self.coefficient_vector = coefficient_vector
+        self.output_coef = output_coef
+        self.normalize = normalize
+        self.mean_deviate = mean_deviate
+        super().__init__(input_cindex=input_cindex,
+                         output_cindex=output_cindex,
+                         input_haplotypes=False,
+                         component_name = 'product',
+                         )
+
+    def compute_component(self,
+                          haplotypes: xr.DataArray,
+                          phenotypes: xr.DataArray) -> None:
+        """
+        Compute the noise component of the phenotype.
+
+        Parameters
+        ----------
+        haplotypes : xr.DataArray
+            Haplotypes, not used in the computation.
+        phenotypes : xr.DataArray
+            Phenotypes to be modified.
+        """
+        inputs = phenotypes.loc[:, self.input_cindex.unique_identifier]
+        if self.mean_deviate:
+            inputs = np.apply_along_axis(lambda x: (
+                x - np.mean(x)), 0, inputs)
+        if self.normalize:
+            inputs = np.apply_along_axis(lambda x: (
+                x - np.mean(x)) / np.std(x), 0, inputs)
+        new_component = self.output_coef * xft.utils.ensure2D(np.prod(xft.utils.ensure2D(inputs) * self.coefficient_vector.ravel(), axis=1).ravel())
+        phenotypes.loc[:, self.output_cindex.unique_identifier] = new_component
+
+
+
 class LinearTransformationComponent(ArchitectureComponent):
     """
     A linear transformation component. Maps input phenotypes to output phenotypes using linear

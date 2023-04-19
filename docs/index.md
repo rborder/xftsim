@@ -17,7 +17,6 @@ API reference <api>
 ```
  -->
 
-
 ```{toctree}
 :maxdepth: 4
 :caption: Getting started

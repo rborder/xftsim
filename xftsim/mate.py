@@ -741,7 +741,7 @@ class RandomMatingRegime(MatingRegime):
     """
     def __init__(self, 
                  offspring_per_pair: xft.utils.VariableCount = xft.utils.ConstantCount(1),
-                 mates_per_female: xft.utils.VariableCount =  xft.utils.ConstantCount(1),
+                 mates_per_female: xft.utils.VariableCount =  xft.utils.ConstantCount(2),
                  female_offspring_per_pair: Union[str, xft.utils.VariableCount] = 'balanced', ## doesn't make total sense
                  sex_aware: bool = False,
                  exhaustive: bool = True,
@@ -1065,7 +1065,7 @@ def _solve_qap_ls(Y, Z, R, nb_threads=6, time_limit=30, tolerance=1e-5):
         return P
 
 
-class KAssortativeMatingRegime(xft.mate.MatingRegime):
+class KAssortativeMatingRegime(MatingRegime):
     """
     A class that implements the K-assortative mating regime. I.e., matches two sets of individuals with
     K phenotypes to achieve an arbitrary K x K cross-mate cross-correlation structure.
