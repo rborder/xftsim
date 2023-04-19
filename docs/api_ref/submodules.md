@@ -12,8 +12,7 @@
 | {ref}`founders <xftsim:xftsim.founders module>`   | Creating and importing founder haplotypes                                         |           |
 | {ref}`index <xftsim:xftsim.index module>`         | Indices for working with individual-, variant-, and component-level data          |           |
 | {ref}`io <xftsim:xftsim.io module>`               | Routines for reading and writing data to disk                                     |           |
-| {ref}`lsmate <xftsim:xftsim.lsmate module>`       | Mating regimes requiring [LocalSolver](https://www.localsolver.com/)              |           |
-| {ref}`mate <xftsim:xftsim.mate module>`           | All other mating regimes and the `MateAssignment` class                           |           |
+| {ref}`mate <xftsim:xftsim.mate module>`           | Mating regimes and the `MateAssignment` class                           |           |
 | {ref}`ped <xftsim:xftsim.ped module>`             | Pedigree data stuctures                                                           |           |
 | {ref}`proc <xftsim:xftsim.proc module>`           | Data post-processors (saving intermediate simulation data, limiting memory, etc.) |           |
 | {ref}`reproduce <xftsim:xftsim.reproduce module>` | Reproduction and transmission of genetic and phenotypic data                      |           |
