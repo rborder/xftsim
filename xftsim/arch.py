@@ -366,6 +366,7 @@ class ArchitectureComponent:
     def draw_dependency_graph(self, 
                               node_color='none', 
                               node_size = 1500, 
+                              arrowsize = 7,
                               font_size=6, 
                               margins=.1, 
                               **kwargs):
@@ -376,6 +377,7 @@ class ArchitectureComponent:
                          node_size = node_size, 
                          font_size=font_size,
                          margins=margins,
+                         arrowsize=arrowsize,
                          **kwargs)
 
 
@@ -1506,6 +1508,7 @@ class Architecture:
                               font_size=5, 
                               margins=.1,
                               edge_color="#222222", 
+                              arrowsize = 6,
                               number_edges: bool = True,
                               **kwargs):
         import networkx as nx
@@ -1523,6 +1526,7 @@ class Architecture:
                          font_size=font_size,
                          margins=margins,
                          edge_color=new_colors,
+                         arrowsize=arrowsize,
                          **kwargs)
         nx.draw_networkx_edge_labels(G,pos, 
                  font_size=font_size//1.3,

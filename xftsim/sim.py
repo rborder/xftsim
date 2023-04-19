@@ -383,6 +383,78 @@ class Simulation():
     # def __repr__(self):
         # pass
 
+    @property
+    def dependency_graph_edges(self):
+        edges = []
+        colors = []
+        edge_labels = []
+        for i,component in enumerate(self.architecture.components):
+            edges += component.dependency_graph_edges
+            colors += [i+1 for j in range(len(component.dependency_graph_edges))]
+            edge_labels += [component._component_name for j in range(len(component.dependency_graph_edges))]
+        if 'proband\nhaplotypes' in [edge[0] for edge in edges]:
+            edges += [('maternal\nhaplotypes','proband\nhaplotypes'),
+                      ('paternal\nhaplotypes','proband\nhaplotypes')]
+            colors += [0, 0]
+            edge_labels += ['meiosis', 'meiosis']
+        ## hack to ensure noise nodes (labelled #\d+) have unique blank labels
+        import re
+        noise_nodes = [x[0] for x in [re.findall('^#\\d+$', node,) for node in [edge[0] for edge in edges]] if x != []]
+        noise_dict = {x:' '*(i+1) for i,x in enumerate(np.unique(noise_nodes))}
+        for i in range(len(edges)):
+            edge = edges[i]
+            if edge[0] in noise_nodes:
+                edges[i] = (noise_dict[edge[0]],edge[1])
+        ## add mating
+        edges += self.mating_regime.dependency_graph_edges
+        colors += [np.max(colors)+1 for edge in self.mating_regime.dependency_graph_edges]
+        edge_labels += ['mating' for edge in self.mating_regime.dependency_graph_edges]
+        return (edges,np.array(colors), edge_labels)
+
+    @property
+    def dependency_graph(self):
+        import networkx as nx
+        G = nx.DiGraph()
+        edges, colors, edge_labels = self.dependency_graph_edges
+        G.add_edges_from(edges)
+        pos = nx.nx_agraph.graphviz_layout(G, prog='dot')
+        return (G,pos,colors,edges,edge_labels)
+
+    def draw_dependency_graph(self, 
+                              node_color='none', 
+                              node_size = 1200, 
+                              font_size=5, 
+                              margins=.1,
+                              edge_color="#222222", 
+                              arrowsize = 6,
+                              number_edges: bool = True,
+                              **kwargs):
+        import networkx as nx
+        G,pos,colors,edges,edge_labels = self.dependency_graph
+        if number_edges:
+            edge_labels = xft.utils.paste([colors.astype(str),edge_labels],sep=':')
+        color_dict = {a:b for a,b in zip(edges, colors)}
+        label_dict = {a:b for a,b in zip(edges, edge_labels)}
+        new_colors = [color_dict[edge] for edge in G.edges]
+        # new_labels = [label_dict[edge] for edge in G.edges]
+        # labels = {key:str(value) for (key,value) in zip(G.edges, colors)}
+        nx.draw_networkx(G,pos, 
+                         node_color=node_color, 
+                         node_size = node_size, 
+                         font_size=font_size,
+                         margins=margins,
+                         edge_color=new_colors,
+                         arrowsize=arrowsize,
+                         **kwargs)
+        nx.draw_networkx_edge_labels(G,pos, 
+                 font_size=font_size//1.3,
+                 edge_labels=label_dict,
+                 rotate=False,
+                 bbox={'boxstyle':'round', 'ec':'none', 'fc':(1.0, 1.0, 1.0)},
+                 # font_color=colors/np.max(colors),
+                 )
+
+
 
 class DemoSimulation(Simulation):
     demo_routines = dict(UGRM = 'Univariate GCTA with balanced random mating demo\n',

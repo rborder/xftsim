@@ -399,6 +399,10 @@ class MatingRegime:
         Whether the mating process should take sex into account. If True, females and males will be paired up based on their sex. If False, the pairs will be randomly assigned. Default is False.
     exhaustive : bool, optional
         Whether the mating pairs should be enumerated exhaustively or randomly. If True, all possible pairings will be enumerated before repeating. If False, the pairings will be randomly assigned with replacement. Default is True.
+    component_index : xft.index.ComponentIndex, optional
+        Which phenotype components (if any) are used in assigning mates
+    haplotypes : bool, optional
+        Flag indeicating if haplotype data is used to assign mates (defaults to False)
 
     Attributes
     ----------
@@ -439,6 +443,8 @@ class MatingRegime:
                  female_offspring_per_pair: Union[Callable, str, int, xft.utils.VariableCount] = 'balanced', ## doesn't make total sense
                  sex_aware: bool = False,
                  exhaustive: bool = True,
+                 component_index: xft.index.ComponentIndex = None,
+                 haplotypes: bool = False,
                  ):
         ## replace integer counts with ConstantCount objects
         if isinstance(offspring_per_pair, int):
@@ -454,6 +460,8 @@ class MatingRegime:
         self.female_offspring_per_pair = female_offspring_per_pair
         self.exhaustive = exhaustive
         self._mateFunction = mateFunction
+        self._component_index = component_index
+        self._haplotypes = haplotypes
 
     def get_potential_mates(self,
                             haplotypes: xr.DataArray = None, 
@@ -658,6 +666,44 @@ class MatingRegime:
         """
         return .5 * self.expected_offspring_per_pair * self.expected_mates_per_female
 
+    def _dependency_graph(self):
+        edge_list = []
+        if self._haplotypes:
+            edge_list.append(('proband\nhaplotypes', 'Mating\nregime'))
+        if self._component_index is not None:
+            for input_node in self._component_index._nodes:
+                edge_list.append((input_node, 'Mating\nregime'))
+        return edge_list
+
+    @property
+    def dependency_graph_edges(self):
+        return self._dependency_graph()
+
+    @property
+    def dependency_graph(self):
+        import networkx as nx
+        G = nx.DiGraph()
+        G.add_edges_from(self.dependency_graph_edges)
+        pos = nx.nx_agraph.graphviz_layout(G, prog='dot')
+        return (G,pos)
+
+    def draw_dependency_graph(self, 
+                              node_color='none', 
+                              node_size = 1500, 
+                              arrowsize = 7,
+                              font_size=6, 
+                              margins=.1, 
+                              **kwargs):
+        import networkx as nx
+        G,pos = self.dependency_graph
+        nx.draw_networkx(G,pos, 
+                         node_color=node_color, 
+                         node_size = node_size, 
+                         font_size=font_size,
+                         margins=margins,
+                         arrowsize=arrowsize,
+                         **kwargs)
+
 
 class RandomMatingRegime(MatingRegime):
     """
@@ -691,6 +737,8 @@ class RandomMatingRegime(MatingRegime):
                          female_offspring_per_pair=female_offspring_per_pair,
                          sex_aware=sex_aware,
                          exhaustive=exhaustive,
+                         component_index = None,
+                         haplotypes = False,
                          )
 
     def mate(self, 
@@ -785,6 +833,8 @@ class LinearAssortativeMatingRegime(MatingRegime):
                          female_offspring_per_pair=female_offspring_per_pair,
                          sex_aware=sex_aware,
                          exhaustive=exhaustive,
+                         component_index=component_index,
+                         haplotypes=False,
                          )
         ## Linear regime attributes
         self.r = r
