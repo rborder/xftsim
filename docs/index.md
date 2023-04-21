@@ -38,7 +38,7 @@ Phenogenetic architectures <userguide/arch>
 Mating regimes <userguide/mate>
 Statistics <userguide/stats>
 Post-processing <userguide/proc>
-Advanced genetic architectures <userguide/advancegenetic.ipynb>
+Advanced genetic architectures <userguide/advgen>
 Extending `xftsim` <userguide/extensions>
 ```
 
