@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 setup(
     name='xftsim',
     
-    version='0.0.1.dev8',
+    version='0.1.0',
     
     author="Richard Border",
     

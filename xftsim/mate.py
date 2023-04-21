@@ -837,7 +837,7 @@ class LinearAssortativeMatingRegime(MatingRegime):
                  component_index: xft.index.ComponentIndex,
                  r: float = 0,
                  offspring_per_pair: Union[int, xft.utils.VariableCount] = xft.utils.ConstantCount(1),
-                 mates_per_female: Union[int, xft.utils.VariableCount] =  xft.utils.ConstantCount(1),
+                 mates_per_female: Union[int, xft.utils.VariableCount] =  xft.utils.ConstantCount(2),
                  female_offspring_per_pair: Union[str, int, xft.utils.VariableCount] = 'balanced', ## doesn't make total sense
                  sex_aware: bool = False,
                  exhaustive: bool = True,

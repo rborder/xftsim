@@ -17,6 +17,7 @@ API reference <api>
 ```
  -->
 
+
 ```{toctree}
 :maxdepth: 4
 :caption: Getting started
@@ -33,10 +34,11 @@ Nuts and bolts <userguide/nutsandbolts>
 Anatomy of a simulation <userguide/simulation>
 Founder data <userguide/founder>
 Recombination maps <userguide/rmaps>
-Phenogenetic archetectures <userguide/arch>
+Phenogenetic architectures <userguide/arch>
 Mating regimes <userguide/mate>
 Statistics <userguide/stats>
 Post-processing <userguide/proc>
+Advanced genetic architectures <userguide/advancegenetic.ipynb>
 Extending `xftsim` <userguide/extensions>
 ```
 
