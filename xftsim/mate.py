@@ -997,7 +997,7 @@ class BatchedMatingRegime(MatingRegime):
 
 
 
-def _solve_qap_ls(Y, Z, R, nb_threads=6, time_limit=30, tolerance=1e-5):
+def _solve_qap_ls(Y, Z, R, nb_threads=6, time_limit=30, tolerance=1e-5, verbosity=1, time_between_displays=1):
     """
     Solves the Quadratic Assignment Problem (QAP) using the LocalSolver optimization solver.
     
@@ -1012,9 +1012,11 @@ def _solve_qap_ls(Y, Z, R, nb_threads=6, time_limit=30, tolerance=1e-5):
     nb_threads : int, optional
         The number of threads to be used for the optimization.
     time_limit : int, optional
-        The amount of time (in seconds) to run the optimization.
+        The amount of time (in seconds) to run the optimization passed to `.param.set_time_limit()`
     tolerance : float, optional
         The minimum threshold for the objective function to terminate optimization.
+    verbosity : int, optional
+        The amount of time (in seconds) to run the optimization.
 
     Returns
     -------
@@ -1028,7 +1030,9 @@ def _solve_qap_ls(Y, Z, R, nb_threads=6, time_limit=30, tolerance=1e-5):
         np.argsort(np.argsort(np.apply_along_axis(np.mean, 1, Z)))]
     with localsolver.LocalSolver() as ls:
         ls.param.set_time_limit(int(time_limit))
-        ls.param.set_nb_threads(nb_threads)
+        ls.param.set_nb_threads(int(nb_threads))
+        ls.param.set_verbosity(verbosity)
+        ls.param.set_time_between_displays(time_between_displays)
 
         model = ls.model
         # flows
@@ -1064,10 +1068,10 @@ def _solve_qap_ls(Y, Z, R, nb_threads=6, time_limit=30, tolerance=1e-5):
 
         return P
 
-
-class KAssortativeMatingRegime(MatingRegime):
+##TODO add seed
+class GeneralAssortativeMatingRegime(MatingRegime):
     """
-    A class that implements the K-assortative mating regime. I.e., matches two sets of individuals with
+    A class that implements the general assortative mating regimes. I.e., matches two sets of individuals with
     K phenotypes to achieve an arbitrary K x K cross-mate cross-correlation structure.
 
     Parameters
@@ -1079,13 +1083,16 @@ class KAssortativeMatingRegime(MatingRegime):
     offspring_per_pair : Union[int, xft.utils.VariableCount], optional
         The number of offspring per mating pair. Default is 1.
     mates_per_female : Union[int, xft.utils.VariableCount], optional
-        The number of mates for each female. Default is 1.
+        The number of mates for each female. Default is 2.
     female_offspring_per_pair : Union[str, int, xft.utils.VariableCount], optional
         The number of offspring per mating pair for females. Default is 'balanced'.
     sex_aware : bool, optional
         Whether to consider sex in mating pairs. Default is False.
     exhaustive : bool, optional
         Whether to enumerate all possible pairs. Default is True.
+    control : dict, optional
+        A dictionary of control parameters passed to LocalSolver. Defaults are as follows: 
+        nb_threads=4, time_limit=120, tolerance=1e-5, verbosity=1, time_between_displays=15
 
     Attributes
     ----------
@@ -1108,12 +1115,14 @@ class KAssortativeMatingRegime(MatingRegime):
                  offspring_per_pair: Union[int, xft.utils.VariableCount] = xft.utils.ConstantCount(
                      1),
                  mates_per_female: Union[int, xft.utils.VariableCount] = xft.utils.ConstantCount(
-                     1),
+                     2),
                  # doesn't make total sense
                  female_offspring_per_pair: Union[str, int,
                                                   xft.utils.VariableCount] = 'balanced',
                  sex_aware: bool = False,
                  exhaustive: bool = True,
+                 control: dict = {},
+
                  ):
         super().__init__(self,
                          offspring_per_pair=offspring_per_pair,
@@ -1126,11 +1135,13 @@ class KAssortativeMatingRegime(MatingRegime):
         self.cross_corr = cross_corr
         self.component_index = component_index
         self.K = component_index.k_total
+        self.control = dict(nb_threads=4, time_limit=120, tolerance=1e-5, verbosity=1, time_between_displays=15)
+        self.control.update(control)
 
     def mate(self,
              haplotypes: xr.DataArray = None,
              phenotypes: xr.DataArray = None,
-             control: dict = None,
+             control: dict = {},
              ):
         """
         Mate haplotypes and phenotypes based on the K-assortative mating regime.
@@ -1141,8 +1152,6 @@ class KAssortativeMatingRegime(MatingRegime):
             The haplotype data to be mated. Default is None.
         phenotypes : xr.DataArray, optional
             The phenotype data to be mated. Default is None.
-        control : dict, optional
-            A dictionary of control parameters for mating. Default is None.
 
         Returns
         -------
@@ -1167,7 +1176,13 @@ class KAssortativeMatingRegime(MatingRegime):
                                                                      self.component_index].data)
 
         perm = _solve_qap_ls(
-            female_components, male_components, self.cross_corr)
+            female_components, male_components, self.cross_corr, 
+                nb_threads=self.control['nb_threads'],
+                time_limit=self.control['time_limit'],
+                tolerance=self.control['tolerance'],
+                verbosity=self.control['verbosity'],
+                time_between_displays=self.control['time_between_displays'],
+                )
 
         return self.enumerate_assignment(female_indices=female_indices[perm],
                                          male_indices=male_indices,
