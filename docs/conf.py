@@ -24,7 +24,6 @@ html_logo = "_static/xftsimlogomediumwhite.svg"
 
 extensions = [
     "sphinx.ext.autodoc",
-    "notfound.extension",
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
     "sphinx.ext.autosectionlabel",
@@ -53,12 +52,6 @@ myst_enable_extensions = ['attrs_inline', 'substitution']
 autosectionlabel_prefix_document = True
 autosummary_generate = True
 autodoc_typehints = "none"
-
-
-{
-        'title': "404: page doesn't exist (yet)",
-    'body': "<h1>Page doesn't exist (yet)</h1>\n\nThanks for trying.",
-}
 
 
 # Napoleon configurations
