@@ -69,7 +69,8 @@ class Simulation():
         Dictionary storing results for each generation.
     pedigree : Any
         Pedigree information for the simulation (currently not implemented).
-
+    metadata : Dict
+        Dictionary containing user specified metadata
 
     Methods
     -------
@@ -104,31 +105,8 @@ class Simulation():
                  generation: int = -1,
                  control={},
                  reproduction_method=xft.reproduce.Meiosis,
+                 metadata={},
                  ):
-        """
-        Initialize a Simulation instance.
-
-        Parameters
-        ----------
-        founder_haplotypes : xr.DataArray
-            Haplotypes for the founder generation.
-        mating_regime : xft.mate.MatingRegime
-            Mating regime for the simulation.
-        recombination_map : xft.reproduce.RecombinationMap
-            Recombination map for the simulation.
-        architecture : xft.arch.Architecture
-            Architecture for the simulation.
-        statistics : Iterable, optional
-            Iterable of statistics to compute, by default an empty list.
-        post_processors : Iterable, optional
-            Iterable of post processors to apply, by default an empty list.
-        generation : int, optional
-            Initial generation, by default -1.
-        control : Dict, optional
-            Control parameters for the simulation, by default an empty dictionary.
-        reproduction_method : xft.reproduce.ReproductionMethod, optional
-            Reproduction method for the simulation, by default xft.reproduce.Meiosis.
-        """
         # attributes
         self.mating_regime = mating_regime
         self.recombination_map = recombination_map
@@ -138,6 +116,7 @@ class Simulation():
         self.reproduction_method = reproduction_method
         self.reproduction_regime = self.reproduction_method(
             self.recombination_map)
+        self.metadata = metadata
         # default control parameters:
         ctrl = Simulation._default_control()
         ctrl.update(control)
