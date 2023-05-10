@@ -24,6 +24,10 @@ class Statistic:
         The name of the statistic.
     estimator : Callable
         The function that estimates the statistic.
+    metadata : Dict
+        Any additional metadata
+    filter_sample : bool
+        Apply global filter prior to estimation?
 
     Methods
     -------
@@ -36,9 +40,12 @@ class Statistic:
     def __init__(self, 
                  estimator: Callable,
                  name: str,
+                 metadata: Dict = {},
+                 filter_sample = False,
                  ):
         self.name = name
         self.estimator = estimator
+        self.filter_sample = filter_sample
 
     def estimate(self,
                  sim: xft.sim.Simulation) -> None:
@@ -86,6 +93,8 @@ class SampleStatistics(Statistic):
                  vcov: bool = True,
                  corr: bool = True,
                  prettify: bool = True,
+                 metadata: Dict = {},
+                 filter_sample = False,
                  ):
         self.name = 'sample_statistics'
         self.means = means
@@ -94,11 +103,17 @@ class SampleStatistics(Statistic):
         self.vcov = vcov
         self.corr = corr
         self.prettify = prettify
+        self.metadata = metadata
+        self.filter_sample = filter_sample
 
     @xft.utils.profiled(level=2, message = "sample statistics")
     def estimator(self, sim: xft.sim.Simulation) -> Dict:
         output = dict()
-        pheno_df = sim.phenotypes.xft.as_pd(prettify=self.prettify)
+
+        if self.filter_sample:
+            pheno_df = sim.phenotypes_filtered.xft.as_pd(prettify=self.prettify)
+        else:
+            pheno_df = sim.phenotypes.xft.as_pd(prettify=self.prettify)
         h = [g.var(axis=1) for _, g in pheno_df.T.groupby(['phenotype_name','vorigin_relative'])]
         mm = [g.mean(axis=1) for _, g in pheno_df.T.groupby(['phenotype_name','vorigin_relative'])]
         if self.means:
@@ -134,19 +149,27 @@ class MatingStatistics(Statistic):
     def __init__(self,
                  component_index: xft.index.ComponentIndex = None,
                  full: bool = False,
+                 metadata: Dict = {},
+                 filter_sample = False,
                  ):
         self.name = 'mating_statistics'
         self._full = full
         self.component_index = component_index
+        self.metadata = metadata
+        self.filter_sample = filter_sample
 
     @xft.utils.profiled(level=2, message = "mating statistics")
     def estimator(self, sim: xft.sim.Simulation) -> Dict:
+        if self.filter_sample:
+            phenotypes = sim.phenotypes_filtered         
+        else:
+            phenotypes = sim.phenotypes
         output = dict(
                       n_reproducing_pairs = sim.mating.n_reproducing_pairs,
                       n_total_offspring = sim.mating.n_total_offspring,
                       mean_n_offspring_per_pair =  np.mean(sim.mating.n_offspring_per_pair),
                       mean_n_female_offspring_per_pair =  np.mean(sim.mating.n_females_per_pair),
-                      mate_correlations = sim.mating.get_mate_phenotypes(phenotypes=sim.phenotypes,
+                      mate_correlations = sim.mating.get_mate_phenotypes(phenotypes=phenotypes,
                                                                          component_index=self.component_index,
                                                                          full = self._full).corr(),
                       )
@@ -361,6 +384,8 @@ class HasemanElstonEstimator(Statistic):
                  prettify: bool = True,
                  n_probe: int = 100,
                  dask: bool = True,
+                 metadata: Dict = {},
+                 filter_sample = False,
                  ):
         self.name = 'HE_regression'
         self.component_index = component_index
@@ -369,6 +394,8 @@ class HasemanElstonEstimator(Statistic):
         self.prettify = prettify
         self.n_probe = n_probe
         self.dask = dask
+        self.metadata = metadata
+        self.filter_sample = filter_sample
 
     @xft.utils.profiled(level=2, message = "haseman elston estimator")
     def estimator(self, sim: xft.sim.Simulation) -> Dict:
@@ -379,8 +406,13 @@ class HasemanElstonEstimator(Statistic):
             component_index = sim.phenotypes.xft.grep_component_index('phenotype')
         else:
             component_index = self.component_index
-        Y = sim.current_std_phenotypes.xft[None, component_index].xft.as_pd()
-        he_out = haseman_elston(G = sim.current_std_genotypes,
+        if self.filter_sample:
+            Y = sim.current_std_phenotypes_filtered.xft[None, component_index].xft.as_pd()
+            G = sim.current_std_genotypes_filtered
+        else:
+            Y = sim.current_std_phenotypes.xft[None, component_index].xft.as_pd()
+            G = sim.current_std_genotypes
+        he_out = haseman_elston(G = G,
                                 Y = Y,
                                 n_probe = self.n_probe,
                                 dask = self.dask,
@@ -590,17 +622,17 @@ class GWAS_Estimator(Statistic):
         Index of the component for which the statistics are calculated.
         If not provided, calculate statistics for all phenotype components.
 
-    Methods
-    -------
-    estimator(sim: xft.sim.Simulation) -> Dict
-        Estimate and return the Haseman-Elston regression for the given simulation.
     """
     def __init__(self,
                  component_index: xft.index.ComponentIndex = None,
+                 metadata: Dict = {},
+                 filter_sample = False,
                  # numba: bool = True,
                  ):
         self.name = 'GWAS'
         self.component_index = component_index
+        self.metadata = metadata
+        self.filter_sample = filter_sample
         # self.numba = numba
 
     @xft.utils.profiled(level=2, message = "GWAS estimator")
@@ -612,10 +644,12 @@ class GWAS_Estimator(Statistic):
             component_index = sim.phenotypes.xft.grep_component_index('phenotype')
         else:
             component_index = self.component_index
-        Y = sim.current_std_phenotypes.xft[None, component_index].data.astype(np.float32)
-        # if Y.shape[1] <2:
-        #     raise NotImplementedError()
-        G = sim.current_std_genotypes
+        if self.filter_sample:
+            Y = sim.current_std_phenotypes.xft[None, component_index].data.astype(np.float32)
+            G = sim.current_std_genotypes
+        else:
+            Y = sim.current_std_phenotypes_filtered.xft[None, component_index].data.astype(np.float32)
+            G = sim.current_std_genotypes_filtered
         sum_stats = _mv_gwas_nb(G,Y)
         coord_dict = component_index.coord_dict.copy()
         coord_dict.update(sim.haplotypes.xft.get_variant_indexer().to_diploid().coord_dict)

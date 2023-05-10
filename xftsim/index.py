@@ -6,7 +6,10 @@ import functools
 
 from typing import Iterable, Union, Dict
 from nptyping import NDArray, Shape, Float, Int, Object
+from nptyping import NDArray, Int8, Int64, Float64, Bool, Shape, Float, Int
+from typing import Any, Hashable, List, Iterable, Callable, Union, Dict, Tuple
 from collections.abc import Sequence
+
 
 import xftsim as xft
 
@@ -1047,4 +1050,82 @@ def _test_variantIndex_from_plink():
 
 def _test_variantIndex_from_VCF():
     pass
+
+class SampleFilter:
+    def __init__(self, 
+                 filter_function: Callable,
+                 filter_name: str = None,
+                 metadata: Dict = {}):
+        """Class of functions that subsample fullSample.SampleIndex objects
+        
+        Parameters
+        ----------
+        filter_function : Callable
+            Maps an SampleIndex and other metadata to a set of integer indices.
+        filter_name : str, optional
+            Name of filter applied
+        metadata : Dict, optional
+            Dictionary containing any additional metadata
+        """
+        self._filter_function = filter_function
+        self.filter_name = filter_name
+        self.metadata = metadata
+
+    def filter(self, sindex: SampleIndex, **kwargs):
+        if self._filter_function is not None:
+            return self._filter_function(sindex, **kwargs)
+        else:
+            return np.arange(sindex.n)
+
+class NullFilter(SampleFilter):
+    def __init__(self):
+        super().__init__(filter_function = None,
+                         filter_name = 'NullFilter')
+
+class RandomSiblingFilter(SampleFilter):
+
+    """Randomly select one sibling per family
+    """
+    
+    @staticmethod
+    def _sib_random_sample(sindex: SampleIndex):
+        selection = np.sort(pd.Series(range(sindex.n)).groupby(sindex.fid).apply(np.random.choice))
+        return selection
+
+    def __init__(self):
+        super().__init__(filter_function = RandomSiblingFilter._sib_random_sample,
+                         filter_name = 'RandomSibling')
+
+class RandomSubsampleFilter(SampleFilter):
+    """Randomly subsample `k` individuals
+    """
+    def _random_subsample(self,
+                          sindex: SampleIndex):
+        k = self.k
+        n = sindex.n
+        if k is None:
+            k = n
+        selection = np.sort(np.random.permutation(n)[:k])
+        return selection
+    def __init__(self, k: int):
+        self.k = k
+        super().__init__(filter_function = self._random_subsample,
+                         filter_name = 'RandomSibling')
+
+
+
+class RandomSiblingSubsampleFilter(SampleFilter):
+    
+    """Randomly subsample `k` families, choosing one offspring per family
+    """
+
+    def __init__(self, sindex: SampleIndex):
+        def _sib_random_subsample(sindex: SampleIndex):
+            selection = np.sort(pd.Series(range(sindex.n)).groupby(sindex.fid).apply(np.random.choice))
+            if k is None or len(selection) < k:
+                k = len(selection)
+            selection = np.sort(selection[:k])
+            return selection
+        super().__init__(filter_function = _sib_random_subsample,
+                         filter_name = 'RandomSiblingSubsample')
 

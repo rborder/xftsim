@@ -1110,7 +1110,7 @@ class SumAllTransformation(ArchitectureComponent):
             Output component index.
         """
         self.input_haplotypes = False
-        self.input_cindex = input_cindex
+        self.input_cindex = input_cindex 
 
         input_frame = input_cindex.coord_frame
         output_frame = input_frame.copy(

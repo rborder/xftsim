@@ -106,6 +106,8 @@ class Simulation():
                  control={},
                  reproduction_method=xft.reproduce.Meiosis,
                  metadata={},
+                 filter_sample: bool = False,
+                 sample_filter: xft.index.SampleFilter = None,
                  ):
         # attributes
         self.mating_regime = mating_regime
@@ -117,6 +119,8 @@ class Simulation():
         self.reproduction_regime = self.reproduction_method(
             self.recombination_map)
         self.metadata = metadata
+        self.filter_sample = filter_sample
+        self.sample_filter = sample_filter
         # default control parameters:
         ctrl = Simulation._default_control()
         ctrl.update(control)
@@ -137,6 +141,8 @@ class Simulation():
         self._current_afs_empirical = None
         self._current_std_genotypes = None
         self._current_std_phenotypes = None
+        self._current_std_genotypes_filtered = None
+        self._current_std_phenotypes_filtered = None
 
     @property
     def control(self):
@@ -183,6 +189,7 @@ class Simulation():
         self.compute_phenotypes()
         self.mate()
         self.update_pedigree()
+        self.apply_filter()
         self.estimate_statistics()
         self.process()
 
@@ -235,6 +242,15 @@ class Simulation():
         for stat in self.statistics:
             stat.estimate(self)
 
+    def apply_filter(self):
+        """
+        Apply sample filters to the current generation
+        """
+        if self.sample_filter is None:
+            pass
+        else:
+            self.filter_indices = self.sample_filter.filter(self.phenotypes.xft.get_sample_indexer())
+
     @xft.utils.profiled()
     def process(self):
         """
@@ -275,6 +291,13 @@ class Simulation():
         else:
             return None
 
+    @property
+    def haplotypes_filtered(self):
+        if self.filter_sample:
+            return self.haplotypes[self.filter_indices,:]
+        else:
+            return self.haplotypes
+
     @haplotypes.setter
     def haplotypes(self, value):
         self.haplotype_store[self.generation] = value
@@ -289,6 +312,14 @@ class Simulation():
     @phenotypes.setter
     def phenotypes(self, value):
         self.phenotype_store[self.generation] = value
+
+    @property
+    def phenotypes_filtered(self):
+        if self.filter_sample:
+            return self.phenotypes[self.filter_indices,:]
+        else:
+            return self.phenotypes
+
 
     @property
     def mating(self):
@@ -345,12 +376,25 @@ class Simulation():
     def current_std_genotypes(self):
         if self._current_std_genotypes is None:
             if self.control['standardization'] == 'hardy_weinberg_empirical':
-                return self.haplotypes.xft.to_diploid_standardized(af=self.current_afs_empirical,
+                return self.haplotypes.xft.to_diploid_standardized(af=None,
                                                                    scale=False)
             else:
                 raise NotImplementedError()
         else:
             return self._current_std_genotypes
+
+    @property
+    def current_std_genotypes_filtered(self):
+        if self.filter_sample is False:
+            return self.current_std_genotypes
+        elif self._current_std_genotypes_filtered is None:
+            if self.control['standardization'] == 'hardy_weinberg_empirical':
+                return self.haplotypes[self.filter_indices,:].xft.to_diploid_standardized(af=None,
+                                                                   scale=False)
+            else:
+                raise NotImplementedError()
+        else:
+            return self._current_std_genotypes_filtered
 
     @property
     def current_std_phenotypes(self):
@@ -359,8 +403,14 @@ class Simulation():
         else:
             return self._current_std_phenotypes
 
-    # def __repr__(self):
-        # pass
+    @property
+    def current_std_phenotypes_filtered(self):
+        if self.filter_sample is False:
+            return self.current_std_phenotypes
+        elif self._current_std_phenotypes_filtered is None:
+            return self.phenotypes[self.filter_indices,:].xft.standardize()
+        else:
+            return self._current_std_phenotypes_filtered
 
     @property
     def dependency_graph_edges(self):

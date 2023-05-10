@@ -188,6 +188,14 @@ class XftAccessor:
         """
         return self._obj.dims[1]
 
+    def _check_sample_indexed(self):
+        if self._row_dim != 'sample':
+            raise TypeError("Array must have sample index")
+
+    def _check_variant_indexed(self):
+        if self._col_dim != 'variant':
+            raise TypeError("Array must have variant index")
+
     @property
     def shape(self):
         """
@@ -681,16 +689,17 @@ class XftAccessor:
         raise NotImplementedError()
 
 
-    def to_diploid_standardized(self, af: NDArray, scale: bool):
+    def to_diploid_standardized(self, af: NDArray = None, scale: bool = False):
         """
         Standardize the HaplotypeArray object and convert it to a diploid representation.
         Specific to HaplotypeArray objects.
         
         Parameters
         ----------
-        af: NDArray
-            An array containing the allele frequencies of each variant.
-        scale: bool
+        af: NDArray, optional
+            An array containing the allele frequencies of each variant. If not provided, empirical afs
+            will with used
+        scale: bool, optional
             Whether or not to scale the standardized array by the square root of the number of variants.
             
         Returns
@@ -705,6 +714,8 @@ class XftAccessor:
         """
         if self._col_dim != 'variant':
             raise TypeError
+        if af is None:
+            af = self.af_empirical
         if scale:
             return xft.utils.standardize_array_hw(self._obj.data, af) / np.sqrt(self.m)
         else:
