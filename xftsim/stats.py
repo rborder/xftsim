@@ -549,6 +549,13 @@ def _mv_vec_linear_regression_with_intercept_nb(X: NDArray,
         m-by-2-by-k array of standardized slopes (first column) and corresponding standard errors (second column)
         for each of the m predictors. 
     """
+    # output = np.empty((X.shape[1], 2, Y.shape[1]), dtype=Y.dtype)
+    # for k in nb.prange(Y.shape[1]):
+    #     y = Y[:,k].ravel()
+    #     y = y / np.std(y)
+    #     for j in np.arange(X.shape[1]):
+    #         output[j,:, k] = _linear_regression_with_intercept_nb(X[:,j],y)
+    # return output
     output = np.empty((X.shape[1], 2, Y.shape[1]), dtype=Y.dtype)
     for k in nb.prange(Y.shape[1]):
         y = Y[:,k].ravel()
@@ -556,6 +563,7 @@ def _mv_vec_linear_regression_with_intercept_nb(X: NDArray,
         for j in np.arange(X.shape[1]):
             output[j,:, k] = _linear_regression_with_intercept_nb(X[:,j],y)
     return output
+
 
 
 def _p_val_t(t: float, df: Union[int, float]) -> float:
@@ -574,7 +582,7 @@ def _p_val_t(t: float, df: Union[int, float]) -> float:
     float
         p-value
     """
-    return (1-sp.stats.t.cdf(t,df))*2
+    return (1-sp.stats.t.cdf(t,df))
 
 
 def _mv_gwas_nb(X: NDArray, Y: NDArray) -> NDArray:
