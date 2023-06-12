@@ -1118,14 +1118,35 @@ class RandomSiblingSubsampleFilter(SampleFilter):
     
     """Randomly subsample `k` families, choosing one offspring per family
     """
-
-    def __init__(self, sindex: SampleIndex):
-        def _sib_random_subsample(sindex: SampleIndex):
-            selection = np.sort(pd.Series(range(sindex.n)).groupby(sindex.fid).apply(np.random.choice))
-            if k is None or len(selection) < k:
-                k = len(selection)
-            selection = np.sort(selection[:k])
-            return selection
-        super().__init__(filter_function = _sib_random_subsample,
+    def _sib_random_subsample(self, sindex: SampleIndex):
+        selection = pd.Series(range(sindex.n)).groupby(sindex.fid).apply(np.random.choice)
+        k = self.k
+        if k is None or len(selection) < k:
+            k = len(selection)
+        selection = np.sort(selection[:k])
+        return selection
+    def __init__(self, k: int):
+        self.k = k
+        super().__init__(filter_function = self._sib_random_subsample,
                          filter_name = 'RandomSiblingSubsample')
 
+
+class SiblingPairFilter(SampleFilter):
+    
+    """
+    Subsample 2 siblings each from k families with at least two siblings
+    """
+    def _sibpair_subsample(self, sindex: SampleIndex):
+        if self.k is None:
+            k = len(family_subset)
+        else:
+            k = self.k
+        family_subset = np.random.permutation(np.unique(sindex.fid[pd.Series(sindex.fid).duplicated()]))[:k]
+        sub_inds = np.where(pd.Series(sindex.fid).isin(family_subset))[0]
+        selection = pd.Series(sub_inds).groupby(sindex.fid[sub_inds]).apply(np.random.choice, size=2, replace = False)
+        selection = np.sort(np.concatenate(selection.values))
+        return selection
+    def __init__(self, k: int = None):
+        self.k = k
+        super().__init__(filter_function = self._sibpair_subsample,
+                         filter_name = 'RandomSiblingSubsample')
