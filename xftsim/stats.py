@@ -178,7 +178,7 @@ class MatingStatistics(Statistic):
     
 
 # ## estimates tr (X %*% t(X) %*% X %*% t(X)) using l probing vectors
-@nb.jit(parallel=True)
+@nb.njit(parallel=True)
 def _rtrace_K2(X, l): ## (matrix, int) -> float
     """
     Estimate the trace of the matrix product (X %*% t(X) %*% X %*% t(X)) using l probing vectors.
@@ -219,7 +219,7 @@ def _rtrace_K2_dask(X, l): ## (matrix, int) -> float
     W = da.dot(probes.T, da.dot(X, da.dot(X.T, da.dot(X, da.dot(X.T, probes)))))
     return da.trace(W)/l
 
-@nb.jit(parallel=True)
+@nb.njit(parallel=True)
 def _haseman_elston_randomized(
                     G, # (2D array) standardized (but not scaled) diploid genotypes
                     Y, # (2D array) standardized phenotypes
@@ -283,7 +283,7 @@ def _haseman_elston_randomized_dask(
     return cov_g_HE.compute()
 
 
-@nb.jit(parallel=True)
+@nb.njit(parallel=True)
 def _haseman_elston_deterministic(
                     G, # (2D array) standardized (but not scaled) diploid genotypes
                     Y, # (2D array) standardized phenotypes
