@@ -719,7 +719,7 @@ def standardize_array(a: ArrayLike):
 # map int8 haploid genotypes, float afs to float32 standardized genotypes
 
 
-@nb.jit(parallel=True)
+@nb.njit(parallel=True)
 def _standardize_array_hw(haplotypes,
                           af):
     """
