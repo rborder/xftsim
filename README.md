@@ -17,6 +17,15 @@
 pip install xftsim
 ```
 
+Alternatively, you can install the latest development version from github:
+
+```bash
+git clone https://github/rborder/xftsim
+cd xftsim
+git checkout dev
+pip -e . install
+```
+
 
 ## Getting started
 
@@ -24,7 +33,7 @@ To get started, [check out the documentation](https://xftsim.readthedocs.io)!
 
 ## Notice
 
-`xftsim` is under active development. Stay tuned for tutorials and documentation in the near future!
+`xftsim` is under active development. Please let us know if there are features missing or bugs!
 
 <!-- 
 ## Quickstart: simulating bivariate cross-assortative mating
