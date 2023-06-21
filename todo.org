@@ -1,29 +1,31 @@
-* immediate todos [0/2]
+* immediate todos [2/3]
     - [ ] direct interface with stdpopsim maps
-* documentation todos [0/2]
+    - [X] gwas
+    - [X] variant result data structure
+* documentation todos [0/0]
 ** Getting started
 *** ☑ installation
 *** ☑ quickstart
 ** User Guide
-*** ☐ nuts and bolts
-**** ☐ indexes
-**** ☐ data structures
-**** ☐ submodule organization
-*** ☐ anatomy of a simulation
-*** ☐ founder data
-**** ☐ synthetic data
-**** ☐ working with real data
-    - [ ] example with vcf data
-    - [ ] example with vcf plink data
-*** ☐ recombination maps
-*** ☐ architectures
-**** ☐ architecture class
-**** ☐ components
-**** ☐ vertical components and founder initializations
-*** ☐ mating regimes
-**** ☐ choosing mates
+*** ☑ nuts and bolts
+**** ☑ indexes
+**** ☑ data structures
+**** ☑ submodule organization
+*** ☑ anatomy of a simulation
+*** ☑ founder data
+**** ☑ synthetic data
+**** ☑ working with real data
+    - [X] example with vcf data
+    - [X] example with vcf plink data
+*** ☑ recombination maps
+*** ☑ architectures
+**** ☑ architecture class
+**** ☑ components
+**** ☑ vertical components and founder initializations
+*** ☑ mating regimes
+**** ☑ choosing mates
 **** ☐ controlling population growth
-*** ☐ statistics and post-processors 
+*** ☑ statistics and post-processors 
 *** ☐ extending xftsim 
     - [ ] Extending mating regimes
     - [ ] Extending phenogenetic architectures
@@ -36,31 +38,17 @@
     - [ ] spatial assortment + environmental gradient
 * tutorials [1/4]
     - [X] quickstart
-    - [ ] random mating
-    - [ ] assortative mating
-    - [ ] transmission / causal dependences
+    - [X] random mating
+    - [X] assortative mating
+    - [X] transmission / causal dependences
 * major features [0/3]
     - [ ] support CV_only + tskit
     - [ ] spatial_module
-    - [ ] causal graph
-* features [0/0]
+    - [X] causal graph
+* features [0/2]
 ** documentation
 *** ☐ replace duplicate descriptions
-*** ☐ Getting started [0/3]
-    - [ ] overview
-    - [ ] installation
-    - [ ] quickstart
-*** ☐ User guide [0/5]
-    - [ ] the components of a simulation
-    - [ ] founders haplotypes
-    - [ ] mating regime and recombination map
-    - [ ] phenogenetic architectures
-    - [ ] statistics and post-processors
-*** ☐ Under the hood [0/5]
-    - [ ] data structures
-    - [ ] indexing
-*** ☐ Example gallery [0/5]
-** ☐ module docstrings [2/13]
+*** ☐ module docstrings [2/13]
     - [ ] arch
     - [ ] data
     - [ ] effect
@@ -85,17 +73,17 @@
     - [ ] add examples to documentation
     - [ ] add get_annotations methods
     - [ ] LDAK model
-    - [ ] GCTA model
-    - [ ] implement component types
+    - [X] GCTA model
+    - [X] implement component types
     - [ ] auto add sum
     - [X] binary
     - [ ] binary + ruleout
     - [ ] misdiagnosis
     - [ ] GxG
-    - [ ] GxE
-    - [ ] causal graph methods
+    - [X] GxE
+    - [X] causal graph methods
     - [ ] prettify __repr__
-** ☐ data [/]
+** ☐ data [0/1]
     - [ ] incorporate genetic maps from stdpopsim
 ** ☐ [#A] effect [4/6]
     - [X] common index api
@@ -107,17 +95,17 @@
 ** ☐ [#A] founders [1/8]
     - [ ] common index api
     - [X] DOCUMENT
-    - [ ] from_maf function
+    - [X] from_maf function
     - [ ] from_numpy
-    - [ ] from_vcf
-    - [ ] from_dask
-    - [ ] from_zarr
+    - [X] from_vcf
+    - [ ] from_plink
+    - [X] from_zarr
     - [ ] prettify __repr__
 ** ☐ index [2/6]
     - [X] DOCUMENT
     - ~ unify VariantIndex
-    - [ ] type field for components
-    - [ ] cleaner index creation
+    - [X] type field for components
+    - [X] cleaner index creation
     - [X] make from_product etc staticmethods
     - [ ] allow vorigin specification via string
     - [ ] prettify __repr__
@@ -175,10 +163,10 @@
     - [X] constructors -> staticmethods
     - [X] DOCUMENT
     - [ ] prettify __repr__
-** ☐ sim [1/2]
+** ☐ sim [1/3]
     - [X] DOCUMENT
     - [ ] Make it clear which args are optional for Simulation class
     - [ ] prettify __repr__
-** ☐ utils [1/2]
+** ☐ utils [2/2]
     - [X] DOCUMENT - variable count
     - [X] DOCUMENT - everything else

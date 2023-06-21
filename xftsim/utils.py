@@ -17,7 +17,7 @@ import funcy
 import xftsim as xft
 
 @funcy.decorator
-def profiled(call, level: int = 1, message: str = None):
+def profiled(call, level: int = 1, message: str = None, sep: str = '     | '):
     """
     A decorator that prints the duration of a function call when the specified logging level is met.
     
@@ -42,7 +42,8 @@ def profiled(call, level: int = 1, message: str = None):
     else:
         msg = call._func.__name__
     if level <= xft.config.get_plevel():
-        with funcy.print_durations(msg, threshold=xft.config.get_pdurations()):
+        with funcy.log_durations(print_func = lambda x: print(sep*level + str(x)))(msg, 
+                                 threshold=xft.config.get_pdurations()):
             return call()
     else:
         return call()
@@ -718,7 +719,7 @@ def standardize_array(a: ArrayLike):
 # map int8 haploid genotypes, float afs to float32 standardized genotypes
 
 
-@nb.jit(parallel=True)
+@nb.njit(parallel=True)
 def _standardize_array_hw(haplotypes,
                           af):
     """

@@ -1110,7 +1110,7 @@ class SumAllTransformation(ArchitectureComponent):
             Output component index.
         """
         self.input_haplotypes = False
-        self.input_cindex = input_cindex
+        self.input_cindex = input_cindex 
 
         input_frame = input_cindex.coord_frame
         output_frame = input_frame.copy(
@@ -1118,6 +1118,7 @@ class SumAllTransformation(ArchitectureComponent):
         output_frame['component_name'] = output_component_name
         output_frame['comp_type'] = output_comp_type
         self.output_cindex = xft.index.ComponentIndex.from_frame(output_frame)
+        self.output_cindex.comp_type = output_comp_type
         self.founder_initialization = None
         self._component_name = component_name
         # self._dependency_graph = None
