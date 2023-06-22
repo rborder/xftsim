@@ -1,0 +1,49 @@
+{% set name = "xftsim" %}
+{% set version = "0.1.3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/xftsim-{{ version }}.tar.gz
+  sha256: dcc57f597016b8211e3bd72e825f72fcac01d65a6f1bf7e8bbea43d9c34ba084
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv
+  number: 0
+
+requirements:
+  host:
+    - python
+    - pip
+  run:
+    - python
+    - funcy
+    - networkx
+    - nptyping
+    - numba
+    - numpy
+    - pandas
+    - pandas-plink
+    - pygraphviz
+    - scipy
+    - sgkit
+    - xarray
+
+test:
+  imports:
+    - xftsim
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  license: GPL-3.0
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - rborder

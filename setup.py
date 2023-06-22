@@ -21,7 +21,6 @@ setup(
     "numpy",
     "pandas",
     "pandas_plink",
-    "pygraphviz",
     "scipy",
     "sgkit",
     "xarray",
