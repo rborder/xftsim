@@ -243,7 +243,7 @@ def save_haplotype_zarr(haplotypes: xr.DataArray,
     -------
     None
     """
-    haplotypes.to_dataset().to_zarr(path, **kwargs)
+    return haplotypes.to_dataset().to_zarr(path, **kwargs)
 
 
 def haplotypes_from_sgkit_dataset(gdat: xr.Dataset, generation: int = 0) ->  xr.DataArray:
