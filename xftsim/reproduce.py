@@ -10,7 +10,7 @@ from functools import cached_property
 import numba as nb
 import math
 import nptyping as npt
-
+import dask
 import xftsim as xft
 
 from xftsim.mate import MateAssignment
@@ -258,59 +258,161 @@ def _meiosis_i(p):
     output += np.arange(0, 2 * m, 2)
     return output
 
-# meiosis i and ii
+
+# @nb.njit#("int64[:](float64[:],int64)")
+# def _meiosis_i_slice(p,n_mate):
+#     return [[i for i in range(p.shape[0]) if np.random.binomial(1,p[i])==1] for j in nb.prange(n_mate)]
 
 
-@nb.njit("int8[:,:](int8[:,:], int8[:,:], int64, int64, float64[:], int64[:], int64[:], int64[:], int64[:])", parallel=True)
-def _meiosis(parental_haplotypes,
-             offspring_haplotypes,
-             n,
-             m_hap,
-             recombination_p,
-             maternal_inds,
-             paternal_inds,
-             m_meiosis_ii_inds,
-             p_meiosis_ii_inds,
-             ):
-    """
-    Performs meiosis I and II.
+# @nb.njit#("int64[:](float64[:],int64)")
+# def _meiosis_i_slice_boundary(p):
+#     edges = [0]+[i for i in range(p.shape[0]) if np.random.binomial(1,p[i])==1] + [len(p)]
+#     return edges #[edges[i]*2 + i%2 for i in range(len(edges))]
 
-    Parameters
-    ----------
-    parental_haplotypes : numpy.ndarray[int8]
-        An array of parental haplotypes.
-    offspring_haplotypes : numpy.ndarray[int8]
-        An array of offspring haplotypes.
-    n : int64
-        The number of offspring.
-    m_hap : int64
-        The number of haploid chromosomes.
-    recombination_p : numpy.ndarray[float64]
-        An array of recombination probabilities.
-    maternal_inds : numpy.ndarray[int64]
-        An array of maternal indices.
-    paternal_inds : numpy.ndarray[int64]
-        An array of paternal indices.
-    m_meiosis_ii_inds : numpy.ndarray[int64]
-        An array of maternal meiosis II indices.
-    p_meiosis_ii_inds : numpy.ndarray[int64]
-        An array of paternal meiosis II indices.
+# # @nb.njit#("int64[:](float64[:],int64)")
+# def _meiosis_i_slicer(thing):
+#     return tuple(slice(thing[i]*2+(i%2),thing[i+1]*2+(i%2), 2) for i in range(len(thing)-1))
 
-    Returns
-    -------
-    numpy.ndarray[int8]
-        An array of offspring haplotypes.
-    """
-    for i in nb.prange(n):
-        # maternal copies:
-        m_meiosis_i_inds = _meiosis_i(recombination_p)
-        p_meiosis_i_inds = _meiosis_i(recombination_p)
-        for j in range(m_hap // 2):
-            offspring_haplotypes[i, m_meiosis_ii_inds[j]
-                                 ] = parental_haplotypes[maternal_inds[i], m_meiosis_i_inds[j]]
-            offspring_haplotypes[i, p_meiosis_ii_inds[j]
-                                 ] = parental_haplotypes[paternal_inds[i], p_meiosis_i_inds[j]]
-    return offspring_haplotypes
+
+# # maps recombination probabilities to haploid indicies
+# @nb.njit("int64[:](float64[:])")
+# def _meiosis_i_slice(p):
+#     """
+#     Maps recombination probabilities to haploid indices.
+
+#     Parameters
+#     ----------
+#     p : numpy.ndarray[float64]
+#         An array of recombination probabilities.
+
+#     Returns
+#     -------
+#     numpy.ndarray[int64]
+#         An array of haploid indices.
+#     """
+#     m = p.shape[0]
+#     output = np.empty(m, dtype=np.int64)
+#     for j in range(m):
+#         output[j] = np.random.binomial(1, p[j])
+#     output = np.cumsum(output) % 2
+#     output += np.arange(0, 2 * m, 2)
+#     return output
+
+# # meiosis i and ii
+
+
+
+# # meiosis i and ii
+
+
+
+
+# @nb.njit("int8[:,:](int8[:,:], int8[:,:], int64, int64, float64[:], int64[:], int64[:], int64[:], int64[:])", parallel=True)
+# def _meiosis(parental_haplotypes,
+#              offspring_haplotypes,
+#              n,
+#              m_hap,
+#              recombination_p,
+#              maternal_inds,
+#              paternal_inds,
+#              m_meiosis_ii_inds,
+#              p_meiosis_ii_inds,
+#              ):
+#     """
+#     Performs meiosis I and II.
+
+#     Parameters
+#     ----------
+#     parental_haplotypes : numpy.ndarray[int8]
+#         An array of parental haplotypes.
+#     offspring_haplotypes : numpy.ndarray[int8]
+#         An array of offspring haplotypes.
+#     n : int64
+#         The number of offspring.
+#     m_hap : int64
+#         The number of haploid chromosomes.
+#     recombination_p : numpy.ndarray[float64]
+#         An array of recombination probabilities.
+#     maternal_inds : numpy.ndarray[int64]
+#         An array of maternal indices.
+#     paternal_inds : numpy.ndarray[int64]
+#         An array of paternal indices.
+#     m_meiosis_ii_inds : numpy.ndarray[int64]
+#         An array of maternal meiosis II indices.
+#     p_meiosis_ii_inds : numpy.ndarray[int64]
+#         An array of paternal meiosis II indices.
+
+#     Returns
+#     -------
+#     numpy.ndarray[int8]
+#         An array of offspring haplotypes.
+#     """
+#     for i in nb.prange(n):
+#         # maternal copies:
+#         m_meiosis_i_inds = _meiosis_i(recombination_p)
+#         p_meiosis_i_inds = _meiosis_i(recombination_p)
+#         for j in range(m_hap // 2):
+#             offspring_haplotypes[i, m_meiosis_ii_inds[j]
+#                                  ] = parental_haplotypes[maternal_inds[i], m_meiosis_i_inds[j]]
+#             offspring_haplotypes[i, p_meiosis_ii_inds[j]
+#                                  ] = parental_haplotypes[paternal_inds[i], p_meiosis_i_inds[j]]
+#     return offspring_haplotypes
+
+
+
+
+@nb.njit#("int8[:,:](int8[:,:], int8[:,:], int64, int64, float64[:], int64[:], int64[:], int64[:], int64[:])", parallel=True)
+def _meiosis_individual(maternal_haplotypes,
+                        paternal_haplotypes,
+                        m_meiosis_ii_inds,
+                        p_meiosis_ii_inds,
+                        recombination_p,
+                        m_hap):
+    offspring_haplotype = np.empty(m_hap, dtype=np.int8)
+    # maternal copies:
+    m_meiosis_i_inds = _meiosis_i(recombination_p)
+    p_meiosis_i_inds = _meiosis_i(recombination_p)
+    for j in range(m_hap // 2):
+        offspring_haplotype[m_meiosis_ii_inds[j]
+                             ] = maternal_haplotypes[m_meiosis_i_inds[j]]
+        offspring_haplotype[p_meiosis_ii_inds[j]
+                             ] = paternal_haplotypes[p_meiosis_i_inds[j]]
+    return offspring_haplotype
+
+def _meiosis_individual_x(maternal_haplotypes,
+                        paternal_haplotypes,
+                        m_meiosis_ii_inds,
+                        p_meiosis_ii_inds,
+                        recombination_p,
+                        m_hap):
+    offspring_haplotype = da.empty(m_hap, dtype=np.int8)
+    # maternal copies:
+    m_meiosis_i_inds = _meiosis_i(recombination_p)
+    p_meiosis_i_inds = _meiosis_i(recombination_p)
+
+    offspring_haplotype[m_meiosis_ii_inds
+                             ] = maternal_haplotypes[m_meiosis_i_inds]
+    offspring_haplotype[p_meiosis_ii_inds
+                             ] = paternal_haplotypes[p_meiosis_i_inds]
+    return offspring_haplotype
+
+@dask.delayed#("int8[:,:](int8[:,:], int8[:,:], int64, int64, float64[:], int64[:], int64[:], int64[:], int64[:])", parallel=True)
+def meiosis_individual(maternal_haplotypes,
+                       paternal_haplotypes,
+                       m_meiosis_ii_inds,
+                       p_meiosis_ii_inds,
+                       recombination_p,
+                       m_hap):
+    if isinstance(maternal_haplotypes, da.Array):
+        maternal_haplotypes=maternal_haplotypes.compute()
+        paternal_haplotypes=paternal_haplotypes.compute()
+    return _meiosis_individual(maternal_haplotypes,
+                       paternal_haplotypes,
+                       m_meiosis_ii_inds,
+                       p_meiosis_ii_inds,
+                       recombination_p,
+                       m_hap)
+
 
 
 def meiosis(parental_haplotypes: npt.NDArray[npt.Shape["*,*"], npt.Int8],
@@ -337,34 +439,113 @@ def meiosis(parental_haplotypes: npt.NDArray[npt.Shape["*,*"], npt.Int8],
     numpy.ndarray[int8]
         An array of offspring haplotypes.
     """
-    assert (parental_haplotypes.shape[1] //
-            2) == recombination_p.shape[0], "incompatable arg dimension"
-    assert paternal_inds.shape[0] == maternal_inds.shape[0], "incompatable arg dimension"
-    assert np.max(
-        maternal_inds) <= parental_haplotypes.shape[0], "incompatable arg dimension"
-    assert np.max(
-        paternal_inds) <= parental_haplotypes.shape[0], "incompatable arg dimension"
-    assert (parental_haplotypes.dtype == np.int8) & (
-        recombination_p.dtype == np.float64), "type error"
-    assert (maternal_inds.dtype == paternal_inds.dtype == np.int64), "type error"
-
     n = maternal_inds.shape[0]
     m_hap = parental_haplotypes.shape[1]
     offspring_haplotypes = np.empty((n, m_hap), dtype=np.int8)
     m_meiosis_ii_inds = np.arange(0, m_hap, 2, dtype=np.int64)
     p_meiosis_ii_inds = np.arange(1, m_hap, 2, dtype=np.int64)
-    if isinstance(parental_haplotypes, da.Array):
-        parental_haplotypes = parental_haplotypes.compute()
-    return _meiosis(parental_haplotypes,
-                    offspring_haplotypes,
-                    n,
-                    m_hap,
-                    recombination_p,
-                    maternal_inds,
-                    paternal_inds,
-                    m_meiosis_ii_inds,
-                    p_meiosis_ii_inds,
-                    )
+        # parental_haplotypes = parental_haplotypes.compute()
+    # if isinstance(parental_haplotypes, da.Array):
+    #     out= da.vstack([_meiosis_individual(m_hap=m_hap,
+    #                 recombination_p=recombination_p,
+    #                 maternal_haplotypes=parental_haplotypes[maternal_inds[i],:].values,
+    #                 paternal_haplotypes=parental_haplotypes[paternal_inds[i],:].values,
+    #                 m_meiosis_ii_inds=m_meiosis_ii_inds,
+    #                 p_meiosis_ii_inds=p_meiosis_ii_inds,
+    #                 ) for i in range(n)])
+    # else:
+    out= da.vstack([_meiosis_individual_x(m_hap=m_hap,
+                recombination_p=recombination_p,
+                maternal_haplotypes=parental_haplotypes[maternal_inds[i],:],
+                paternal_haplotypes=parental_haplotypes[paternal_inds[i],:],
+                m_meiosis_ii_inds=m_meiosis_ii_inds,
+                p_meiosis_ii_inds=p_meiosis_ii_inds,
+                ) for i in range(n)])
+    return out
+
+# def _chunk
+# _m
+
+
+# vv = np.array([[100*i + 10*j + (j%2) for j in range(9)] for i in range(8)])
+
+
+# def _meiosis_blockwise(parental_haplotypes,
+#              offspring_haplotypes,
+#              n,
+#              m_hap,
+#              recombination_p,
+#              maternal_inds,
+#              paternal_inds,
+#              m_meiosis_ii_inds,
+#              p_meiosis_ii_inds,
+#              ):
+#     for i in nb.prange(n):
+#         # maternal copies:
+#         m_meiosis_i_inds = _meiosis_i(recombination_p)
+#         p_meiosis_i_inds = _meiosis_i(recombination_p)
+#         for j in range(m_hap // 2):
+#             offspring_haplotypes[i, m_meiosis_ii_inds[j]
+#                                  ] = parental_haplotypes[maternal_inds[i], m_meiosis_i_inds[j]]
+#             offspring_haplotypes[i, p_meiosis_ii_inds[j]
+#                                  ] = parental_haplotypes[paternal_inds[i], p_meiosis_i_inds[j]]
+#     return offspring_haplotypes
+
+
+
+
+# def meiosis(parental_haplotypes: npt.NDArray[npt.Shape["*,*"], npt.Int8],
+#             recombination_p: npt.NDArray[npt.Shape["*,*"], npt.Float64],
+#             maternal_inds: npt.NDArray[npt.Shape["*,*"], npt.Int64],
+#             paternal_inds: npt.NDArray[npt.Shape["*,*"], npt.Int64],
+#             ) -> npt.NDArray[npt.Shape["*,*"], npt.Int8]:
+#     """
+#     Performs meiosis on parental haplotypes.
+
+#     Parameters
+#     ----------
+#     parental_haplotypes : numpy.ndarray[int8]
+#         An array of parental haplotypes.
+#     recombination_p : numpy.ndarray[float64]
+#         An array of recombination probabilities.
+#     maternal_inds : numpy.ndarray[int64]
+#         An array of maternal indices.
+#     paternal_inds : numpy.ndarray[int64]
+#         An array of paternal indices.
+
+#     Returns
+#     -------
+#     numpy.ndarray[int8]
+#         An array of offspring haplotypes.
+#     """
+#     assert (parental_haplotypes.shape[1] //
+#             2) == recombination_p.shape[0], "incompatable arg dimension"
+#     assert paternal_inds.shape[0] == maternal_inds.shape[0], "incompatable arg dimension"
+#     assert np.max(
+#         maternal_inds) <= parental_haplotypes.shape[0], "incompatable arg dimension"
+#     assert np.max(
+#         paternal_inds) <= parental_haplotypes.shape[0], "incompatable arg dimension"
+#     assert (parental_haplotypes.dtype == np.int8) & (
+#         recombination_p.dtype == np.float64), "type error"
+#     assert (maternal_inds.dtype == paternal_inds.dtype == np.int64), "type error"
+
+#     n = maternal_inds.shape[0]
+#     m_hap = parental_haplotypes.shape[1]
+#     offspring_haplotypes = np.empty((n, m_hap), dtype=np.int8)
+#     m_meiosis_ii_inds = np.arange(0, m_hap, 2, dtype=np.int64)
+#     p_meiosis_ii_inds = np.arange(1, m_hap, 2, dtype=np.int64)
+#     if isinstance(parental_haplotypes, da.Array):
+#         parental_haplotypes = parental_haplotypes.compute()
+#     return _meiosis(parental_haplotypes,
+#                     offspring_haplotypes,
+#                     n,
+#                     m_hap,
+#                     recombination_p,
+#                     maternal_inds,
+#                     paternal_inds,
+#                     m_meiosis_ii_inds,
+#                     p_meiosis_ii_inds,
+#                     )
 
 
 class Meiosis:
