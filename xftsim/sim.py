@@ -501,7 +501,7 @@ class Simulation():
         if results_store:
             _results_store = self.results_store
         if architecture:
-            _architecture = self.architecture
+            _architecture = self.architecture[0].effects
         if mating_store:
             _mating_store = self.mating_store
         if phenotype_store:
