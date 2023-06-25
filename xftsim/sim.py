@@ -2,6 +2,7 @@ import xftsim as xft
 
 
 import warnings
+import pickle
 import functools
 import numpy as np
 import pandas as pd
@@ -483,7 +484,41 @@ class Simulation():
                  # font_color=colors/np.max(colors),
                  )
 
-
+    @xft.utils.profiled()
+    def pickle_results(self, 
+                       path: str, 
+                       metadata: dict = dict(),
+                       results_store: bool = True,
+                       architecture: bool = True,
+                       mating_store: bool = True,
+                       phenotype_store: bool = True,
+                       mating_regime: bool = True,
+                       haplotype_store: bool = False,
+                       ):
+        _metadata = self.metadata.update(metadata); _results_store = None; 
+        _architecture = None; _mating_store = None; _phenotype_store = None; 
+        _mating_regime = None; _haplotype_store = None
+        if results_store:
+            _results_store = self.results_store
+        if architecture:
+            _architecture = self.architecture
+        if mating_store:
+            _mating_store = self.mating_store
+        if phenotype_store:
+            _phenotype_store = self.phenotype_store
+        if mating_regime:
+            _mating_regime = self.mating_regime
+        if haplotype_store:
+            _haplotype_store = self.haplotype_store
+        to_pickle=dict(metadata=_metadata,
+                       results_store=_results_store,
+                       architecture=_architecture,
+                       mating_store=_mating_store,
+                       phenotype_store=_phenotype_store,
+                       mating_regime=_mating_regime,
+                       haplotype_store=_haplotype_store)
+        with open(path+'.pickle', 'wb') as f:
+            pickle.dump(obj=to_pickle, file=f)
 
 class DemoSimulation(Simulation):
     demo_routines = dict(UGRM = 'Univariate GCTA with balanced random mating demo\n',
@@ -540,3 +575,6 @@ class DemoSimulation(Simulation):
                          f"n = {self._n}; m = {self._m}",
                          self.routine_long,
                          ])
+
+
+
