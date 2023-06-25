@@ -749,7 +749,7 @@ class Pop_GWAS_Estimator(Statistic):
         n_sub = self.n_sub
         if n_sub > 0:
             n_sub = np.min([n_sib, n_sub])
-            subinds = np.sort(np.random.permuation(n_sib)[:nsub])
+            subinds = np.sort(np.random.permutation(n_sib)[:nsub])
         else:
             n_sub = n_sib
             subinds = np.arange(n_sib)
@@ -827,7 +827,7 @@ class Sib_GWAS_Estimator(Statistic):
         n_sub = self.n_sub
         if n_sub > 0:
             n_sub = np.min([n_sib, n_sub])
-            subinds = np.sort(np.random.permuation(n_sib)[:nsub])
+            subinds = np.sort(np.random.permutation(n_sib)[:nsub])
         else:
             n_sub = n_sib
             subinds = np.arange(n_sib)
