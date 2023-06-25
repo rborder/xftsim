@@ -497,7 +497,7 @@ def _linear_regression_with_intercept_nb(x: NDArray,
     res = y - yhat
     s2 = (res.T @ res) / (n - 2)
     std_err = np.sqrt(s2 * np.diag(XtXinv))
-    return [coef.ravel()[1], std_err.ravel()[1]]
+    return np.array([coef.ravel()[1], std_err.ravel()[1]], dtype =np.float32)
 
 
 @nb.njit
