@@ -130,9 +130,9 @@ class Simulation():
         # initialize data stores
         # for proper initialization
         self.haplotype_store = {np.max([generation, 0]): founder_haplotypes}
-        self.phenotype_store = {}
-        self.mating_store = {}
-        self.results_store = {}
+        self.phenotype_store = dict()
+        self.mating_store = dict()
+        self.results_store = dict()
         self.pedigree = None  # TODO
 
         #### generation specific cached properties ####
