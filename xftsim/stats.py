@@ -724,6 +724,7 @@ class Pop_GWAS_Estimator(Statistic):
                  std_Y: bool = False,
                  assume_pairs: bool = True,
                  n_sub: int = 0,
+                 PGS: bool = True,
                  ):
         self.name = 'pop_GWAS'
         self.component_index = component_index
@@ -731,6 +732,7 @@ class Pop_GWAS_Estimator(Statistic):
         self.std_X = std_X
         self.std_Y = std_Y
         self.n_sub = n_sub
+        self.PGS = PGS
         if not assume_pairs:
             raise NotImplementedError()
         else:
@@ -749,7 +751,7 @@ class Pop_GWAS_Estimator(Statistic):
         n_sub = self.n_sub
         if n_sub > 0:
             n_sub = np.min([n_sib, n_sub])
-            subinds = np.sort(np.random.permutation(n_sib)[:nsub])
+            subinds = np.sort(np.random.permutation(n_sib)[:n_sub])
         else:
             n_sub = n_sib
             subinds = np.arange(n_sib)
@@ -766,11 +768,20 @@ class Pop_GWAS_Estimator(Statistic):
             coord_dict.update({'statistic':('statistic', ['std_beta', 'se', 't', 'p'])})
         else:
             coord_dict.update({'statistic':('statistic', ['beta', 'se', 't', 'p'])})
-        output = dict(estimates=xr.DataArray(sum_stats,dims=('variant', 'statistic', 'component'), 
-                                        coords=coord_dict),
+        estimates=xr.DataArray(sum_stats,dims=('variant', 'statistic', 'component'), 
+                               coords=coord_dict)
+        if self.PGS:
+            G = sim.haplotypes.xft.to_diploid()
+            b = estimates.loc[:,'beta',:]
+            PGS = xr.dot(G,b)
+        else:
+            PGS = None
+        output = dict(estimates=estimates,
+                      PGS=PGS,
                       info=dict(n_sub=n_sub,
                                 std_X=self.std_X,
                                 std_Y=self.std_Y,
+                                training_samples = sim.phenotypes.xft.get_sample_indexer().frame.iloc[subinds,],
                                 ))
         return output
 
@@ -802,6 +813,7 @@ class Sib_GWAS_Estimator(Statistic):
                  std_Y: bool = False,
                  assume_pairs: bool = True,
                  n_sub: int = 0,
+                 PGS:bool = True,
                  ):
         self.name = 'sib_GWAS'
         self.component_index = component_index
@@ -809,6 +821,7 @@ class Sib_GWAS_Estimator(Statistic):
         self.std_X = std_X
         self.std_Y = std_Y
         self.n_sub = n_sub
+        self.PGS=PGS
         if not assume_pairs:
             raise NotImplementedError()
         else:
@@ -827,7 +840,7 @@ class Sib_GWAS_Estimator(Statistic):
         n_sub = self.n_sub
         if n_sub > 0:
             n_sub = np.min([n_sib, n_sub])
-            subinds = np.sort(np.random.permutation(n_sib)[:nsub])
+            subinds = np.sort(np.random.permutation(n_sib)[:n_sub])
         else:
             n_sub = n_sib
             subinds = np.arange(n_sib)
@@ -845,10 +858,19 @@ class Sib_GWAS_Estimator(Statistic):
             coord_dict.update({'statistic':('statistic', ['std_beta', 'se', 't', 'p'])})
         else:
             coord_dict.update({'statistic':('statistic', ['beta', 'se', 't', 'p'])})
-        output = dict(estimates=xr.DataArray(sum_stats,dims=('variant', 'statistic', 'component'), 
-                                        coords=coord_dict),
+        estimates=xr.DataArray(sum_stats,dims=('variant', 'statistic', 'component'), 
+                               coords=coord_dict)
+        if self.PGS:
+            G = sim.haplotypes.xft.to_diploid()
+            b = estimates.loc[:,'beta',:]
+            PGS = xr.dot(G,b)
+        else:
+            PGS = None
+        output = dict(estimates=estimates,
+                      PGS=PGS,
                       info=dict(n_sub=n_sub,
                                 std_X=self.std_X,
                                 std_Y=self.std_Y,
+                                training_samples = sim.phenotypes.xft.get_sample_indexer().frame.iloc[subinds,],
                                 ))
         return output
