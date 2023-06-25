@@ -531,7 +531,7 @@ def _mv_vec_linear_regression_with_intercept_nb(X: NDArray,
     #     for j in np.arange(X.shape[1]):
     #         output[j,:, k] = _linear_regression_with_intercept_nb(X[:,j],y)
     # return output
-    output = np.empty((X.shape[1], 2, Y.shape[1]), dtype=Y.dtype)
+    output = np.empty((X.shape[1], 2, Y.shape[1]), dtype=X.dtype)
     for k in nb.prange(Y.shape[1]):
         y = Y[:,k].ravel()
         y = y.reshape((y.shape[0], 1))
