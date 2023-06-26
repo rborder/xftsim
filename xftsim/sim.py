@@ -492,7 +492,7 @@ class Simulation():
                        architecture: bool = True,
                        mating_store: bool = True,
                        phenotype_store: bool = True,
-                       mating_regime: bool = True,
+                       mating_regime: bool = False,
                        haplotype_store: bool = False,
                        ):
         _metadata = self.metadata.update(metadata); _results_store = None; 
