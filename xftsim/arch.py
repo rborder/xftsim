@@ -1251,11 +1251,8 @@ class BinarizingTransformation(ArchitectureComponent):
                  thresholds: Iterable,
                  input_cindex: xft.index.ComponentIndex,
                  output_cindex: xft.index.ComponentIndex,
-                 phenotype_name: Iterable,
-                 liability_component: str = 'phenotype',
                  # TODO: make consistent with providing index
-                 vorigin_relative: Iterable = [-1],
-                 output_component: str = 'binary_phenotype',
+                 component_name: str ='binarize',
                  ):
         # assert len(thresholds) == len(phenotype_name)
         self.thresholds = np.array(thresholds).ravel()
@@ -1266,6 +1263,7 @@ class BinarizingTransformation(ArchitectureComponent):
         self.input_cindex = input_cindex
         self.output_cindex = output_cindex
         self.founder_initialization = None
+        self._component_name = component_name
 
     @staticmethod
     def construct_input_cindex(phenotype_name: Iterable,
