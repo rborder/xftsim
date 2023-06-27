@@ -126,8 +126,8 @@ class MateAssignment:
         """
         return MateAssignment(
                               generation = int(np.max([x.generation for x in assignments])),
-                              maternal_sample_index = xft.index.XftIndex.reduce_merge([x._maternal_sample_index for x in assignments]),
-                              paternal_sample_index = xft.index.XftIndex.reduce_merge([x._paternal_sample_index for x in assignments]), 
+                              maternal_sample_index = xft.index.XftIndex.reduce_merge([x._maternal_sample_index for x in assignments], deduplicate=False),
+                              paternal_sample_index = xft.index.XftIndex.reduce_merge([x._paternal_sample_index for x in assignments], deduplicate=False), 
                               n_offspring_per_pair = np.concatenate([x.n_offspring_per_pair for x in assignments]),
                               n_females_per_pair = np.concatenate([x.n_females_per_pair for x in assignments]),
                               # sex_aware = bool(np.prod([x.sex_aware for x in assignments])),      
@@ -265,7 +265,8 @@ class MateAssignment:
         """
         raise NotImplementedError ## TODO
 
-    @cached_property## TODO possible gotcha with chunking?
+    # @cached_property## TODO possible gotcha with chunking?
+    @property## TODO possible gotcha with chunking?
     def offspring_sample_index(self):
         """
         The sample index for the offspring.
