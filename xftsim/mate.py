@@ -1035,7 +1035,7 @@ def _solve_qap_ls(Y, Z, R, nb_threads=6, time_limit=30, tolerance=1e-5,
         def callback(self, ls, cb_type):
             stats = ls.statistics
             obj = ls.model.objectives[0]
-            if obj.value > self.last_best_value:
+            if obj.value < self.last_best_value:
                 self.last_best_running_time = stats.running_time
                 self.last_best_value = obj.value
             elif stats.running_time - self.last_best_running_time > self.interval:
