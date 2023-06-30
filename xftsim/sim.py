@@ -495,9 +495,10 @@ class Simulation():
                        mating_regime: bool = False,
                        haplotype_store: bool = False,
                        ):
-        _metadata = self.metadata.update(metadata); _results_store = None; 
+        _metadata = self.metadata
+        _metadata.update(metadata); 
         _architecture = None; _mating_store = None; _phenotype_store = None; 
-        _mating_regime = None; _haplotype_store = None
+        _mating_regime = None; _haplotype_store = None; _results_store = None;
         if results_store:
             _results_store = self.results_store
         if architecture:
