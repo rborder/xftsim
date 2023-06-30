@@ -1068,7 +1068,8 @@ def _solve_qap_ls(Y, Z, R, nb_threads=6, time_limit=30, tolerance=1e-5,
         p = model.list(n)
         model.constraint(model.eq(model.count(p), n))
         # objective
-        const = np.trace(W @ W.T)
+        # const = np.trace(W @ W.T)
+        const = np.trace(R @ R.T)
         qobj = model.sum(
             model.at(array_YY, p[i], p[j]) * ZZ[i, j] for j in range(n) for i in range(n))
         lobj = model.sum(model.at(array_W, p[i], i) for i in range(n))
