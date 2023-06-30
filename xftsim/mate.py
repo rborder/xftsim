@@ -1038,7 +1038,7 @@ def _solve_qap_ls(Y, Z, R, nb_threads=6, time_limit=30, tolerance=1e-5,
             if obj.value < self.last_best_value:
                 self.last_best_running_time = stats.running_time
                 self.last_best_value = obj.value
-            elif stats.running_time - self.last_best_running_time > self.interval:
+            if stats.running_time - self.last_best_running_time > self.interval:
                 print(f">>> No improvement during {self.interval} seconds: resolution is stopped")
                 ls.stop()
             else:
