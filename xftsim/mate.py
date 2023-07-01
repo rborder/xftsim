@@ -1028,7 +1028,7 @@ def _solve_qap_ls(Y, Z, R, nb_threads=6, time_limit=30, tolerance=1e-5,
     import localsolver
     class TerminateSolver:
         def __init__(self, interval: int = 20):
-            self.last_best_value = 0
+            self.last_best_value = 100.0
             self.last_best_running_time = 0
             self.interval = interval
 
@@ -1040,7 +1040,7 @@ def _solve_qap_ls(Y, Z, R, nb_threads=6, time_limit=30, tolerance=1e-5,
                 self.last_best_value = obj.value
             if stats.running_time - self.last_best_running_time > self.interval:
                 print(f">>> No improvement during {self.interval} seconds: resolution is stopped")
-                # ls.stop()
+                ls.stop()
     n = Y.shape[0]
     # for later use as initial value
     tmp = np.argsort(np.apply_along_axis(np.mean, 1, Y))[
