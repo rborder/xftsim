@@ -1040,9 +1040,7 @@ def _solve_qap_ls(Y, Z, R, nb_threads=6, time_limit=30, tolerance=1e-5,
                 self.last_best_value = obj.value
             if stats.running_time - self.last_best_running_time > self.interval:
                 print(f">>> No improvement during {self.interval} seconds: resolution is stopped")
-                ls.stop()
-            else:
-                pass #print(">>>>>> Objective %d" % obj.value)
+                # ls.stop()
     n = Y.shape[0]
     # for later use as initial value
     tmp = np.argsort(np.apply_along_axis(np.mean, 1, Y))[
