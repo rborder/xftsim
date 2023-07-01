@@ -1079,7 +1079,7 @@ def _solve_qap_ls(Y, Z, R, nb_threads=6, time_limit=30, tolerance=1e-5,
         for pp in tmp:
             p.value.add(pp)
         # solve
-        # ls.param.set_objective_threshold(0,tolerance)
+        ls.param.set_objective_threshold(tolerance)
         ls.solve()
 
         # solution
