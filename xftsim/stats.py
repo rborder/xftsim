@@ -121,7 +121,7 @@ class SampleStatistics(Statistic):
         if self.variances:
             output['variances'] = pd.concat([g for g in h])
         if self.variance_components:
-            output['variance_components'] = pd.concat([x.iloc[:-1] for x in [g/g.iloc[g.index.get_locs([slice(None),'phenotype'])].values for g in h] if x.size>1])
+            output['variance_components'] = pd.concat([x.iloc[:-1] for x in [g/g.iloc[g.index.get_locs([slice(None),'phenotype'])].values for g in h if g.size>1] if x.size>1])
         if self.vcov:
             output['vcov'] = pheno_df.cov()
         if self.corr:
