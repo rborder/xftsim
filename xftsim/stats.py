@@ -724,6 +724,21 @@ def _vec_linear_regression_with_intercept_nb(X: NDArray,
     return output
 
 
+def threshold_PGS(estimates, threshold, G):
+    mask = estimates.loc[:,'p'].values<threshold
+    out = G[:,mask] @ estimates.loc[:,'beta'][mask]
+    return out.assign_coords({'threshold':threshold})
+
+def apply_threshold_PGS(estimates, G, thresholds = 10**np.linspace(np.log10(5e-8), 0,24)):
+    output = [threshold_PGS(estimates, threshold, G) for threshold in thresholds]
+    return xr.concat(output,'threshold')
+
+def apply_threshold_PGS_all(gwas_results, G, minp=5e-8, maxp=1, nthresh=25):
+    thresholds = 10**np.linspace(np.log10(minp),np.log10(maxp),nthresh)
+    output = [apply_threshold_PGS(gwas_results.loc[:,:,comp], G,thresholds) for comp in gwas_results.component.values]
+    return xr.concat(output,'component')
+
+    
 
 class Pop_GWAS_Estimator(Statistic):
     """
@@ -752,6 +767,7 @@ class Pop_GWAS_Estimator(Statistic):
                  assume_pairs: bool = True,
                  n_sub: int = 0,
                  PGS: bool = True,
+                 PGS_sub_divisions: int = 50,
                  ):
         self.name = 'pop_GWAS'
         self.component_index = component_index
@@ -760,6 +776,7 @@ class Pop_GWAS_Estimator(Statistic):
         self.std_Y = std_Y
         self.n_sub = n_sub
         self.PGS = PGS
+        self.PGS_sub_divisions =PGS_sub_divisions
         self.s_args = ['phenotypes', 'current_std_phenotypes', 'current_std_genotypes', 'haplotypes']
         if not assume_pairs:
             raise NotImplementedError()
@@ -804,9 +821,9 @@ class Pop_GWAS_Estimator(Statistic):
         estimates=xr.DataArray(sum_stats,dims=('variant', 'statistic', 'component'), 
                                coords=coord_dict)
         if self.PGS:
-            G = haplotypes.xft.to_diploid()
-            b = estimates.loc[:,'beta',:]
-            PGS = xr.dot(G,b)
+            G = haplotypes.drop_isel(sample=subinds).xft.to_diploid()
+            b = estimates.loc[:,'beta',:]   
+            PGS = apply_threshold_PGS_all(estimates, G,nthresh=self.PGS_sub_divisions)
         else:
             PGS = None
         output = dict(estimates=estimates,
@@ -815,6 +832,7 @@ class Pop_GWAS_Estimator(Statistic):
                                 std_X=self.std_X,
                                 std_Y=self.std_Y,
                                 training_samples = phenotypes.xft.get_sample_indexer().frame.iloc[subinds,],
+                                samples = phenotypes.xft.get_sample_indexer().frame,
                                 ))
         return output
 
@@ -847,6 +865,7 @@ class Sib_GWAS_Estimator(Statistic):
                  assume_pairs: bool = True,
                  n_sub: int = 0,
                  PGS:bool = True,
+                 PGS_sub_divisions: int = 50,
                  ):
         self.name = 'sib_GWAS'
         self.component_index = component_index
@@ -855,6 +874,7 @@ class Sib_GWAS_Estimator(Statistic):
         self.std_Y = std_Y
         self.n_sub = n_sub
         self.PGS=PGS
+        self.PGS_sub_divisions =PGS_sub_divisions
         if not assume_pairs:
             raise NotImplementedError()
         else:
@@ -882,27 +902,32 @@ class Sib_GWAS_Estimator(Statistic):
             subinds = np.sort(np.random.permutation(n_sib)[:n_sub])
         else:
             n_sub = n_sib
-            subinds = np.arange(n_sib)
-        Y = phenotypes.xft[None, component_index].data.astype(np.float32) 
-        Y = Y[0::2,:] - Y[1::2,:]
-        Y = np.ascontiguousarray(Y[subinds, :], dtype = np.float32)
-        G = haplotypes.data[:,0::2] + haplotypes.data[:,1::2]
-        G = G[0::2,:] - G[1::2,:]
-        G = np.ascontiguousarray(G[subinds, :], dtype = np.float32)
+            subinds = np.arange(n_sub)
 
-        sum_stats = _mv_gwas_nb(G,Y, std_X=self.std_X, std_Y=self.std_Y)
+        train_inds = np.concatenate([np.array(x) for x in zip(subinds,np.array(subinds)+1)])
+        Y = phenotypes.xft[None, component_index].data.astype(np.float32)[train_inds,:]
+        Y = Y[0::2,:] - Y[1::2,:]
+        Y = np.ascontiguousarray(Y, dtype = np.float32)
+        G_train = haplotypes.data[train_inds,0::2] + haplotypes.data[train_inds,1::2]
+        G_train = G_train[0::2,:] - G_train[1::2,:]
+        G_train = np.ascontiguousarray(G_train, dtype = np.float32)
+
+        sum_stats = _mv_gwas_nb(G_train,Y, std_X=self.std_X, std_Y=self.std_Y)
         coord_dict = component_index.coord_dict.copy()
         coord_dict.update(haplotypes.xft.get_variant_indexer().to_diploid().coord_dict)
-        if self.std_X and self.std_Y:
-            coord_dict.update({'statistic':('statistic', ['std_beta', 'se', 't', 'p'])})
-        else:
-            coord_dict.update({'statistic':('statistic', ['beta', 'se', 't', 'p'])})
+        # if self.std_X and self.std_Y:
+            # coord_dict.update({'statistic':('statistic', ['beta', 'se', 't', 'p'])})
+        # else:
+        coord_dict.update({'statistic':('statistic', ['beta', 'se', 't', 'p'])})
         estimates=xr.DataArray(sum_stats,dims=('variant', 'statistic', 'component'), 
                                coords=coord_dict)
         if self.PGS:
-            G = haplotypes.xft.to_diploid()
-            b = estimates.loc[:,'beta',:]
-            PGS = xr.dot(G,b)
+            if self.std_X:
+                raise NotImplementedError()
+            else:
+                G = haplotypes.drop_isel(sample=train_inds).xft.to_diploid()
+                b = estimates.loc[:,'beta',:]   
+                PGS = apply_threshold_PGS_all(estimates, G,nthresh=self.PGS_sub_divisions)
         else:
             PGS = None
         output = dict(estimates=estimates,
@@ -910,6 +935,6 @@ class Sib_GWAS_Estimator(Statistic):
                       info=dict(n_sub=n_sub,
                                 std_X=self.std_X,
                                 std_Y=self.std_Y,
-                                training_samples = phenotypes.xft.get_sample_indexer().frame.iloc[subinds,],
+                                training_samples = phenotypes.xft.get_sample_indexer().frame.iloc[train_inds,],
                                 ))
         return output
