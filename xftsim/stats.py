@@ -42,10 +42,12 @@ class Statistic:
                  name: str,
                  metadata: Dict = {},
                  filter_sample = False,
+                 s_args: Iterable = None,
                  ):
         self.name = name
         self.estimator = estimator
         self.filter_sample = filter_sample
+        self.s_args = s_args
     
     def update_results(self, sim: xft.sim.Simulation, results: object) -> None:
         ## initialize empty dict if result store for generation is empty
@@ -58,8 +60,21 @@ class Statistic:
         sim.results_store[sim.generation][self.name] = results
 
     def estimate(self,
-                 sim: xft.sim.Simulation) -> None:
-        output = self.estimator(sim)
+                 sim: xft.sim.Simulation = None,
+                 **kwargs) -> None:
+        ## The goal here is that specific kwargs can take precidence over the sim object when specified
+        ## For example, if you provide a subsample of genotypes/phenotypes, the estimator will be applied to
+        ## those, otherwise it will retrieve them from the sim object
+        if self.s_args is None:
+            output = self.estimator(sim)
+        else:
+            inputs = dict()
+            for arg in self.s_args:
+                if arg in kwargs.keys():
+                    inputs[arg] = kwargs[arg]
+                else:
+                    inputs[arg] = getattr(sim, arg) 
+            output = self.estimator(**inputs)
         self.update_results(sim, output)
 
 class SampleStatistics(Statistic):
@@ -105,15 +120,15 @@ class SampleStatistics(Statistic):
         self.prettify = prettify
         self.metadata = metadata
         self.filter_sample = filter_sample
+        self.s_args = ['phenotypes']
 
     @xft.utils.profiled(level=2, message = "sample statistics")
-    def estimator(self, sim: xft.sim.Simulation) -> Dict:
+    def estimator(self, phenotypes: xr.DataArray) -> Dict:
         output = dict()
-
-        if self.filter_sample:
-            pheno_df = sim.phenotypes_filtered.xft.as_pd(prettify=self.prettify)
-        else:
-            pheno_df = sim.phenotypes.xft.as_pd(prettify=self.prettify)
+        # if self.filter_sample:
+            # pheno_df = sim.phenotypes_filtered.xft.as_pd(prettify=self.prettify)
+        # else:
+        pheno_df = phenotypes.xft.as_pd(prettify=self.prettify)
         h = [g.var(axis=1) for _, g in pheno_df.T.groupby(['phenotype_name','vorigin_relative'])]
         mm = [g.mean(axis=1) for _, g in pheno_df.T.groupby(['phenotype_name','vorigin_relative'])]
         if self.means:
@@ -157,19 +172,22 @@ class MatingStatistics(Statistic):
         self.component_index = component_index
         self.metadata = metadata
         self.filter_sample = filter_sample
+        self.s_args = ['mating','phenotypes']
 
     @xft.utils.profiled(level=2, message = "mating statistics")
-    def estimator(self, sim: xft.sim.Simulation) -> Dict:
-        if self.filter_sample:
-            phenotypes = sim.phenotypes_filtered         
-        else:
-            phenotypes = sim.phenotypes
+    def estimator(self, 
+                  phenotypes: xr.DataArray,
+                  mating: xft.mate.MateAssignment) -> Dict:
+        # if self.filter_sample:
+        #     phenotypes = sim.phenotypes_filtered         
+        # else:
+        #     phenotypes = sim.phenotypes
         output = dict(
-                      n_reproducing_pairs = sim.mating.n_reproducing_pairs,
-                      n_total_offspring = sim.mating.n_total_offspring,
-                      mean_n_offspring_per_pair =  np.mean(sim.mating.n_offspring_per_pair),
-                      mean_n_female_offspring_per_pair =  np.mean(sim.mating.n_females_per_pair),
-                      mate_correlations = sim.mating.get_mate_phenotypes(phenotypes=phenotypes,
+                      n_reproducing_pairs = mating.n_reproducing_pairs,
+                      n_total_offspring = mating.n_total_offspring,
+                      mean_n_offspring_per_pair =  np.mean(mating.n_offspring_per_pair),
+                      mean_n_female_offspring_per_pair =  np.mean(mating.n_females_per_pair),
+                      mate_correlations = mating.get_mate_phenotypes(phenotypes=phenotypes,
                                                                          component_index=self.component_index,
                                                                          full = self._full).corr(),
                       )
@@ -396,22 +414,26 @@ class HasemanElstonEstimator(Statistic):
         self.dask = dask
         self.metadata = metadata
         self.filter_sample = filter_sample
+        self.s_args = ['phenotypes', 'current_std_phenotypes', 'current_std_genotypes']
 
     @xft.utils.profiled(level=2, message = "haseman elston estimator")
-    def estimator(self, sim: xft.sim.Simulation) -> Dict:
+    def estimator(self, 
+                  phenotypes,
+                  current_std_phenotypes,
+                  current_std_genotypes, ) -> Dict:
         ## look for "phenotype" components if component_index not provided
         if self.component_index is None:
             # pheno_cols= sim.phenotypes.component_name.values[sim.phenotypes.component_name.str.contains('phenotype')]
             # component_index = sim.phenotypes.xft.get_component_indexer()[dict(component_name=pheno_cols)]
-            component_index = sim.phenotypes.xft.grep_component_index('phenotype')
+            component_index = phenotypes.xft.grep_component_index('phenotype')
         else:
             component_index = self.component_index
-        if self.filter_sample:
-            Y = sim.current_std_phenotypes_filtered.xft[None, component_index].xft.as_pd()
-            G = sim.current_std_genotypes_filtered
-        else:
-            Y = sim.current_std_phenotypes.xft[None, component_index].xft.as_pd()
-            G = sim.current_std_genotypes
+        # if self.filter_sample:
+            # Y = sim.current_std_phenotypes_filtered.xft[None, component_index].xft.as_pd()
+            # G = sim.current_std_genotypes_filtered
+        # else:
+        Y = current_std_phenotypes.xft[None, component_index].xft.as_pd()
+        G = current_std_genotypes
         he_out = haseman_elston(G = G,
                                 Y = Y,
                                 n_probe = self.n_probe,
@@ -640,26 +662,31 @@ class GWAS_Estimator(Statistic):
         self.filter_sample = filter_sample
         self.std_X = std_X
         self.std_Y = std_Y
-        # self.numba = numba
+        self.s_args = ['phenotypes', 'current_std_phenotypes', 'current_std_genotypes', 'haplotypes']
+    # self.numba = numba
 
     @xft.utils.profiled(level=2, message = "GWAS estimator")
-    def estimator(self, sim: xft.sim.Simulation) -> Dict:
+    def estimator(self, phenotypes,
+                  current_std_phenotypes, 
+                  current_std_genotypes,
+                  haplotypes,
+                  ) -> Dict:
         ## look for "phenotype" components if component_index not provided
         if self.component_index is None:
             # pheno_cols= sim.phenotypes.component_name.values[sim.phenotypes.component_name.str.contains('phenotype')]
             # component_index = sim.phenotypes.xft.get_component_indexer()[dict(component_name=pheno_cols)]
-            component_index = sim.phenotypes.xft.grep_component_index('phenotype')
+            component_index = phenotypes.xft.grep_component_index('phenotype')
         else:
             component_index = self.component_index
-        if self.filter_sample:
-            Y = sim.current_std_phenotypes.xft[None, component_index].data.astype(np.float32)
-            G = sim.current_std_genotypes
-        else:
-            Y = sim.current_std_phenotypes_filtered.xft[None, component_index].data.astype(np.float32)
-            G = sim.current_std_genotypes_filtered
+        # if self.filter_sample:
+            # Y = sim.current_std_phenotypes.xft[None, component_index].data.astype(np.float32)
+            # G = sim.current_std_genotypes
+        # else:
+        Y = current_std_phenotypes_filtered.xft[None, component_index].data.astype(np.float32)
+        G = current_std_genotypes_filtered
         sum_stats = _mv_gwas_nb(G,Y, std_X=self.std_X, std_Y=self.std_Y)
         coord_dict = component_index.coord_dict.copy()
-        coord_dict.update(sim.haplotypes.xft.get_variant_indexer().to_diploid().coord_dict)
+        coord_dict.update(haplotypes.xft.get_variant_indexer().to_diploid().coord_dict)
         if self.std_X and self.std_Y:
             coord_dict.update({'statistic':('statistic', ['std_beta', 'se', 't', 'p'])})
         else:
@@ -733,21 +760,27 @@ class Pop_GWAS_Estimator(Statistic):
         self.std_Y = std_Y
         self.n_sub = n_sub
         self.PGS = PGS
+        self.s_args = ['phenotypes', 'current_std_phenotypes', 'current_std_genotypes', 'haplotypes']
         if not assume_pairs:
             raise NotImplementedError()
         else:
             self.assume_pairs = assume_pairs
 
     @xft.utils.profiled(level=2, message = "pop GWAS estimator")
-    def estimator(self, sim: xft.sim.Simulation) -> Dict:
+    def estimator(self, 
+                  phenotypes,
+                  current_std_phenotypes,
+                  current_std_genotypes,
+                  haplotypes,
+                  ) -> Dict:
         ## look for "phenotype" components if component_index not provided
         if self.component_index is None:
             # pheno_cols= sim.phenotypes.component_name.values[sim.phenotypes.component_name.str.contains('phenotype')]
             # component_index = sim.phenotypes.xft.get_component_indexer()[dict(component_name=pheno_cols)]
-            component_index = sim.phenotypes.xft.grep_component_index('phenotype')
+            component_index = phenotypes.xft.grep_component_index('phenotype')
         else:
             component_index = self.component_index
-        n_sib = sim.phenotypes.shape[0]//2
+        n_sib = phenotypes.shape[0]//2
         n_sub = self.n_sub
         if n_sub > 0:
             n_sub = np.min([n_sib, n_sub])
@@ -756,14 +789,14 @@ class Pop_GWAS_Estimator(Statistic):
             n_sub = n_sib
             subinds = np.arange(n_sib)
         subinds = 2*subinds +np.random.choice([0,1], n_sub)
-        Y = sim.phenotypes.xft[None, component_index].data.astype(np.float32)[subinds, :]
+        Y = phenotypes.xft[None, component_index].data.astype(np.float32)[subinds, :]
         Y = np.ascontiguousarray(Y, dtype = np.float32)
-        G = sim.haplotypes.data[subinds,0::2] + sim.haplotypes.data[subinds,1::2]
+        G = haplotypes.data[subinds,0::2] + haplotypes.data[subinds,1::2]
         G = np.ascontiguousarray(G, dtype = np.float32)
 
         sum_stats = _mv_gwas_nb(G,Y, std_X=self.std_X, std_Y=self.std_Y)
         coord_dict = component_index.coord_dict.copy()
-        coord_dict.update(sim.haplotypes.xft.get_variant_indexer().to_diploid().coord_dict)
+        coord_dict.update(haplotypes.xft.get_variant_indexer().to_diploid().coord_dict)
         if self.std_X and self.std_Y:
             coord_dict.update({'statistic':('statistic', ['std_beta', 'se', 't', 'p'])})
         else:
@@ -771,7 +804,7 @@ class Pop_GWAS_Estimator(Statistic):
         estimates=xr.DataArray(sum_stats,dims=('variant', 'statistic', 'component'), 
                                coords=coord_dict)
         if self.PGS:
-            G = sim.haplotypes.xft.to_diploid()
+            G = haplotypes.xft.to_diploid()
             b = estimates.loc[:,'beta',:]
             PGS = xr.dot(G,b)
         else:
@@ -781,7 +814,7 @@ class Pop_GWAS_Estimator(Statistic):
                       info=dict(n_sub=n_sub,
                                 std_X=self.std_X,
                                 std_Y=self.std_Y,
-                                training_samples = sim.phenotypes.xft.get_sample_indexer().frame.iloc[subinds,],
+                                training_samples = phenotypes.xft.get_sample_indexer().frame.iloc[subinds,],
                                 ))
         return output
 
@@ -826,17 +859,23 @@ class Sib_GWAS_Estimator(Statistic):
             raise NotImplementedError()
         else:
             self.assume_pairs = assume_pairs
+        self.s_args = ['phenotypes', 'current_std_phenotypes', 'current_std_genotypes', 'haplotypes']
 
     @xft.utils.profiled(level=2, message = "sib GWAS estimator")
-    def estimator(self, sim: xft.sim.Simulation) -> Dict:
+    def estimator(self, 
+                  phenotypes,
+                  current_std_phenotypes,
+                  current_std_genotypes,
+                  haplotypes,
+                  ) -> Dict:
         ## look for "phenotype" components if component_index not provided
         if self.component_index is None:
             # pheno_cols= sim.phenotypes.component_name.values[sim.phenotypes.component_name.str.contains('phenotype')]
             # component_index = sim.phenotypes.xft.get_component_indexer()[dict(component_name=pheno_cols)]
-            component_index = sim.phenotypes.xft.grep_component_index('phenotype')
+            component_index = phenotypes.xft.grep_component_index('phenotype')
         else:
             component_index = self.component_index
-        n_sib = sim.phenotypes.shape[0]//2
+        n_sib = phenotypes.shape[0]//2
         n_sub = self.n_sub
         if n_sub > 0:
             n_sub = np.min([n_sib, n_sub])
@@ -844,16 +883,16 @@ class Sib_GWAS_Estimator(Statistic):
         else:
             n_sub = n_sib
             subinds = np.arange(n_sib)
-        Y = sim.phenotypes.xft[None, component_index].data.astype(np.float32) 
+        Y = phenotypes.xft[None, component_index].data.astype(np.float32) 
         Y = Y[0::2,:] - Y[1::2,:]
         Y = np.ascontiguousarray(Y[subinds, :], dtype = np.float32)
-        G = sim.haplotypes.data[:,0::2] + sim.haplotypes.data[:,1::2]
+        G = haplotypes.data[:,0::2] + haplotypes.data[:,1::2]
         G = G[0::2,:] - G[1::2,:]
         G = np.ascontiguousarray(G[subinds, :], dtype = np.float32)
 
         sum_stats = _mv_gwas_nb(G,Y, std_X=self.std_X, std_Y=self.std_Y)
         coord_dict = component_index.coord_dict.copy()
-        coord_dict.update(sim.haplotypes.xft.get_variant_indexer().to_diploid().coord_dict)
+        coord_dict.update(haplotypes.xft.get_variant_indexer().to_diploid().coord_dict)
         if self.std_X and self.std_Y:
             coord_dict.update({'statistic':('statistic', ['std_beta', 'se', 't', 'p'])})
         else:
@@ -861,7 +900,7 @@ class Sib_GWAS_Estimator(Statistic):
         estimates=xr.DataArray(sum_stats,dims=('variant', 'statistic', 'component'), 
                                coords=coord_dict)
         if self.PGS:
-            G = sim.haplotypes.xft.to_diploid()
+            G = haplotypes.xft.to_diploid()
             b = estimates.loc[:,'beta',:]
             PGS = xr.dot(G,b)
         else:
@@ -871,6 +910,6 @@ class Sib_GWAS_Estimator(Statistic):
                       info=dict(n_sub=n_sub,
                                 std_X=self.std_X,
                                 std_Y=self.std_Y,
-                                training_samples = sim.phenotypes.xft.get_sample_indexer().frame.iloc[subinds,],
+                                training_samples = phenotypes.xft.get_sample_indexer().frame.iloc[subinds,],
                                 ))
         return output
