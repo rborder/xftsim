@@ -1569,8 +1569,7 @@ class Architecture:
         G = nx.DiGraph()
         edges, colors, edge_labels = self.dependency_graph_edges
         G.add_edges_from(edges)
-        pos = nx.nx_agraph.graphviz_layout(G, prog='dot')
-        return (G,pos,colors,edges,edge_labels)
+        return (G,colors,edges,edge_labels)
 
     def draw_dependency_graph(self, 
                               node_color='none', 
@@ -1582,7 +1581,8 @@ class Architecture:
                               number_edges: bool = True,
                               **kwargs):
         import networkx as nx
-        G,pos,colors,edges,edge_labels = self.dependency_graph
+        G,colors,edges,edge_labels = self.dependency_graph
+        pos = nx.nx_agraph.graphviz_layout(G, prog='dot')
         if number_edges:
             edge_labels = xft.utils.paste([colors.astype(str),edge_labels],sep=':')
         color_dict = {a:b for a,b in zip(edges, colors)}
@@ -1607,7 +1607,7 @@ class Architecture:
                  )
 
     def check_dependencies(self):
-        G,pos,colors,edges,edge_labels = self.dependency_graph
+        G,colors,edges,edge_labels = self.dependency_graph
         edge_array = np.vstack(edges)
         import networkx as nx
         G = nx.DiGraph()

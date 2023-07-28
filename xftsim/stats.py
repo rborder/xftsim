@@ -39,6 +39,7 @@ class Statistic:
     """
     def __init__(self, 
                  estimator: Callable,
+                 parser: Callable,
                  name: str,
                  metadata: Dict = {},
                  filter_sample = False,
@@ -46,9 +47,10 @@ class Statistic:
                  ):
         self.name = name
         self.estimator = estimator
+        self.parser = parser
         self.filter_sample = filter_sample
         self.s_args = s_args
-    
+
     def update_results(self, sim: xft.sim.Simulation, results: object) -> None:
         ## initialize empty dict if result store for generation is empty
         if sim.generation not in sim.results_store.keys():
@@ -59,6 +61,16 @@ class Statistic:
         ## append results to simulation results_store
         sim.results_store[sim.generation][self.name] = results
 
+    def parse_results(self, sim: xft.sim.Simulation) -> None:
+        if 'parsed' not in sim.results_store.keys():
+            sim.results_store['parsed'] = {}
+        results = sim.results_store[sim.generation][self.name]
+        parsed = self.parser(sim, results)
+        if parsed is None:
+            pass
+        else:
+            sim.results_store['parsed'].update(parsed)
+    
     def estimate(self,
                  sim: xft.sim.Simulation = None,
                  **kwargs) -> None:
@@ -76,6 +88,11 @@ class Statistic:
                     inputs[arg] = getattr(sim, arg) 
             output = self.estimator(**inputs)
         self.update_results(sim, output)
+
+    @staticmethod
+    def null_parser(self, *args, **kwargs):
+        pass
+
 
 class SampleStatistics(Statistic):
     """
@@ -121,6 +138,7 @@ class SampleStatistics(Statistic):
         self.metadata = metadata
         self.filter_sample = filter_sample
         self.s_args = ['phenotypes']
+        self.parser = Statistic.null_parser
 
     @xft.utils.profiled(level=2, message = "sample statistics")
     def estimator(self, phenotypes: xr.DataArray) -> Dict:
@@ -173,6 +191,7 @@ class MatingStatistics(Statistic):
         self.metadata = metadata
         self.filter_sample = filter_sample
         self.s_args = ['mating','phenotypes']
+        self.parser = Statistic.null_parser
 
     @xft.utils.profiled(level=2, message = "mating statistics")
     def estimator(self, 
@@ -415,6 +434,7 @@ class HasemanElstonEstimator(Statistic):
         self.metadata = metadata
         self.filter_sample = filter_sample
         self.s_args = ['phenotypes', 'current_std_phenotypes', 'current_std_genotypes']
+        self.parser = Statistic.null_parser
 
     @xft.utils.profiled(level=2, message = "haseman elston estimator")
     def estimator(self, 
@@ -425,7 +445,7 @@ class HasemanElstonEstimator(Statistic):
         if self.component_index is None:
             # pheno_cols= sim.phenotypes.component_name.values[sim.phenotypes.component_name.str.contains('phenotype')]
             # component_index = sim.phenotypes.xft.get_component_indexer()[dict(component_name=pheno_cols)]
-            component_index = phenotypes.xft.grep_component_index('phenotype')
+            component_index = phenotypes.xft.get_component_indexer()[{'vorigin_relative':-1,'component_name':'phenotype'}]
         else:
             component_index = self.component_index
         # if self.filter_sample:
@@ -663,6 +683,7 @@ class GWAS_Estimator(Statistic):
         self.std_X = std_X
         self.std_Y = std_Y
         self.s_args = ['phenotypes', 'current_std_phenotypes', 'current_std_genotypes', 'haplotypes']
+        self.parser = Statistic.null_parser
     # self.numba = numba
 
     @xft.utils.profiled(level=2, message = "GWAS estimator")
@@ -675,7 +696,7 @@ class GWAS_Estimator(Statistic):
         if self.component_index is None:
             # pheno_cols= sim.phenotypes.component_name.values[sim.phenotypes.component_name.str.contains('phenotype')]
             # component_index = sim.phenotypes.xft.get_component_indexer()[dict(component_name=pheno_cols)]
-            component_index = phenotypes.xft.grep_component_index('phenotype')
+            component_index = phenotypes.xft.get_component_indexer()[{'vorigin_relative':-1,'component_name':'phenotype'}]
         else:
             component_index = self.component_index
         # if self.filter_sample:
@@ -768,6 +789,7 @@ class Pop_GWAS_Estimator(Statistic):
                  n_sub: int = 0,
                  PGS: bool = True,
                  PGS_sub_divisions: int = 50,
+                 training_fraction: float = .8,
                  ):
         self.name = 'pop_GWAS'
         self.component_index = component_index
@@ -778,6 +800,8 @@ class Pop_GWAS_Estimator(Statistic):
         self.PGS = PGS
         self.PGS_sub_divisions =PGS_sub_divisions
         self.s_args = ['phenotypes', 'current_std_phenotypes', 'current_std_genotypes', 'haplotypes']
+        self.parser = Statistic.null_parser
+        self.training_fraction = training_fraction
         if not assume_pairs:
             raise NotImplementedError()
         else:
@@ -794,11 +818,11 @@ class Pop_GWAS_Estimator(Statistic):
         if self.component_index is None:
             # pheno_cols= sim.phenotypes.component_name.values[sim.phenotypes.component_name.str.contains('phenotype')]
             # component_index = sim.phenotypes.xft.get_component_indexer()[dict(component_name=pheno_cols)]
-            component_index = phenotypes.xft.grep_component_index('phenotype')
+            component_index = phenotypes.xft.get_component_indexer()[{'vorigin_relative':-1,'component_name':'phenotype'}]
         else:
             component_index = self.component_index
-        n_sib = phenotypes.shape[0]//2
-        n_sub = self.n_sub
+        n_sib = int(np.floor(self.training_fraction*(phenotypes.shape[0]//2)))
+        n_sub = int(np.floor(self.training_fraction*(self.n_sub)))
         if n_sub > 0:
             n_sub = np.min([n_sib, n_sub])
             subinds = np.sort(np.random.permutation(n_sib)[:n_sub])
@@ -823,7 +847,8 @@ class Pop_GWAS_Estimator(Statistic):
         if self.PGS:
             G = haplotypes.drop_isel(sample=subinds).xft.to_diploid()
             b = estimates.loc[:,'beta',:]   
-            PGS = apply_threshold_PGS_all(estimates, G,nthresh=self.PGS_sub_divisions)
+            PGS = dict(scores=apply_threshold_PGS_all(estimates, G,nthresh=self.PGS_sub_divisions),
+                     phenotypes=phenotypes.drop_isel(sample=subinds))
         else:
             PGS = None
         output = dict(estimates=estimates,
@@ -835,6 +860,14 @@ class Pop_GWAS_Estimator(Statistic):
                                 samples = phenotypes.xft.get_sample_indexer().frame,
                                 ))
         return output
+    # @xft.utils.profiled(level=2, message = "pop GWAS estimator parsing")
+    # def parser(self, sim: xft.sim.Simulation, results: dict):
+    #     ## GWAS estimates
+    #     estimates = results['estimates']
+    #     beta_true = sim.bet
+
+
+        # phenotypes = sim.phenotypes.sel(sample=estimates.)
 
 
 
@@ -866,6 +899,7 @@ class Sib_GWAS_Estimator(Statistic):
                  n_sub: int = 0,
                  PGS:bool = True,
                  PGS_sub_divisions: int = 50,
+                 training_fraction: float = .8,
                  ):
         self.name = 'sib_GWAS'
         self.component_index = component_index
@@ -875,12 +909,13 @@ class Sib_GWAS_Estimator(Statistic):
         self.n_sub = n_sub
         self.PGS=PGS
         self.PGS_sub_divisions =PGS_sub_divisions
+        self.parser = Statistic.null_parser
+        self.training_fraction = training_fraction
         if not assume_pairs:
             raise NotImplementedError()
         else:
             self.assume_pairs = assume_pairs
         self.s_args = ['phenotypes', 'current_std_phenotypes', 'current_std_genotypes', 'haplotypes']
-
     @xft.utils.profiled(level=2, message = "sib GWAS estimator")
     def estimator(self, 
                   phenotypes,
@@ -892,11 +927,11 @@ class Sib_GWAS_Estimator(Statistic):
         if self.component_index is None:
             # pheno_cols= sim.phenotypes.component_name.values[sim.phenotypes.component_name.str.contains('phenotype')]
             # component_index = sim.phenotypes.xft.get_component_indexer()[dict(component_name=pheno_cols)]
-            component_index = phenotypes.xft.grep_component_index('phenotype')
+            component_index = phenotypes.xft.get_component_indexer()[{'vorigin_relative':-1,'component_name':'phenotype'}]
         else:
             component_index = self.component_index
-        n_sib = phenotypes.shape[0]//2
-        n_sub = self.n_sub
+        n_sib = int(np.floor(self.training_fraction*(phenotypes.shape[0]//2)))
+        n_sub = int(np.floor(self.training_fraction*(self.n_sub)))
         if n_sub > 0:
             n_sub = np.min([n_sib, n_sub])
             subinds = np.sort(np.random.permutation(n_sib)[:n_sub])
@@ -927,7 +962,8 @@ class Sib_GWAS_Estimator(Statistic):
             else:
                 G = haplotypes.drop_isel(sample=train_inds).xft.to_diploid()
                 b = estimates.loc[:,'beta',:]   
-                PGS = apply_threshold_PGS_all(estimates, G,nthresh=self.PGS_sub_divisions)
+                PGS = dict(scores=apply_threshold_PGS_all(estimates, G,nthresh=self.PGS_sub_divisions),
+                           phenotypes=phenotypes.drop_isel(sample=train_inds))
         else:
             PGS = None
         output = dict(estimates=estimates,
@@ -938,3 +974,5 @@ class Sib_GWAS_Estimator(Statistic):
                                 training_samples = phenotypes.xft.get_sample_indexer().frame.iloc[train_inds,],
                                 ))
         return output
+
+
