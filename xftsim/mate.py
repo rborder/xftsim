@@ -126,8 +126,8 @@ class MateAssignment:
         """
         return MateAssignment(
                               generation = int(np.max([x.generation for x in assignments])),
-                              maternal_sample_index = xft.index.XftIndex.reduce_merge([x._maternal_sample_index for x in assignments]),
-                              paternal_sample_index = xft.index.XftIndex.reduce_merge([x._paternal_sample_index for x in assignments]), 
+                              maternal_sample_index = xft.index.XftIndex.reduce_merge([x._maternal_sample_index for x in assignments], deduplicate=False),
+                              paternal_sample_index = xft.index.XftIndex.reduce_merge([x._paternal_sample_index for x in assignments], deduplicate=False), 
                               n_offspring_per_pair = np.concatenate([x.n_offspring_per_pair for x in assignments]),
                               n_females_per_pair = np.concatenate([x.n_females_per_pair for x in assignments]),
                               # sex_aware = bool(np.prod([x.sex_aware for x in assignments])),      
@@ -265,7 +265,8 @@ class MateAssignment:
         """
         raise NotImplementedError ## TODO
 
-    @cached_property## TODO possible gotcha with chunking?
+    # @cached_property## TODO possible gotcha with chunking?
+    @property## TODO possible gotcha with chunking?
     def offspring_sample_index(self):
         """
         The sample index for the offspring.
@@ -997,7 +998,8 @@ class BatchedMatingRegime(MatingRegime):
 
 
 
-def _solve_qap_ls(Y, Z, R, nb_threads=6, time_limit=30, tolerance=1e-5, verbosity=1, time_between_displays=1):
+def _solve_qap_ls(Y, Z, R, nb_threads=6, time_limit=30, tolerance=1e-5, 
+                  verbosity=1, time_between_displays=1, termination_interval=15):
     """
     Solves the Quadratic Assignment Problem (QAP) using the LocalSolver optimization solver.
     
@@ -1024,11 +1026,28 @@ def _solve_qap_ls(Y, Z, R, nb_threads=6, time_limit=30, tolerance=1e-5, verbosit
         A permutation matrix.
     """
     import localsolver
+    class TerminateSolver:
+        def __init__(self, interval: int = 20):
+            self.last_best_value = 100.0
+            self.last_best_running_time = 0
+            self.interval = interval
+
+        def callback(self, ls, cb_type):
+            stats = ls.statistics
+            obj = ls.model.objectives[0]
+            if obj.value < self.last_best_value:
+                self.last_best_running_time = stats.running_time
+                self.last_best_value = obj.value
+            if stats.running_time - self.last_best_running_time > self.interval:
+                print(f">>> No improvement during {self.interval} seconds: resolution is stopped")
+                ls.stop()
     n = Y.shape[0]
     # for later use as initial value
     tmp = np.argsort(np.apply_along_axis(np.mean, 1, Y))[
         np.argsort(np.argsort(np.apply_along_axis(np.mean, 1, Z)))]
     with localsolver.LocalSolver() as ls:
+        cb = TerminateSolver(int(termination_interval))
+        ls.add_callback(localsolver.LSCallbackType.TIME_TICKED, cb.callback)
         ls.param.set_time_limit(int(time_limit))
         ls.param.set_nb_threads(int(nb_threads))
         ls.param.set_verbosity(verbosity)
@@ -1047,7 +1066,8 @@ def _solve_qap_ls(Y, Z, R, nb_threads=6, time_limit=30, tolerance=1e-5, verbosit
         p = model.list(n)
         model.constraint(model.eq(model.count(p), n))
         # objective
-        const = np.trace(W @ W.T)
+        # const = np.trace(W @ W.T)
+        const = np.trace(R @ R.T)
         qobj = model.sum(
             model.at(array_YY, p[i], p[j]) * ZZ[i, j] for j in range(n) for i in range(n))
         lobj = model.sum(model.at(array_W, p[i], i) for i in range(n))
@@ -1059,8 +1079,7 @@ def _solve_qap_ls(Y, Z, R, nb_threads=6, time_limit=30, tolerance=1e-5, verbosit
         for pp in tmp:
             p.value.add(pp)
         # solve
-        # ls.param.set_objective_threshold(0,tolerance)
-        ls.param.set_verbosity(1)
+        ls.param.set_objective_threshold(0,tolerance)
         ls.solve()
 
         # solution

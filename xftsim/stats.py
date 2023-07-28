@@ -39,18 +39,17 @@ class Statistic:
     """
     def __init__(self, 
                  estimator: Callable,
+                 parser: Callable,
                  name: str,
                  metadata: Dict = {},
                  filter_sample = False,
+                 s_args: Iterable = None,
                  ):
         self.name = name
         self.estimator = estimator
+        self.parser = parser
         self.filter_sample = filter_sample
-
-    def estimate(self,
-                 sim: xft.sim.Simulation) -> None:
-        output = self.estimator(sim)
-        self.update_results(sim, output)
+        self.s_args = s_args
 
     def update_results(self, sim: xft.sim.Simulation, results: object) -> None:
         ## initialize empty dict if result store for generation is empty
@@ -61,6 +60,39 @@ class Statistic:
             sim.results_store[sim.generation][self.name] = {}
         ## append results to simulation results_store
         sim.results_store[sim.generation][self.name] = results
+
+    def parse_results(self, sim: xft.sim.Simulation) -> None:
+        if 'parsed' not in sim.results_store.keys():
+            sim.results_store['parsed'] = {}
+        results = sim.results_store[sim.generation][self.name]
+        parsed = self.parser(sim, results)
+        if parsed is None:
+            pass
+        else:
+            sim.results_store['parsed'].update(parsed)
+    
+    def estimate(self,
+                 sim: xft.sim.Simulation = None,
+                 **kwargs) -> None:
+        ## The goal here is that specific kwargs can take precidence over the sim object when specified
+        ## For example, if you provide a subsample of genotypes/phenotypes, the estimator will be applied to
+        ## those, otherwise it will retrieve them from the sim object
+        if self.s_args is None:
+            output = self.estimator(sim)
+        else:
+            inputs = dict()
+            for arg in self.s_args:
+                if arg in kwargs.keys():
+                    inputs[arg] = kwargs[arg]
+                else:
+                    inputs[arg] = getattr(sim, arg) 
+            output = self.estimator(**inputs)
+        self.update_results(sim, output)
+
+    @staticmethod
+    def null_parser(self, *args, **kwargs):
+        pass
+
 
 class SampleStatistics(Statistic):
     """
@@ -105,15 +137,16 @@ class SampleStatistics(Statistic):
         self.prettify = prettify
         self.metadata = metadata
         self.filter_sample = filter_sample
+        self.s_args = ['phenotypes']
+        self.parser = Statistic.null_parser
 
     @xft.utils.profiled(level=2, message = "sample statistics")
-    def estimator(self, sim: xft.sim.Simulation) -> Dict:
+    def estimator(self, phenotypes: xr.DataArray) -> Dict:
         output = dict()
-
-        if self.filter_sample:
-            pheno_df = sim.phenotypes_filtered.xft.as_pd(prettify=self.prettify)
-        else:
-            pheno_df = sim.phenotypes.xft.as_pd(prettify=self.prettify)
+        # if self.filter_sample:
+            # pheno_df = sim.phenotypes_filtered.xft.as_pd(prettify=self.prettify)
+        # else:
+        pheno_df = phenotypes.xft.as_pd(prettify=self.prettify)
         h = [g.var(axis=1) for _, g in pheno_df.T.groupby(['phenotype_name','vorigin_relative'])]
         mm = [g.mean(axis=1) for _, g in pheno_df.T.groupby(['phenotype_name','vorigin_relative'])]
         if self.means:
@@ -121,7 +154,7 @@ class SampleStatistics(Statistic):
         if self.variances:
             output['variances'] = pd.concat([g for g in h])
         if self.variance_components:
-            output['variance_components'] = pd.concat([x.iloc[:-1] for x in [g/g.iloc[g.index.get_locs([slice(None),'phenotype'])].values for g in h] if x.size>1])
+            output['variance_components'] = pd.concat([x.iloc[:-1] for x in [g/g.iloc[g.index.get_locs([slice(None),'phenotype'])].values for g in h if g.size>1] if x.size>1])
         if self.vcov:
             output['vcov'] = pheno_df.cov()
         if self.corr:
@@ -157,19 +190,23 @@ class MatingStatistics(Statistic):
         self.component_index = component_index
         self.metadata = metadata
         self.filter_sample = filter_sample
+        self.s_args = ['mating','phenotypes']
+        self.parser = Statistic.null_parser
 
     @xft.utils.profiled(level=2, message = "mating statistics")
-    def estimator(self, sim: xft.sim.Simulation) -> Dict:
-        if self.filter_sample:
-            phenotypes = sim.phenotypes_filtered         
-        else:
-            phenotypes = sim.phenotypes
+    def estimator(self, 
+                  phenotypes: xr.DataArray,
+                  mating: xft.mate.MateAssignment) -> Dict:
+        # if self.filter_sample:
+        #     phenotypes = sim.phenotypes_filtered         
+        # else:
+        #     phenotypes = sim.phenotypes
         output = dict(
-                      n_reproducing_pairs = sim.mating.n_reproducing_pairs,
-                      n_total_offspring = sim.mating.n_total_offspring,
-                      mean_n_offspring_per_pair =  np.mean(sim.mating.n_offspring_per_pair),
-                      mean_n_female_offspring_per_pair =  np.mean(sim.mating.n_females_per_pair),
-                      mate_correlations = sim.mating.get_mate_phenotypes(phenotypes=phenotypes,
+                      n_reproducing_pairs = mating.n_reproducing_pairs,
+                      n_total_offspring = mating.n_total_offspring,
+                      mean_n_offspring_per_pair =  np.mean(mating.n_offspring_per_pair),
+                      mean_n_female_offspring_per_pair =  np.mean(mating.n_females_per_pair),
+                      mate_correlations = mating.get_mate_phenotypes(phenotypes=phenotypes,
                                                                          component_index=self.component_index,
                                                                          full = self._full).corr(),
                       )
@@ -396,22 +433,27 @@ class HasemanElstonEstimator(Statistic):
         self.dask = dask
         self.metadata = metadata
         self.filter_sample = filter_sample
+        self.s_args = ['phenotypes', 'current_std_phenotypes', 'current_std_genotypes']
+        self.parser = Statistic.null_parser
 
     @xft.utils.profiled(level=2, message = "haseman elston estimator")
-    def estimator(self, sim: xft.sim.Simulation) -> Dict:
+    def estimator(self, 
+                  phenotypes,
+                  current_std_phenotypes,
+                  current_std_genotypes, ) -> Dict:
         ## look for "phenotype" components if component_index not provided
         if self.component_index is None:
             # pheno_cols= sim.phenotypes.component_name.values[sim.phenotypes.component_name.str.contains('phenotype')]
             # component_index = sim.phenotypes.xft.get_component_indexer()[dict(component_name=pheno_cols)]
-            component_index = sim.phenotypes.xft.grep_component_index('phenotype')
+            component_index = phenotypes.xft.get_component_indexer()[{'vorigin_relative':-1,'component_name':'phenotype'}]
         else:
             component_index = self.component_index
-        if self.filter_sample:
-            Y = sim.current_std_phenotypes_filtered.xft[None, component_index].xft.as_pd()
-            G = sim.current_std_genotypes_filtered
-        else:
-            Y = sim.current_std_phenotypes.xft[None, component_index].xft.as_pd()
-            G = sim.current_std_genotypes
+        # if self.filter_sample:
+            # Y = sim.current_std_phenotypes_filtered.xft[None, component_index].xft.as_pd()
+            # G = sim.current_std_genotypes_filtered
+        # else:
+        Y = current_std_phenotypes.xft[None, component_index].xft.as_pd()
+        G = current_std_genotypes
         he_out = haseman_elston(G = G,
                                 Y = Y,
                                 n_probe = self.n_probe,
@@ -469,8 +511,9 @@ class HasemanElstonEstimator(Statistic):
 
 
 @nb.njit
-def _linear_regression_with_intercept_nb(X: NDArray,
-                                         y: NDArray) -> NDArray:
+def _linear_regression_with_intercept_nb(x: NDArray,
+                                         y: NDArray,
+                                         ) -> NDArray:
     """
     Numba implementation of simple linear regression of y ~ 1 + X. 
     Intercepts term is included but corresponing coefficients are not reported
@@ -487,50 +530,24 @@ def _linear_regression_with_intercept_nb(X: NDArray,
     NDArray
         2 array consisting of standardized slope corresponding standard errors.
     """
-    n = X.shape[0]
-    y = y.reshape((n,1))
-    X = X/np.std(X)
-    X = X.reshape((n,1))
-    pred = np.hstack((np.ones_like(X), X))
+    n = x.shape[0]
+    pred = np.hstack((np.ones_like(x), x))
     XtX = pred.T @ pred
-    XtXinv = np.linalg.pinv(pred.T @ pred)
+    XtXinv = np.linalg.pinv(XtX)
     coef = XtXinv @ (pred.T @ y)
     yhat = pred @ coef
     res = y - yhat
     s2 = (res.T @ res) / (n - 2)
     std_err = np.sqrt(s2 * np.diag(XtXinv))
-    return [coef.ravel()[1], std_err.ravel()[1]]
-
-@nb.njit
-def _vec_linear_regression_with_intercept_nb(X: NDArray,
-                                             y: NDArray) -> NDArray:
-    """
-    Numba implementation of simple linear regression vectorized over predictors. 
-    Intercepts term is included but corresponing coefficients are not reported
-    
-    Parameters
-    ----------
-    X : NDArray
-        n-by-m array of predictors
-    y : NDArray
-        n-by-1 standardized outcome array
-    
-    Returns
-    -------
-    NDArray
-        m-by-2 array of standardized slopes (first column) and corresponding standard errors (second column)
-        for each of the m predictors. 
-    """
-    output = np.empty((X.shape[1], 2), dtype=y.dtype)
-    for j in np.arange(X.shape[1]):
-        output[j,:] = _linear_regression_with_intercept_nb(X[:,j],y)
-    return output
-
+    return np.array([coef.ravel()[1], std_err.ravel()[1]], dtype =np.float32)
 
 
 @nb.njit
 def _mv_vec_linear_regression_with_intercept_nb(X: NDArray,
-                                                Y: NDArray) -> NDArray:
+                                                Y: NDArray,
+                                                std_X: bool = True,
+                                                std_Y: bool = True,
+                                                ) -> NDArray:
     """
     Numba implementation of simple linear regression vectorized over predictors
     and outcomes. 
@@ -556,12 +573,20 @@ def _mv_vec_linear_regression_with_intercept_nb(X: NDArray,
     #     for j in np.arange(X.shape[1]):
     #         output[j,:, k] = _linear_regression_with_intercept_nb(X[:,j],y)
     # return output
-    output = np.empty((X.shape[1], 2, Y.shape[1]), dtype=Y.dtype)
+    output = np.empty((X.shape[1], 2, Y.shape[1]), dtype=X.dtype)
     for k in nb.prange(Y.shape[1]):
         y = Y[:,k].ravel()
-        y = y / np.std(y)
-        for j in np.arange(X.shape[1]):
-            output[j,:, k] = _linear_regression_with_intercept_nb(X[:,j],y)
+        y = y.reshape((y.shape[0], 1))
+        if std_Y:
+            y = y / np.std(y)
+        for j in range(X.shape[1]):
+            x = X[:,j].ravel()
+            x = x.reshape((x.shape[0], 1))
+            if std_X:
+                x = x/ np.std(x)
+            output[j,:, k] = _linear_regression_with_intercept_nb(x = x,
+                                                                  y = y, 
+                                                                  )
     return output
 
 
@@ -585,7 +610,12 @@ def _p_val_t(t: float, df: Union[int, float]) -> float:
     return (1-sp.stats.t.cdf(t,df))
 
 
-def _mv_gwas_nb(X: NDArray, Y: NDArray) -> NDArray:
+def _mv_gwas_nb(X: NDArray, 
+                Y: NDArray, 
+                std_X: bool,
+                std_Y: bool,
+                ) -> NDArray:
+
     """
     Numba implementation of simple linear regression vectorized over predictors and outcomes 
     Intercepts term is included but corresponing coefficients are not reported.
@@ -597,6 +627,10 @@ def _mv_gwas_nb(X: NDArray, Y: NDArray) -> NDArray:
         n-by-m array of predictors
     Y : NDArray
         n-by-k outcome array
+    std_X : bool
+        Should columns of X be standardized?
+    std_Y : bool
+        Should columns of Y be standardized?
     
     Returns
     -------
@@ -605,7 +639,10 @@ def _mv_gwas_nb(X: NDArray, Y: NDArray) -> NDArray:
         slopes, standard errors, test statistics, and p-values 
         for each of the m predictors. 
     """
-    tmp = _mv_vec_linear_regression_with_intercept_nb(X,Y)
+    tmp = _mv_vec_linear_regression_with_intercept_nb(X=X,
+                                                      Y=Y,
+                                                      std_X=std_X,
+                                                      std_Y=std_Y)
     output = np.tile(tmp,(1,2,1))
     output[:,2,:] = output[:,0,:] /output[:,1,:] 
     output[:,3,:] = _p_val_t(output[:,2,:], X.shape[0]-2) 
@@ -635,34 +672,307 @@ class GWAS_Estimator(Statistic):
                  component_index: xft.index.ComponentIndex = None,
                  metadata: Dict = {},
                  filter_sample = False,
+                 std_X: bool = True,
+                 std_Y: bool = True,
                  # numba: bool = True,
                  ):
         self.name = 'GWAS'
         self.component_index = component_index
         self.metadata = metadata
         self.filter_sample = filter_sample
-        # self.numba = numba
+        self.std_X = std_X
+        self.std_Y = std_Y
+        self.s_args = ['phenotypes', 'current_std_phenotypes', 'current_std_genotypes', 'haplotypes']
+        self.parser = Statistic.null_parser
+    # self.numba = numba
 
     @xft.utils.profiled(level=2, message = "GWAS estimator")
-    def estimator(self, sim: xft.sim.Simulation) -> Dict:
+    def estimator(self, phenotypes,
+                  current_std_phenotypes, 
+                  current_std_genotypes,
+                  haplotypes,
+                  ) -> Dict:
         ## look for "phenotype" components if component_index not provided
         if self.component_index is None:
             # pheno_cols= sim.phenotypes.component_name.values[sim.phenotypes.component_name.str.contains('phenotype')]
             # component_index = sim.phenotypes.xft.get_component_indexer()[dict(component_name=pheno_cols)]
-            component_index = sim.phenotypes.xft.grep_component_index('phenotype')
+            component_index = phenotypes.xft.get_component_indexer()[{'vorigin_relative':-1,'component_name':'phenotype'}]
         else:
             component_index = self.component_index
-        if self.filter_sample:
-            Y = sim.current_std_phenotypes.xft[None, component_index].data.astype(np.float32)
-            G = sim.current_std_genotypes
-        else:
-            Y = sim.current_std_phenotypes_filtered.xft[None, component_index].data.astype(np.float32)
-            G = sim.current_std_genotypes_filtered
-        sum_stats = _mv_gwas_nb(G,Y)
+        # if self.filter_sample:
+            # Y = sim.current_std_phenotypes.xft[None, component_index].data.astype(np.float32)
+            # G = sim.current_std_genotypes
+        # else:
+        Y = current_std_phenotypes_filtered.xft[None, component_index].data.astype(np.float32)
+        G = current_std_genotypes_filtered
+        sum_stats = _mv_gwas_nb(G,Y, std_X=self.std_X, std_Y=self.std_Y)
         coord_dict = component_index.coord_dict.copy()
-        coord_dict.update(sim.haplotypes.xft.get_variant_indexer().to_diploid().coord_dict)
-        coord_dict.update({'statistic':('statistic', ['beta', 'se', 't', 'p'])})
+        coord_dict.update(haplotypes.xft.get_variant_indexer().to_diploid().coord_dict)
+        if self.std_X and self.std_Y:
+            coord_dict.update({'statistic':('statistic', ['std_beta', 'se', 't', 'p'])})
+        else:
+            coord_dict.update({'statistic':('statistic', ['beta', 'se', 't', 'p'])})
         output = dict(estimates=xr.DataArray(sum_stats,dims=('variant', 'statistic', 'component'), 
                                         coords=coord_dict))
         return output
+
+
+
+
+@nb.njit
+def _vec_linear_regression_with_intercept_nb(X: NDArray,
+                                             y: NDArray) -> NDArray:
+    """
+    Numba implementation of simple linear regression vectorized over predictors. 
+    Intercepts term is included but corresponing coefficients are not reported
+    
+    Parameters
+    ----------
+    X : NDArray
+        n-by-m array of predictors
+    y : NDArray
+        n-by-1 standardized outcome array
+    
+    Returns
+    -------
+    NDArray
+        m-by-2 array of standardized slopes (first column) and corresponding standard errors (second column)
+        for each of the m predictors. 
+    """
+    output = np.empty((X.shape[1], 2), dtype=y.dtype)
+    for j in np.arange(X.shape[1]):
+        output[j,:] = _linear_regression_with_intercept_nb(X[:,j],y)
+    return output
+
+
+def threshold_PGS(estimates, threshold, G):
+    mask = estimates.loc[:,'p'].values<threshold
+    out = G[:,mask] @ estimates.loc[:,'beta'][mask]
+    return out.assign_coords({'threshold':threshold})
+
+def apply_threshold_PGS(estimates, G, thresholds = 10**np.linspace(np.log10(5e-8), 0,24)):
+    output = [threshold_PGS(estimates, threshold, G) for threshold in thresholds]
+    return xr.concat(output,'threshold')
+
+def apply_threshold_PGS_all(gwas_results, G, minp=5e-8, maxp=1, nthresh=25):
+    thresholds = 10**np.linspace(np.log10(minp),np.log10(maxp),nthresh)
+    output = [apply_threshold_PGS(gwas_results.loc[:,:,comp], G,thresholds) for comp in gwas_results.component.values]
+    return xr.concat(output,'component')
+
+    
+
+class Pop_GWAS_Estimator(Statistic):
+    """
+    Perform one sib only linear assocation studies for the given simulation.
+
+    NOTE! Currently assumes each mate-pair produces exactly 2 offspring
+
+    When called within a Simulation, will add to Simulation.results['GWAS']
+    a 3-D array indexed as follows:
+        - the first dimension indexes variants via xft.index.DiploidVariantIndex
+        - the second dimension indexes four association statistics: slope, se, test-statistic, and p-value
+        - the third dimension indexes phenotypic components via xft.index.ComponentIndex
+
+    Attributes
+    ----------
+    component_index : xft.index.ComponentIndex, optional
+        Index of the component for which the statistics are calculated.
+        If not provided, calculate statistics for all phenotype components.
+
+    """
+    def __init__(self,
+                 component_index: xft.index.ComponentIndex = None,
+                 metadata: Dict = {},
+                 std_X: bool = False,
+                 std_Y: bool = False,
+                 assume_pairs: bool = True,
+                 n_sub: int = 0,
+                 PGS: bool = True,
+                 PGS_sub_divisions: int = 50,
+                 training_fraction: float = .8,
+                 ):
+        self.name = 'pop_GWAS'
+        self.component_index = component_index
+        self.metadata = metadata
+        self.std_X = std_X
+        self.std_Y = std_Y
+        self.n_sub = n_sub
+        self.PGS = PGS
+        self.PGS_sub_divisions =PGS_sub_divisions
+        self.s_args = ['phenotypes', 'current_std_phenotypes', 'current_std_genotypes', 'haplotypes']
+        self.parser = Statistic.null_parser
+        self.training_fraction = training_fraction
+        if not assume_pairs:
+            raise NotImplementedError()
+        else:
+            self.assume_pairs = assume_pairs
+
+    @xft.utils.profiled(level=2, message = "pop GWAS estimator")
+    def estimator(self, 
+                  phenotypes,
+                  current_std_phenotypes,
+                  current_std_genotypes,
+                  haplotypes,
+                  ) -> Dict:
+        ## look for "phenotype" components if component_index not provided
+        if self.component_index is None:
+            # pheno_cols= sim.phenotypes.component_name.values[sim.phenotypes.component_name.str.contains('phenotype')]
+            # component_index = sim.phenotypes.xft.get_component_indexer()[dict(component_name=pheno_cols)]
+            component_index = phenotypes.xft.get_component_indexer()[{'vorigin_relative':-1,'component_name':'phenotype'}]
+        else:
+            component_index = self.component_index
+        n_sib = int(np.floor(self.training_fraction*(phenotypes.shape[0]//2)))
+        n_sub = int(np.floor(self.training_fraction*(self.n_sub)))
+        if n_sub > 0:
+            n_sub = np.min([n_sib, n_sub])
+            subinds = np.sort(np.random.permutation(n_sib)[:n_sub])
+        else:
+            n_sub = n_sib
+            subinds = np.arange(n_sib)
+        subinds = 2*subinds +np.random.choice([0,1], n_sub)
+        Y = phenotypes.xft[None, component_index].data.astype(np.float32)[subinds, :]
+        Y = np.ascontiguousarray(Y, dtype = np.float32)
+        G = haplotypes.data[subinds,0::2] + haplotypes.data[subinds,1::2]
+        G = np.ascontiguousarray(G, dtype = np.float32)
+
+        sum_stats = _mv_gwas_nb(G,Y, std_X=self.std_X, std_Y=self.std_Y)
+        coord_dict = component_index.coord_dict.copy()
+        coord_dict.update(haplotypes.xft.get_variant_indexer().to_diploid().coord_dict)
+        if self.std_X and self.std_Y:
+            coord_dict.update({'statistic':('statistic', ['std_beta', 'se', 't', 'p'])})
+        else:
+            coord_dict.update({'statistic':('statistic', ['beta', 'se', 't', 'p'])})
+        estimates=xr.DataArray(sum_stats,dims=('variant', 'statistic', 'component'), 
+                               coords=coord_dict)
+        if self.PGS:
+            G = haplotypes.drop_isel(sample=subinds).xft.to_diploid()
+            b = estimates.loc[:,'beta',:]   
+            PGS = dict(scores=apply_threshold_PGS_all(estimates, G,nthresh=self.PGS_sub_divisions),
+                     phenotypes=phenotypes.drop_isel(sample=subinds))
+        else:
+            PGS = None
+        output = dict(estimates=estimates,
+                      PGS=PGS,
+                      info=dict(n_sub=n_sub,
+                                std_X=self.std_X,
+                                std_Y=self.std_Y,
+                                training_samples = phenotypes.xft.get_sample_indexer().frame.iloc[subinds,],
+                                samples = phenotypes.xft.get_sample_indexer().frame,
+                                ))
+        return output
+    # @xft.utils.profiled(level=2, message = "pop GWAS estimator parsing")
+    # def parser(self, sim: xft.sim.Simulation, results: dict):
+    #     ## GWAS estimates
+    #     estimates = results['estimates']
+    #     beta_true = sim.bet
+
+
+        # phenotypes = sim.phenotypes.sel(sample=estimates.)
+
+
+
+class Sib_GWAS_Estimator(Statistic):
+    """
+    Perform sib-difference linear assocation studies for the given simulation.
+
+    NOTE! Currently assumes each mate-pair produces exactly 2 offspring
+
+    When called within a Simulation, will add to Simulation.results['GWAS']
+    a 3-D array indexed as follows:
+        - the first dimension indexes variants via xft.index.DiploidVariantIndex
+        - the second dimension indexes four association statistics: slope, se, test-statistic, and p-value
+        - the third dimension indexes phenotypic components via xft.index.ComponentIndex
+
+    Attributes
+    ----------
+    component_index : xft.index.ComponentIndex, optional
+        Index of the component for which the statistics are calculated.
+        If not provided, calculate statistics for all phenotype components.
+
+    """
+    def __init__(self,
+                 component_index: xft.index.ComponentIndex = None,
+                 metadata: Dict = {},
+                 std_X: bool = False,
+                 std_Y: bool = False,
+                 assume_pairs: bool = True,
+                 n_sub: int = 0,
+                 PGS:bool = True,
+                 PGS_sub_divisions: int = 50,
+                 training_fraction: float = .8,
+                 ):
+        self.name = 'sib_GWAS'
+        self.component_index = component_index
+        self.metadata = metadata
+        self.std_X = std_X
+        self.std_Y = std_Y
+        self.n_sub = n_sub
+        self.PGS=PGS
+        self.PGS_sub_divisions =PGS_sub_divisions
+        self.parser = Statistic.null_parser
+        self.training_fraction = training_fraction
+        if not assume_pairs:
+            raise NotImplementedError()
+        else:
+            self.assume_pairs = assume_pairs
+        self.s_args = ['phenotypes', 'current_std_phenotypes', 'current_std_genotypes', 'haplotypes']
+    @xft.utils.profiled(level=2, message = "sib GWAS estimator")
+    def estimator(self, 
+                  phenotypes,
+                  current_std_phenotypes,
+                  current_std_genotypes,
+                  haplotypes,
+                  ) -> Dict:
+        ## look for "phenotype" components if component_index not provided
+        if self.component_index is None:
+            # pheno_cols= sim.phenotypes.component_name.values[sim.phenotypes.component_name.str.contains('phenotype')]
+            # component_index = sim.phenotypes.xft.get_component_indexer()[dict(component_name=pheno_cols)]
+            component_index = phenotypes.xft.get_component_indexer()[{'vorigin_relative':-1,'component_name':'phenotype'}]
+        else:
+            component_index = self.component_index
+        n_sib = int(np.floor(self.training_fraction*(phenotypes.shape[0]//2)))
+        n_sub = int(np.floor(self.training_fraction*(self.n_sub)))
+        if n_sub > 0:
+            n_sub = np.min([n_sib, n_sub])
+            subinds = np.sort(np.random.permutation(n_sib)[:n_sub])
+        else:
+            n_sub = n_sib
+            subinds = np.arange(n_sub)
+
+        train_inds = np.concatenate([np.array(x) for x in zip(subinds,np.array(subinds)+1)])
+        Y = phenotypes.xft[None, component_index].data.astype(np.float32)[train_inds,:]
+        Y = Y[0::2,:] - Y[1::2,:]
+        Y = np.ascontiguousarray(Y, dtype = np.float32)
+        G_train = haplotypes.data[train_inds,0::2] + haplotypes.data[train_inds,1::2]
+        G_train = G_train[0::2,:] - G_train[1::2,:]
+        G_train = np.ascontiguousarray(G_train, dtype = np.float32)
+
+        sum_stats = _mv_gwas_nb(G_train,Y, std_X=self.std_X, std_Y=self.std_Y)
+        coord_dict = component_index.coord_dict.copy()
+        coord_dict.update(haplotypes.xft.get_variant_indexer().to_diploid().coord_dict)
+        # if self.std_X and self.std_Y:
+            # coord_dict.update({'statistic':('statistic', ['beta', 'se', 't', 'p'])})
+        # else:
+        coord_dict.update({'statistic':('statistic', ['beta', 'se', 't', 'p'])})
+        estimates=xr.DataArray(sum_stats,dims=('variant', 'statistic', 'component'), 
+                               coords=coord_dict)
+        if self.PGS:
+            if self.std_X:
+                raise NotImplementedError()
+            else:
+                G = haplotypes.drop_isel(sample=train_inds).xft.to_diploid()
+                b = estimates.loc[:,'beta',:]   
+                PGS = dict(scores=apply_threshold_PGS_all(estimates, G,nthresh=self.PGS_sub_divisions),
+                           phenotypes=phenotypes.drop_isel(sample=train_inds))
+        else:
+            PGS = None
+        output = dict(estimates=estimates,
+                      PGS=PGS,
+                      info=dict(n_sub=n_sub,
+                                std_X=self.std_X,
+                                std_Y=self.std_Y,
+                                training_samples = phenotypes.xft.get_sample_indexer().frame.iloc[train_inds,],
+                                ))
+        return output
+
 

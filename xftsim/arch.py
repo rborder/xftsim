@@ -1251,11 +1251,8 @@ class BinarizingTransformation(ArchitectureComponent):
                  thresholds: Iterable,
                  input_cindex: xft.index.ComponentIndex,
                  output_cindex: xft.index.ComponentIndex,
-                 phenotype_name: Iterable,
-                 liability_component: str = 'phenotype',
                  # TODO: make consistent with providing index
-                 vorigin_relative: Iterable = [-1],
-                 output_component: str = 'binary_phenotype',
+                 component_name: str ='binarize',
                  ):
         # assert len(thresholds) == len(phenotype_name)
         self.thresholds = np.array(thresholds).ravel()
@@ -1266,6 +1263,7 @@ class BinarizingTransformation(ArchitectureComponent):
         self.input_cindex = input_cindex
         self.output_cindex = output_cindex
         self.founder_initialization = None
+        self._component_name = component_name
 
     @staticmethod
     def construct_input_cindex(phenotype_name: Iterable,
@@ -1571,8 +1569,7 @@ class Architecture:
         G = nx.DiGraph()
         edges, colors, edge_labels = self.dependency_graph_edges
         G.add_edges_from(edges)
-        pos = nx.nx_agraph.graphviz_layout(G, prog='dot')
-        return (G,pos,colors,edges,edge_labels)
+        return (G,colors,edges,edge_labels)
 
     def draw_dependency_graph(self, 
                               node_color='none', 
@@ -1584,7 +1581,8 @@ class Architecture:
                               number_edges: bool = True,
                               **kwargs):
         import networkx as nx
-        G,pos,colors,edges,edge_labels = self.dependency_graph
+        G,colors,edges,edge_labels = self.dependency_graph
+        pos = nx.nx_agraph.graphviz_layout(G, prog='dot')
         if number_edges:
             edge_labels = xft.utils.paste([colors.astype(str),edge_labels],sep=':')
         color_dict = {a:b for a,b in zip(edges, colors)}
@@ -1609,7 +1607,7 @@ class Architecture:
                  )
 
     def check_dependencies(self):
-        G,pos,colors,edges,edge_labels = self.dependency_graph
+        G,colors,edges,edge_labels = self.dependency_graph
         edge_array = np.vstack(edges)
         import networkx as nx
         G = nx.DiGraph()

@@ -184,19 +184,20 @@ class XftIndex:
     def iloc(self, key): ## TODO: optimize to avoid reconstruction
         return self.__class__(frame=self.frame.iloc[key])
 
-    def merge(self, other):
+    def merge(self, other, deduplicate=True):
         if self.__class__ != other.__class__: raise TypeError()
         if self._dimension != other._dimension: raise TypeError()
         frame = pd.concat([self.frame, other.frame])
-        frame = frame[~frame.duplicated()]
+        if deduplicate:
+            frame = frame[~frame.duplicated()]
         if hasattr(self, 'generation'):
             return self.__class__(frame=frame, generation=self.generation)
         else: 
             return self.__class__(frame=frame)
 
     @staticmethod
-    def reduce_merge(args):
-        return functools.reduce(XftIndex.merge,args)
+    def reduce_merge(args,deduplicate=True):
+        return functools.reduce(lambda a,b: XftIndex.merge(a,b,deduplicate=deduplicate), args)
 
     def stack(self, other):
         if self.__class__ != other.__class__: raise TypeError()
