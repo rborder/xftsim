@@ -375,6 +375,10 @@ class SampleIndex(XftIndex):
             return self.__class__(frame=frame.loc[arg], generation=self.generation)
 
 
+    ## redefine to include generation
+    def iloc(self, key): ## TODO: optimize to avoid reconstruction
+        return self.__class__(frame=self.frame.iloc[key], generation=self.generation)
+
 
 class DiploidVariantIndex(XftIndex):
     """
