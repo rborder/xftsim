@@ -46,7 +46,6 @@ class Pedigree:
     """
     def __init__(self,
                  founder_sample_index: xft.index.SampleIndex,
-                 founder_generation=0,
                  ):
         """
         Initialize the Pedigree object with founder samples and their generation.
@@ -59,17 +58,28 @@ class Pedigree:
             The generation of the founder samples (default is 0).
         """
         self.G = nx.DiGraph()
-        self.G.add_nodes_from(founder_iids)
-        self._generation = {
-            node: founder_generation for node in founder_sample_index.unique_identifier}
-        # self._parents = }{
-        if founder_fids is not None:
-            self._fid = {node: fid for (node, fid) in zip(
-                founder_iids, founder_fids)}
-        else:
-            self._fid = {}
-        self._generational_depth = founder_generation
+        self._generation_dict = {}
+        self._fid_dict = {}
+        self.founder_generation = founder_sample_index.generation
+        self.current_generation = self.founder_generation
 
+        self._add_nodes(founder_sample_index)
+
+    def _add_nodes(self, sample_index:xft.index.SampleIndex):
+        uid = sample_index.unique_identifier
+
+        self.current_generation=max(self.current_generation, sample_index.generation)
+        self._generation_dict.update({node: sample_index.generation for node in uid})
+        self._fid_dict.update({node: fid for (node, fid) in zip(uid,
+                                                                sample_index.fid)})
+
+        self.G.add_nodes_from(uid)
+
+
+    @property
+    def generational_depth(self):
+        return self.current_generation - self.founder_generation
+    
     def generation(self, K: int):
         """
         Returns the subgraph of nodes with generation K.
@@ -84,7 +94,7 @@ class Pedigree:
         nx.subgraph_view
             The subgraph of nodes with generation K.
         """
-        return nx.subgraph_view(ped.G, filter_node=lambda x: ped._generation[x] == K)
+        return nx.subgraph_view(self.G, filter_node=lambda x: self._generation_dict[x] == K)
 
     def generations(self, gens):
         """
@@ -100,9 +110,9 @@ class Pedigree:
         nx.subgraph_view
             The subgraph of nodes with generations in the given iterable.
         """
-        return nx.subgraph_view(ped.G, filter_node=lambda x: ped._generation[x] in gens)
+        return nx.subgraph_view(self.G, filter_node=lambda x: self._generation_dict[x] in gens)
 
-    def current_generation(self, K):
+    def get_current_generation(self):
         """
         Returns the subgraph of nodes in the current generation.
 
@@ -116,9 +126,9 @@ class Pedigree:
         nx.subgraph_view
             The subgraph of nodes in the current generation.
         """
-        return self.generation(self._generational_depth)
+        return self.generation(self.current_generation)
 
-    def most_recent_K_generations(self):
+    def get_most_recent_K_generations(self, K):
         """
         Returns the subgraph of nodes in the most recent K generations.
 
@@ -127,22 +137,40 @@ class Pedigree:
         nx.subgraph_view
             The subgraph of nodes in the most recent K generations.
         """
-        return self.generations(range(self._generational_depth, self._generational_depth - K, -1))
+        if K > self.generational_depth:
+            raise ValueError('K exceeds generational depth of pedigree')
+        return self.generations(range(self.current_generation, self.current_generation - K, -1))
 
-    def _add_edges_from_arrays(self, x, y):
+    # def _add_edges_from_arrays(self, x, y):
+    #     """
+    #     Adds edges from arrays x and y.
+
+    #     Parameters
+    #     ----------
+    #     x : array-like
+    #         The source nodes for the edges.
+    #     y : array-like
+    #         The target nodes for the edges.
+    #     """
+    #     self._add_nodes(x)
+    #     self.G.add_edges_from([(xx, yy) for (xx, yy) in zip(x, y)])
+
+    def _add_edges_from_indexes(self, x, y):
         """
         Adds edges from arrays x and y.
 
         Parameters
         ----------
-        x : array-like
-            The source nodes for the edges.
-        y : array-like
-            The target nodes for the edges.
+        x : xft.index.SampleIndex
+            The sample index objections corresponing to source nodes
+        y : xft.index.SampleIndex
+            The sample index objections corresponing to target nodes
         """
-        self.G.add_edges_from([(xx, yy) for (xx, yy) in zip(x, y)])
+        self._add_nodes(x)
+        self._add_nodes(y)
+        self.G.add_edges_from([(xx, yy) for (xx, yy) in zip(x.unique_identifier, y.unique_identifier)])
 
-    def add_offspring(self,
+    def _add_offspring(self,
                       mating: xft.mate.MateAssignment,
                       ):
         """
@@ -153,17 +181,10 @@ class Pedigree:
         mating : xft.mate.MateAssignment
             The MateAssignment object containing mating information.
         """
-        self.G.add_nodes_from(mating.offspring_iids)
-        self._generation.update(
-            {node: mating.generation for node in mating.offspring_iids})
-        self._fid.update({node: fid for (node, fid) in zip(
-            mating.offspring_iids, mating.offspring_fids)})
-        self._add_edges_from_arrays(
-            mating.maternal_iids, mating.offspring_iids)
-        self._add_edges_from_arrays(
-            mating.paternal_iids, mating.offspring_iids)
-        if mating.generation + 1 > self._generational_depth:
-            self._generational_depth = mating.generation + 1
+        self._add_edges_from_indexes(
+            mating.reproducing_maternal_index, mating.offspring_sample_index)
+        self._add_edges_from_indexes(
+            mating.reproducing_paternal_index, mating.offspring_sample_index)
 
     def _get_trios(self):
         """

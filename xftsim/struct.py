@@ -255,6 +255,7 @@ class XftAccessor:
             iid=self._obj.coords['sample'].iid.data,
             fid=self._obj.coords['sample'].fid.data,
             sex=self._obj.coords['sample'].sex.data,
+            generation=self._obj.generation
         )
 
     def set_sample_indexer(self, value):

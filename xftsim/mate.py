@@ -278,7 +278,8 @@ class MateAssignment:
         """
         return xft.index.SampleIndex(iid=self.offspring_iids,
                                     fid=self.offspring_fids,
-                                    sex=self.offspring_sex)
+                                    sex=self.offspring_sex,
+                                    generation=self._maternal_sample_index.generation+1)
 
 
     def get_mating_frame(self):
