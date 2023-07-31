@@ -607,7 +607,7 @@ def _p_val_t(t: float, df: Union[int, float]) -> float:
     float
         p-value
     """
-    return (1-sp.stats.t.cdf(t,df))
+    return 2* sp.stats.t.cdf(-np.abs(t),df)
 
 
 def _mv_gwas_nb(X: NDArray, 
