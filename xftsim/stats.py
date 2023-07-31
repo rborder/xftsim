@@ -748,7 +748,7 @@ def _vec_linear_regression_with_intercept_nb(X: NDArray,
 def threshold_PGS(estimates, threshold, G):
     mask = estimates.loc[:,'p'].values<threshold
     out = G[:,mask] @ estimates.loc[:,'beta'][mask]
-    return out.assign_coords({'threshold':threshold})
+    return out.assign_coords({'threshold':threshold,'n_sig':np.sum(mask)})
 
 def apply_threshold_PGS(estimates, G, thresholds = 10**np.linspace(np.log10(5e-8), 0,24)):
     output = [threshold_PGS(estimates, threshold, G) for threshold in thresholds]
@@ -821,14 +821,14 @@ class Pop_GWAS_Estimator(Statistic):
             component_index = phenotypes.xft.get_component_indexer()[{'vorigin_relative':-1,'component_name':'phenotype'}]
         else:
             component_index = self.component_index
-        n_sib = int(np.floor(self.training_fraction*(phenotypes.shape[0]//2)))
-        n_sub = int(np.floor(self.training_fraction*(self.n_sub)))
+        n_sib = int(np.floor(phenotypes.shape[0]//2))
+        n_sub = int(np.floor(self.n_sub))
+
         if n_sub > 0:
             n_sub = np.min([n_sib, n_sub])
-            subinds = np.sort(np.random.permutation(n_sib)[:n_sub])
         else:
             n_sub = n_sib
-            subinds = np.arange(n_sib)
+        subinds = np.sort(np.random.permutation(n_sib)[:floor(self.training_fraction*n_sub)])
         subinds = 2*subinds +np.random.choice([0,1], n_sub)
         Y = phenotypes.xft[None, component_index].data.astype(np.float32)[subinds, :]
         Y = np.ascontiguousarray(Y, dtype = np.float32)
@@ -930,14 +930,14 @@ class Sib_GWAS_Estimator(Statistic):
             component_index = phenotypes.xft.get_component_indexer()[{'vorigin_relative':-1,'component_name':'phenotype'}]
         else:
             component_index = self.component_index
-        n_sib = int(np.floor(self.training_fraction*(phenotypes.shape[0]//2)))
-        n_sub = int(np.floor(self.training_fraction*(self.n_sub)))
+        n_sib = int(np.floor(phenotypes.shape[0]//2))
+        n_sub = int(np.floor(self.n_sub))
+
         if n_sub > 0:
             n_sub = np.min([n_sib, n_sub])
-            subinds = np.sort(np.random.permutation(n_sib)[:n_sub])
         else:
             n_sub = n_sib
-            subinds = np.arange(n_sub)
+        subinds = np.sort(np.random.permutation(n_sib)[:floor(self.training_fraction*n_sub)])
 
         train_inds = np.concatenate([np.array(x) for x in zip(subinds,np.array(subinds)+1)])
         Y = phenotypes.xft[None, component_index].data.astype(np.float32)[train_inds,:]
