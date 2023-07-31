@@ -828,8 +828,9 @@ class Pop_GWAS_Estimator(Statistic):
             n_sub = np.min([n_sib, n_sub])
         else:
             n_sub = n_sib
-        subinds = np.sort(np.random.permutation(n_sib)[:floor(self.training_fraction*n_sub)])
-        subinds = 2*subinds +np.random.choice([0,1], n_sub)
+        NSUB = int(np.floor(self.training_fraction*n_sub))
+        subinds = np.sort(np.random.permutation(n_sib)[:NSUB])
+        subinds = 2*subinds +np.random.choice([0,1], NSUB)
         Y = phenotypes.xft[None, component_index].data.astype(np.float32)[subinds, :]
         Y = np.ascontiguousarray(Y, dtype = np.float32)
         G = haplotypes.data[subinds,0::2] + haplotypes.data[subinds,1::2]
@@ -937,7 +938,8 @@ class Sib_GWAS_Estimator(Statistic):
             n_sub = np.min([n_sib, n_sub])
         else:
             n_sub = n_sib
-        subinds = np.sort(np.random.permutation(n_sib)[:np.floor(self.training_fraction*n_sub)])
+        NSUB = int(np.floor(self.training_fraction*n_sub))
+        subinds = np.sort(np.random.permutation(n_sib)[:NSUB])
 
         train_inds = np.concatenate([np.array(x) for x in zip(subinds,np.array(subinds)+1)])
         Y = phenotypes.xft[None, component_index].data.astype(np.float32)[train_inds,:]
