@@ -134,7 +134,7 @@ class Simulation():
         self.phenotype_store = dict()
         self.mating_store = dict()
         self.results_store = dict()
-        self.pedigree = None  # TODO
+        self.pedigree = xft.ped.Pedigree(founder_haplotypes.xft.get_sample_indexer())
 
         #### generation specific cached properties ####
         # computed once per generation, deleted next generation
@@ -270,7 +270,7 @@ class Simulation():
         Update pedigree information (NOT IMPLEMENTED).
         """
         # warnings.warn('update_pedigree() not implemented')
-        pass  # TODO
+        self.pedigree._add_offspring(self.mating)
 
     # generation is immutable except through Simulation().increment_generation()
     @property

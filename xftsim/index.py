@@ -357,6 +357,28 @@ class SampleIndex(XftIndex):
     def __eq__(self, other):
         return np.all(self.frame == other.frame)
 
+    ## redefine to include generation
+    def __getitem__(self, arg): ## TODO: optimize to avoid reconstruction
+        frame = self.frame
+        ## subsetting for dict
+        if isinstance(arg, dict):
+            subset = np.full(frame.shape[0], fill_value=True, dtype=bool)
+            for (key,value) in arg.items():
+                if not key in frame.columns:
+                    raise KeyError
+                elif pd.api.types.is_list_like(value):            
+                    subset *= frame[key].isin(value).values
+                else:                 
+                    subset *= (frame[key].values == value)
+            return self.__class__(frame=frame.loc[subset,:], generation=self.generation)
+        else:
+            return self.__class__(frame=frame.loc[arg], generation=self.generation)
+
+
+    ## redefine to include generation
+    def iloc(self, key): ## TODO: optimize to avoid reconstruction
+        return self.__class__(frame=self.frame.iloc[key], generation=self.generation)
+
 
 class DiploidVariantIndex(XftIndex):
     """
