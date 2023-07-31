@@ -937,7 +937,7 @@ class Sib_GWAS_Estimator(Statistic):
             n_sub = np.min([n_sib, n_sub])
         else:
             n_sub = n_sib
-        subinds = np.sort(np.random.permutation(n_sib)[:floor(self.training_fraction*n_sub)])
+        subinds = np.sort(np.random.permutation(n_sib)[:np.floor(self.training_fraction*n_sub)])
 
         train_inds = np.concatenate([np.array(x) for x in zip(subinds,np.array(subinds)+1)])
         Y = phenotypes.xft[None, component_index].data.astype(np.float32)[train_inds,:]
