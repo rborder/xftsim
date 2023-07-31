@@ -26,6 +26,8 @@ git checkout dev
 pip -e . install
 ```
 
+To enable full functionality (i.e., automatic generation of causal diagrams), you must install [pygraphviz](https://pygraphviz.github.io).
+
 
 ## Getting started
 
