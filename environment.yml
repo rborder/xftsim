@@ -30,7 +30,7 @@ dependencies:
   - conda-content-trust=0.1.1=pyhd3eb1b0_0
   - conda-package-handling=1.7.3=py39h27cfd23_1
   - conda-souschef=2.2.3=py39h06a4308_0
-  - cryptography=36.0.0=py39h9ce1e76_0
+  - cryptography
   - debugpy=1.5.1=py39h295c915_0
   - decorator=5.1.1=pyhd3eb1b0_0
   - defusedxml=0.7.1=pyhd3eb1b0_0
