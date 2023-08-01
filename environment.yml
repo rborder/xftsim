@@ -282,7 +282,6 @@ dependencies:
     - kiwisolver==1.4.4
     - lazy-object-proxy==1.9.0
     - llvmlite==0.39.1
-    - localsolver==11.0.20220428
     - locket==1.0.0
     - lxml==4.9.2
     - markdown-it-py==2.2.0
