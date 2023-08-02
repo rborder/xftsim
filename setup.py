@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 setup(
     name='xftsim',
     
-    version='0.1.7',
+    version='0.1.9',
     
     author="Richard Border",
     
@@ -17,7 +17,7 @@ setup(
     "funcy",
     "networkx",
     "nptyping",
-    "numba",
+    "numba==0.56.4",
     "numpy",
     "pandas",
     "pandas_plink",

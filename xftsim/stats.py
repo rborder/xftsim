@@ -755,7 +755,9 @@ def apply_threshold_PGS(estimates, G, thresholds = 10**np.linspace(np.log10(5e-8
     return xr.concat(output,'threshold')
 
 def apply_threshold_PGS_all(gwas_results, G, minp=5e-8, maxp=1, nthresh=25):
+    bonferoni = .05/gwas_results.shape[0]
     thresholds = 10**np.linspace(np.log10(minp),np.log10(maxp),nthresh)
+    thresholds = np.sort(np.concatenate([thresholds,[.05,bonferoni]]))
     output = [apply_threshold_PGS(gwas_results.loc[:,:,comp], G,thresholds) for comp in gwas_results.component.values]
     return xr.concat(output,'component')
 
@@ -941,7 +943,7 @@ class Sib_GWAS_Estimator(Statistic):
         NSUB = int(np.floor(self.training_fraction*n_sub))
         subinds = np.sort(np.random.permutation(n_sib)[:NSUB])
 
-        train_inds = np.concatenate([np.array(x) for x in zip(subinds,np.array(subinds)+1)])
+        train_inds = np.concatenate([np.array(x) for x in zip(2*subinds,2*np.array(subinds)+1)])
         Y = phenotypes.xft[None, component_index].data.astype(np.float32)[train_inds,:]
         Y = Y[0::2,:] - Y[1::2,:]
         Y = np.ascontiguousarray(Y, dtype = np.float32)
