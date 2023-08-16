@@ -239,7 +239,7 @@ def save_haplotype_zarr(haplotypes: xr.DataArray,
     path : str
         The path to the Zarr store.
     **kwargs : dict
-        Additional keyword arguments to pass to haplotypes.to_dataset().to_zarr().
+        Additional keyword arguments to pass to xr.Dataset.to_zarr().
 
     Returns
     -------
