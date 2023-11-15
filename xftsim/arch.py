@@ -490,6 +490,8 @@ class AdditiveNoiseComponent(ArchitectureComponent):
         Variances of the noise components, by default None.
     sds : Iterable, optional
         Standard deviations of the noise components, by default None.
+    means : Iterable, optional
+        Means of the noise components, by default set to zero.
     phenotype_name : Iterable, optional
         Names of the phenotypes, by default None. Included for backwards compatability.
         Do not specify if providing component_index
@@ -575,6 +577,8 @@ class CorrelatedNoiseComponent(ArchitectureComponent):
     ----------
     vcov : ndarray, optional
         variance covariance matrix 
+    means : Iterable, optional
+        Means of the noise components, by default set to zero.
     phenotype_name : Iterable, optional
         Names of the phenotypes, by default None. Included for backwards compatability.
         Do not specify if providing component_index
