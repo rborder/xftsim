@@ -507,6 +507,7 @@ class AdditiveNoiseComponent(ArchitectureComponent):
     def __init__(self,
                  variances: Iterable = None,
                  sds: Iterable = None,
+                 means: Iterable = None,
                  phenotype_name: Iterable = None,
                  component_index: xft.index.ComponentIndex = None,
                  component_name: str = 'addNoise',
@@ -517,10 +518,13 @@ class AdditiveNoiseComponent(ArchitectureComponent):
             component_index is None), "Provide only phenotype_name or component_index"
         self.variances = variances
         self.sds = sds
+        self.means = means
         if variances is None:
             self.variances = np.array(sds)**2
         if sds is None:
             self.sds = np.array(variances)**.5
+        if means is None:
+            self.means = np.zeros_like(self.variances)
         input_cindex = xft.index.ComponentIndex.from_product([], [], [])
         if component_index is None:
             output_cindex = xft.index.ComponentIndex.from_product(
@@ -550,8 +554,8 @@ class AdditiveNoiseComponent(ArchitectureComponent):
             Phenotypes to be modified.
         """
         n = phenotypes.shape[0]
-        noise = np.hstack([np.random.normal(0, scale, (n, 1))
-                           for scale in self.sds])
+        noise = np.hstack([np.random.normal(location, scale, (n, 1))
+                           for (location,scale) in zip(self.means,self.sds)])
         phenotypes.loc[:, self.output_cindex.unique_identifier] = noise
 
     def _dependency_graph(self):
@@ -580,12 +584,16 @@ class CorrelatedNoiseComponent(ArchitectureComponent):
 
     def __init__(self,
                  vcov: NDArray = None,
+                 means: NDArray = None,
                  phenotype_name: Iterable = None,
                  component_index: xft.index.ComponentIndex = None,
                  component_name: str = 'corrNoise',
                  ) -> None:
 
         self.vcov = vcov
+        self.means = means
+        if means is None:
+            self.means = np.zeros(self.vcov.shape[0])
         assert (phenotype_name is None) ^ (
             component_index is None), "Provide only phenotype_name or component_index"
         input_cindex = xft.index.ComponentIndex.from_product([], [], [])
@@ -618,7 +626,7 @@ class CorrelatedNoiseComponent(ArchitectureComponent):
         """
         n = phenotypes.shape[0]
         k = self.output_cindex.k_total
-        noise = np.random.multivariate_normal(np.zeros(k), self.vcov, size = n)
+        noise = np.random.multivariate_normal(self.means, self.vcov, size = n)
         phenotypes.loc[:, self.output_cindex.unique_identifier] = noise
 
     def _dependency_graph(self):
