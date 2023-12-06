@@ -50,7 +50,7 @@ class AdditiveEffects:
         haploid variant of above
     beta_unscaled_unstandardized_diploid : NDArray
         Diploid effects scaled of unstandardized variants unscaled by number of causal variants
-        Multiply these against (0,1,2) raw genotypes and subtract offset to obtain phenotypes
+        Multiply these against (0,1,2) raw genotypes and add offset to obtain phenotypes
     beta_unscaled_unstandardized_haploid : NDArray
         Haploid variant of above
     beta_raw_diploid : NDArray
