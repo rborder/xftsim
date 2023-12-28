@@ -754,10 +754,15 @@ def apply_threshold_PGS(estimates, G, thresholds = 10**np.linspace(np.log10(5e-8
     output = [threshold_PGS(estimates, threshold, G) for threshold in thresholds]
     return xr.concat(output,'threshold')
 
-def apply_threshold_PGS_all(gwas_results, G, minp=5e-8, maxp=1, nthresh=25):
-    bonferoni = .05/gwas_results.shape[0]
-    thresholds = 10**np.linspace(np.log10(minp),np.log10(maxp),nthresh)
-    thresholds = np.sort(np.concatenate([thresholds,[.05,bonferoni]]))
+def apply_threshold_PGS_all(gwas_results, G, minp=5e-8, maxp=1, nthresh=25, alpha=.05,
+                            thresholds = None):
+    if thresholds is None:
+        bonferoni = alpha/gwas_results.shape[0]
+        if nthresh >= 2:
+            thresholds = 10**np.linspace(np.log10(minp),np.log10(maxp),nthresh)
+            thresholds = np.sort(np.concatenate([thresholds,[.05,bonferoni]]))
+        else:
+            thresholds = [alpha,bonferoni]
     output = [apply_threshold_PGS(gwas_results.loc[:,:,comp], G,thresholds) for comp in gwas_results.component.values]
     return xr.concat(output,'component')
 
