@@ -40,7 +40,7 @@ class Statistic:
     def __init__(self, 
                  estimator: Callable,
                  parser: Callable,
-                 name: str,
+                 name: str = None,
                  metadata: Dict = {},
                  filter_sample = False,
                  s_args: Iterable = None,
@@ -127,8 +127,9 @@ class SampleStatistics(Statistic):
                  prettify: bool = True,
                  metadata: Dict = {},
                  filter_sample = False,
+                 name: str = 'sample_statistics',
                  ):
-        self.name = 'sample_statistics'
+        self.name = name
         self.means = means
         self.variances = variances
         self.variance_components = variance_components
@@ -184,8 +185,9 @@ class MatingStatistics(Statistic):
                  full: bool = False,
                  metadata: Dict = {},
                  filter_sample = False,
+                 name: str = 'mating_statistics',
                  ):
-        self.name = 'mating_statistics'
+        self.name = name
         self._full = full
         self.component_index = component_index
         self.metadata = metadata
@@ -423,8 +425,9 @@ class HasemanElstonEstimator(Statistic):
                  dask: bool = True,
                  metadata: Dict = {},
                  filter_sample = False,
+                 name: str = 'HE_regression',
                  ):
-        self.name = 'HE_regression'
+        self.name = name
         self.component_index = component_index
         self.genetic_correlation = genetic_correlation
         self.randomized = randomized
@@ -674,9 +677,9 @@ class GWAS_Estimator(Statistic):
                  filter_sample = False,
                  std_X: bool = True,
                  std_Y: bool = True,
-                 # numba: bool = True,
+                 name: str = 'GWAS',
                  ):
-        self.name = 'GWAS'
+        self.name = name
         self.component_index = component_index
         self.metadata = metadata
         self.filter_sample = filter_sample
@@ -797,8 +800,9 @@ class Pop_GWAS_Estimator(Statistic):
                  PGS: bool = True,
                  PGS_sub_divisions: int = 50,
                  training_fraction: float = .8,
+                 name: str = 'pop_GWAS',
                  ):
-        self.name = 'pop_GWAS'
+        self.name = name
         self.component_index = component_index
         self.metadata = metadata
         self.std_X = std_X
@@ -908,8 +912,9 @@ class Sib_GWAS_Estimator(Statistic):
                  PGS:bool = True,
                  PGS_sub_divisions: int = 50,
                  training_fraction: float = .8,
+                 name: str = 'sib_GWAS',
                  ):
-        self.name = 'sib_GWAS'
+        self.name = name
         self.component_index = component_index
         self.metadata = metadata
         self.std_X = std_X
