@@ -18,7 +18,7 @@ class Config:
         """
         Initialize the Config object with default settings.
         """
-        self.nthreads = 4
+        self.nthreads = 1
         self.print_level = 2
         self.print_durations_threshold = 0. #np.inf
 
