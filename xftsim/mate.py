@@ -998,8 +998,7 @@ class BatchedMatingRegime(MatingRegime):
 
 
 
-
-def _solve_qap_ls(Y, Z, R, nb_threads=6, time_limit=30, tolerance=1e-5, 
+def _solve_qap_ls(Y, Z, R, nb_threads=6, time_limit=30, tolerance=.001, 
                   verbosity=1, time_between_displays=1, termination_interval=15):
     """
     Solves the Quadratic Assignment Problem (QAP) using the LocalSolver optimization solver.
@@ -1026,7 +1025,6 @@ def _solve_qap_ls(Y, Z, R, nb_threads=6, time_limit=30, tolerance=1e-5,
     P : numpy.ndarray
         A permutation matrix.
     """
-    import localsolver
     class TerminateSolver:
         def __init__(self, interval: int = 20):
             self.last_best_value = 100.0
@@ -1046,6 +1044,14 @@ def _solve_qap_ls(Y, Z, R, nb_threads=6, time_limit=30, tolerance=1e-5,
     # for later use as initial value
     tmp = np.argsort(np.apply_along_axis(np.mean, 1, Y))[
         np.argsort(np.argsort(np.apply_along_axis(np.mean, 1, Z)))]
+    const = np.trace(R @ R.T)
+    # flows
+    YY = Y @ Y.T / n
+    # distance
+    ZZ = Z @ Z.T / n
+    # cost
+    W = Y @ R @ Z.T / n
+
     with localsolver.LocalSolver() as ls:
         cb = TerminateSolver(int(termination_interval))
         ls.add_callback(localsolver.LSCallbackType.TIME_TICKED, cb.callback)
@@ -1055,24 +1061,16 @@ def _solve_qap_ls(Y, Z, R, nb_threads=6, time_limit=30, tolerance=1e-5,
         ls.param.set_time_between_displays(time_between_displays)
 
         model = ls.model
-        # flows
-        YY = Y @ Y.T / (n - 1)
         array_YY = model.array(model.array(YY[i, :]) for i in range(n))
-        # distance
-        ZZ = Z @ Z.T / (n - 1)
-        # cost
-        W = Y @ R @ Z.T / (n - 1)
         array_W = model.array(model.array(W[i, :]) for i in range(n))
         # permutation
         p = model.list(n)
         model.constraint(model.eq(model.count(p), n))
         # objective
-        # const = np.trace(W @ W.T)
-        const = np.trace(R @ R.T)
         qobj = model.sum(
             model.at(array_YY, p[i], p[j]) * ZZ[i, j] for j in range(n) for i in range(n))
         lobj = model.sum(model.at(array_W, p[i], i) for i in range(n))
-        obj = qobj - 2 * lobj + const
+        obj = (qobj - 2 * lobj + const)**.5
         model.minimize(obj)
         model.close()
         # set initial value of permutation
@@ -1086,7 +1084,8 @@ def _solve_qap_ls(Y, Z, R, nb_threads=6, time_limit=30, tolerance=1e-5,
         # solution
         P = np.array([p.value.get(i) for i in range(n)])
 
-        return P
+        return ls,P
+
 
 ##TODO add seed
 class GeneralAssortativeMatingRegime(MatingRegime):
