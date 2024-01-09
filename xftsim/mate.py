@@ -991,9 +991,12 @@ class BatchedMatingRegime(MatingRegime):
         batches, num_batches = self.batch(haplotypes,
                                           phenotypes,
                                           control)
-        assignments = [self.regime.mate(haplotypes[batch],
-                                        phenotypes[batch],
-                                        control) for batch in batches]
+        assignments = []
+        for tt,batch in enumerate(batches):
+            print(f"Batch {tt}")
+            assignments += [self.regime.mate(haplotypes[batch],
+                                             phenotypes[batch],
+                                             control)]
         return MateAssignment.reduce_merge(assignments)
 
 
