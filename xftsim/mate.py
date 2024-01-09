@@ -1025,6 +1025,7 @@ def _solve_qap_ls(Y, Z, R, nb_threads=6, time_limit=30, tolerance=.001,
     P : numpy.ndarray
         A permutation matrix.
     """
+    import localsolver
     class TerminateSolver:
         def __init__(self, interval: int = 20):
             self.last_best_value = 100.0
