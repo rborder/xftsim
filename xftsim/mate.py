@@ -1088,7 +1088,7 @@ def _solve_qap_ls(Y, Z, R, nb_threads=6, time_limit=30, tolerance=.001,
         # solution
         P = np.array([p.value.get(i) for i in range(n)])
 
-        return ls,P
+        return P
 
 
 ##TODO add seed
