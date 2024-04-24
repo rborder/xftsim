@@ -40,7 +40,7 @@ class Statistic:
     def __init__(self, 
                  estimator: Callable,
                  parser: Callable,
-                 name: str,
+                 name: str = None,
                  metadata: Dict = {},
                  filter_sample = False,
                  s_args: Iterable = None,
@@ -127,8 +127,9 @@ class SampleStatistics(Statistic):
                  prettify: bool = True,
                  metadata: Dict = {},
                  filter_sample = False,
+                 name: str = 'sample_statistics',
                  ):
-        self.name = 'sample_statistics'
+        self.name = name
         self.means = means
         self.variances = variances
         self.variance_components = variance_components
@@ -184,8 +185,9 @@ class MatingStatistics(Statistic):
                  full: bool = False,
                  metadata: Dict = {},
                  filter_sample = False,
+                 name: str = 'mating_statistics',
                  ):
-        self.name = 'mating_statistics'
+        self.name = name
         self._full = full
         self.component_index = component_index
         self.metadata = metadata
@@ -423,8 +425,9 @@ class HasemanElstonEstimator(Statistic):
                  dask: bool = True,
                  metadata: Dict = {},
                  filter_sample = False,
+                 name: str = 'HE_regression',
                  ):
-        self.name = 'HE_regression'
+        self.name = name
         self.component_index = component_index
         self.genetic_correlation = genetic_correlation
         self.randomized = randomized
@@ -464,6 +467,93 @@ class HasemanElstonEstimator(Statistic):
         if self.genetic_correlation:
             output['corr_HE'] = xft.utils.cov2cor(output['cov_HE'])
         return output
+
+
+
+
+  
+class HasemanElstonEstimatorSibship(Statistic):
+    """
+    Estimate Haseman-Elston regression for the given simulation.
+
+    Attributes
+    ----------
+    component_index : xft.index.ComponentIndex, optional
+        Index of the component for which the statistics are calculated.
+        If not provided, calculate statistics for all components.
+    genetic_correlation : bool
+        If True, calculate and return the genetic correlation matrix.
+    randomized : bool
+        If True, use a randomized trace estimator.
+    prettify : bool
+        If True, prettify the output by converting it to a pandas DataFrame.
+    n_probe : int
+        The number of random probes for trace estimation.
+    dask : bool
+        If True, use dask for calculations.
+
+    Methods
+    -------
+    estimator(sim: xft.sim.Simulation) -> Dict
+        Estimate and return the Haseman-Elston regression for the given simulation.
+    """
+    def __init__(self,
+                 component_index: xft.index.ComponentIndex = None,
+                 genetic_correlation: bool = True,
+                 randomized: bool = True,
+                 prettify: bool = True,
+                 n_probe: int = 100,
+                 dask: bool = True,
+                 metadata: Dict = {},
+                 filter_sample = False,
+                 name: str = 'HE_regression_sibship',
+                 ):
+        self.name = name
+        self.component_index = component_index
+        self.genetic_correlation = genetic_correlation
+        self.randomized = randomized
+        self.prettify = prettify
+        self.n_probe = n_probe
+        self.dask = dask
+        self.metadata = metadata
+        self.filter_sample = filter_sample
+        self.s_args = ['phenotypes', 'current_std_phenotypes', 'current_std_genotypes']
+        self.parser = Statistic.null_parser
+
+    @xft.utils.profiled(level=2, message = "haseman elston estimator sibship")
+    def estimator(self, 
+                  phenotypes,
+                  current_std_phenotypes,
+                  current_std_genotypes, ) -> Dict:
+        ## look for "phenotype" components if component_index not provided
+        if self.component_index is None:
+            # pheno_cols= sim.phenotypes.component_name.values[sim.phenotypes.component_name.str.contains('phenotype')]
+            # component_index = sim.phenotypes.xft.get_component_indexer()[dict(component_name=pheno_cols)]
+            component_index = phenotypes.xft.get_component_indexer()[{'vorigin_relative':-1,'component_name':'phenotype'}]
+        else:
+            component_index = self.component_index
+        # if self.filter_sample:
+            # Y = sim.current_std_phenotypes_filtered.xft[None, component_index].xft.as_pd()
+            # G = sim.current_std_genotypes_filtered
+        # else:
+        Y = current_std_phenotypes.xft[None, component_index].xft.as_pd()
+        Y = Y.iloc[0::2,:]-Y.iloc[1::2,:].values
+        ys=xft.utils.standardize_array(Y)
+        for i in range(ys.shape[1]):
+            Y.iloc[:,i] = ys[:,i]
+        G = xft.utils.standardize_array(current_std_genotypes[0::2,:]-current_std_genotypes[1::2,:])
+        he_out = haseman_elston(G = G,
+                                Y = Y,
+                                n_probe = self.n_probe,
+                                dask = self.dask,
+                                )
+        output = dict()
+        output['cov_HEsib'] = pd.DataFrame(he_out, index = Y.columns, columns = Y.columns)
+        if self.genetic_correlation:
+            output['corr_HEsib'] = xft.utils.cov2cor(output['cov_HEsib'])
+        return output
+
+
 
 
 
@@ -547,7 +637,7 @@ def _mv_vec_linear_regression_with_intercept_nb(X: NDArray,
                                                 Y: NDArray,
                                                 std_X: bool = True,
                                                 std_Y: bool = True,
-                                                ) -> NDArray:
+                                                output_dtype=np.float64) -> NDArray:
     """
     Numba implementation of simple linear regression vectorized over predictors
     and outcomes. 
@@ -573,7 +663,7 @@ def _mv_vec_linear_regression_with_intercept_nb(X: NDArray,
     #     for j in np.arange(X.shape[1]):
     #         output[j,:, k] = _linear_regression_with_intercept_nb(X[:,j],y)
     # return output
-    output = np.empty((X.shape[1], 2, Y.shape[1]), dtype=X.dtype)
+    output = np.empty((X.shape[1], 2, Y.shape[1]), dtype=output_dtype)
     for k in nb.prange(Y.shape[1]):
         y = Y[:,k].ravel()
         y = y.reshape((y.shape[0], 1))
@@ -674,9 +764,9 @@ class GWAS_Estimator(Statistic):
                  filter_sample = False,
                  std_X: bool = True,
                  std_Y: bool = True,
-                 # numba: bool = True,
+                 name: str = 'GWAS',
                  ):
-        self.name = 'GWAS'
+        self.name = name
         self.component_index = component_index
         self.metadata = metadata
         self.filter_sample = filter_sample
@@ -754,10 +844,15 @@ def apply_threshold_PGS(estimates, G, thresholds = 10**np.linspace(np.log10(5e-8
     output = [threshold_PGS(estimates, threshold, G) for threshold in thresholds]
     return xr.concat(output,'threshold')
 
-def apply_threshold_PGS_all(gwas_results, G, minp=5e-8, maxp=1, nthresh=25):
-    bonferoni = .05/gwas_results.shape[0]
-    thresholds = 10**np.linspace(np.log10(minp),np.log10(maxp),nthresh)
-    thresholds = np.sort(np.concatenate([thresholds,[.05,bonferoni]]))
+def apply_threshold_PGS_all(gwas_results, G, minp=5e-8, maxp=1, nthresh=25, alpha=.05,
+                            thresholds = None):
+    if thresholds is None:
+        bonferoni = alpha/gwas_results.shape[0]
+        if nthresh >= 2:
+            thresholds = 10**np.linspace(np.log10(minp),np.log10(maxp),nthresh)
+            thresholds = np.sort(np.concatenate([thresholds,[.05,bonferoni]]))
+        else:
+            thresholds = [alpha,bonferoni]
     output = [apply_threshold_PGS(gwas_results.loc[:,:,comp], G,thresholds) for comp in gwas_results.component.values]
     return xr.concat(output,'component')
 
@@ -792,8 +887,9 @@ class Pop_GWAS_Estimator(Statistic):
                  PGS: bool = True,
                  PGS_sub_divisions: int = 50,
                  training_fraction: float = .8,
+                 name: str = 'pop_GWAS',
                  ):
-        self.name = 'pop_GWAS'
+        self.name = name
         self.component_index = component_index
         self.metadata = metadata
         self.std_X = std_X
@@ -903,8 +999,9 @@ class Sib_GWAS_Estimator(Statistic):
                  PGS:bool = True,
                  PGS_sub_divisions: int = 50,
                  training_fraction: float = .8,
+                 name: str = 'sib_GWAS',
                  ):
-        self.name = 'sib_GWAS'
+        self.name = name
         self.component_index = component_index
         self.metadata = metadata
         self.std_X = std_X
