@@ -764,9 +764,9 @@ class HasemanElstonEstimatorSibship(Statistic):
                                 dask = self.dask,
                                 )
         output = dict()
-        output['cov_HEsib'] = pd.DataFrame(he_out, index = Y.columns, columns = Y.columns)
+        output['cov_HE'] = pd.DataFrame(he_out, index = Y.columns, columns = Y.columns)
         if self.genetic_correlation:
-            output['corr_HEsib'] = xft.utils.cov2cor(output['cov_HEsib'])
+            output['corr_HE'] = xft.utils.cov2cor(output['cov_HE'])
         return output
 
 
