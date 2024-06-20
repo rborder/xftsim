@@ -14,6 +14,223 @@ from functools import cached_property
 import dask.array as da
 
 
+
+class SampleFilter:
+    """
+    Base class for sample filters for estimators
+
+    Attributes
+    ----------
+    name : str
+        The name of the filter.
+
+    Methods
+    -------
+    filter(phenotypes) -> np.ndarray(int):
+        Generate indices of rows to sample
+    """
+    def __init__(self, name: str = None):
+        self.name = name
+
+    def filter(self, phenotypes):
+        pass
+
+class PassFilter(SampleFilter):
+    """
+    Default non-filter filter for estimators
+
+    Methods
+    -------
+    filter(sim: xft.sim.Simulation) -> np.ndarray(int):
+        Returns all sample indices
+    """
+    def __init__(self, name: str = 'pass'):
+        self.name = name
+
+    def filter(self, phenotypes):
+        subinds = np.arange(phenotypes.xft.n)
+        return subinds
+
+class UnrelatedSampleFilter(SampleFilter):
+    """
+    Take a sample of unrelated individuals
+
+    Attributes
+    ----------
+    nsub : int
+        The number of individuals to take.
+
+    Methods
+    -------
+    filter(sim: xft.sim.Simulation) -> np.ndarray(int):
+        Generate indices of rows to sample
+    """
+    def __init__(self, nsub: int, name: str = 'UnrelatedSampleFilter'):
+        self.name = name
+        self.nsub = nsub
+
+    def filter(self, phenotypes):
+        sind = phenotypes.xft.get_sample_indexer()
+        subinds = xft.utils.hierarchical_subsample(a1=sind.fid, a2=sind.iid, 
+                                                   n1=self.nsub, n2=1)
+        return subinds
+
+class SibpairSampleFilter(SampleFilter):
+    """
+    Take a sample of unrelated individuals
+
+    Attributes
+    ----------
+    nsub : int
+        The number of sibpairs to take.
+
+    Methods
+    -------
+    filter(sim: xft.sim.Simulation) -> np.ndarray(int):
+        Generate indices of rows to sample
+    """
+    def __init__(self, nsub: int, name: str = 'SibpairSampleFilter'):
+        self.name = name
+        self.nsub = nsub
+
+    def filter(self, phenotypes):
+        sind = phenotypes.xft.get_sample_indexer()
+        subinds = xft.utils.hierarchical_subsample(a1=sind.fid, a2=sind.iid, 
+                                                   n1=self.nsub, n2=2)
+        return subinds
+
+
+
+class UnrelatedAscertainmentFilter(SampleFilter):
+    """
+    Take a sample of unrelated individuals
+
+    Attributes
+    ----------
+    nsub : int
+        The number of individuals to take.
+
+
+    Methods
+    -------
+    filter(sim: xft.sim.Simulation) -> np.ndarray(int):
+        Generate indices of rows to sample
+    """
+    def __init__(self, nsub: int, 
+                 component_index: xft.index.ComponentIndex = None,
+                 coef: np.ndarray = None,
+                 coef_noise: float = 0,
+                 standardize: bool = True,
+                 name: str = 'UnrelatedAscertainmentFilter',
+                 ):
+        self.name = name
+        self.nsub = nsub
+        self.component_index = component_index
+        self.coef = coef
+        self.coef_noise = coef_noise
+        self.standardize = standardize
+        self.polarity = -1
+
+    def filter(self, phenotypes):
+        sind = phenotypes.xft.get_sample_indexer()
+        if self.component_index is None:
+            component_index = phenotypes.xft.get_component_indexer()[{'vorigin_relative':-1,'component_name':'phenotype'}]
+        else:
+            component_index = self.component_index
+        if self.coef is None:
+            coef = self.polarity * np.ones(component_index.k_total)
+        else:
+            coef = self.polarity * self.coef
+
+        unrel_inds = xft.utils.hierarchical_subsample(a1=sind.fid, a2=sind.iid, 
+                                                      n1=len(set(sind.fid)), n2=1)
+
+        pheno_sub = phenotypes[unrel_inds, :].xft[None,component_index].data
+        if self.standardize:
+            pheno_sub=xft.utils.standardize_array(pheno_sub)
+        ascertainment_score = pheno_sub @ coef 
+        ascertainment_score += np.random.randn(pheno_sub.shape[0]) * self.coef_noise
+        ascertained_inds = unrel_inds[np.argsort(ascertainment_score)]
+        nsub = np.min([self.nsub, ascertained_inds.shape[0]])
+        subinds = ascertained_inds[:nsub]
+        return subinds
+
+
+
+
+class SibpairAscertainmentFilter(SampleFilter):
+    """
+    Take a sample of unrelated individuals
+
+    Attributes
+    ----------
+    nsub : int
+        The number of individuals to take.
+
+
+    Methods
+    -------
+    filter(sim: xft.sim.Simulation) -> np.ndarray(int):
+        Generate indices of rows to sample
+    """
+    def __init__(self, nsub: int, 
+                 component_index: xft.index.ComponentIndex = None,
+                 coef: np.ndarray = None,
+                 coef_noise: float = 0,
+                 standardize: bool = True,
+                 name: str = 'UnrelatedAscertainmentFilter',
+                 combine: str = 'mean',
+                 ):
+        self.name = name
+        self.nsub = nsub
+        self.component_index = component_index
+        self.coef = coef
+        self.coef_noise = coef_noise
+        self.standardize = standardize
+        self.combine = combine
+        self.polarity = -1
+
+    def score(self, phenotypes):
+        if self.coef is None:
+            coef = 1 * np.ones(phenotypes.shape[1])
+        else:
+            coef = self.coef
+        if self.standardize:
+            pheno_sub=xft.utils.standardize_array(phenotypes)
+        if self.combine == 'mean':
+            pheno_sum = (pheno_sub[0::2,:] + pheno_sub[1::2,:])/2
+            ascertainment_score = pheno_sum @ coef 
+        elif self.combine == 'max':
+            s1 = pheno_sub[0::2,:] @ coef
+            s2 = pheno_sub[1::2,:] @ coef
+            ss = np.hstack([s1.reshape((s1.shape[0],1)),s2.reshape((s2.shape[0],1))])
+            ascertainment_score = np.max(ss,1)
+        elif self.combine == 'min':
+            s1 = pheno_sub[0::2,:] @ coef
+            s2 = pheno_sub[1::2,:] @ coef
+            ss = np.hstack([s1.reshape((s1.shape[0],1)),s2.reshape((s2.shape[0],1))])
+            ascertainment_score = np.min(ss,1)
+        ascertainment_score += np.random.randn(ascertainment_score.shape[0]) * self.coef_noise
+        return ascertainment_score
+
+    def filter(self, phenotypes):
+        if self.component_index is None:
+            component_index = phenotypes.xft.get_component_indexer()[{'vorigin_relative':-1,'component_name':'phenotype'}]
+        else:
+            component_index = self.component_index
+
+        sind = phenotypes.xft.get_sample_indexer()
+        sib_inds = xft.utils.hierarchical_subsample(a1=sind.fid, a2=sind.iid, 
+                                                    n1=sind.n_fam, n2=2) ## fragile, breaks with singletons
+        pheno_sub = phenotypes[sib_inds, :].xft[None,component_index].data
+
+        ascertainment_score = self.polarity*self.score(pheno_sub)
+        ascertained_inds0 = np.argsort(ascertainment_score)
+        ascertained_inds = sib_inds[2*np.repeat(ascertained_inds0,2) +np.tile([0,1],ascertained_inds0.shape[0])]
+        nsub = np.min([self.nsub, ascertained_inds.shape[0]])
+        subinds = ascertained_inds[:(nsub*2)]
+        return subinds
+
 class Statistic:
     """
     Base class for defining statistic estimators.
@@ -26,8 +243,8 @@ class Statistic:
         The function that estimates the statistic.
     metadata : Dict
         Any additional metadata
-    filter_sample : bool
-        Apply global filter prior to estimation?
+    filter_sample : xft.stats.SampleFilter
+        Apply global filter prior to estimation
 
     Methods
     -------
@@ -42,13 +259,13 @@ class Statistic:
                  parser: Callable,
                  name: str = None,
                  metadata: Dict = {},
-                 filter_sample = False,
+                 sample_filter = PassFilter(),
                  s_args: Iterable = None,
                  ):
         self.name = name
         self.estimator = estimator
         self.parser = parser
-        self.filter_sample = filter_sample
+        self.sample_filter = sample_filter
         self.s_args = s_args
 
     def update_results(self, sim: xft.sim.Simulation, results: object) -> None:
@@ -126,7 +343,7 @@ class SampleStatistics(Statistic):
                  corr: bool = True,
                  prettify: bool = True,
                  metadata: Dict = {},
-                 filter_sample = False,
+                 sample_filter = PassFilter(),
                  name: str = 'sample_statistics',
                  ):
         self.name = name
@@ -137,17 +354,15 @@ class SampleStatistics(Statistic):
         self.corr = corr
         self.prettify = prettify
         self.metadata = metadata
-        self.filter_sample = filter_sample
+        self.sample_filter = sample_filter
         self.s_args = ['phenotypes']
         self.parser = Statistic.null_parser
 
     @xft.utils.profiled(level=2, message = "sample statistics")
     def estimator(self, phenotypes: xr.DataArray) -> Dict:
         output = dict()
-        # if self.filter_sample:
-            # pheno_df = sim.phenotypes_filtered.xft.as_pd(prettify=self.prettify)
-        # else:
         pheno_df = phenotypes.xft.as_pd(prettify=self.prettify)
+        pheno_df = pheno_df.iloc[self.sample_filter.filter(phenotypes),:]
         h = [g.var(axis=1) for _, g in pheno_df.T.groupby(['phenotype_name','vorigin_relative'])]
         mm = [g.mean(axis=1) for _, g in pheno_df.T.groupby(['phenotype_name','vorigin_relative'])]
         if self.means:
@@ -184,14 +399,14 @@ class MatingStatistics(Statistic):
                  component_index: xft.index.ComponentIndex = None,
                  full: bool = False,
                  metadata: Dict = {},
-                 filter_sample = False,
+                 sample_filter = PassFilter(),
                  name: str = 'mating_statistics',
                  ):
         self.name = name
         self._full = full
         self.component_index = component_index
         self.metadata = metadata
-        self.filter_sample = filter_sample
+        self.sample_filter = sample_filter
         self.s_args = ['mating','phenotypes']
         self.parser = Statistic.null_parser
 
@@ -424,7 +639,7 @@ class HasemanElstonEstimator(Statistic):
                  n_probe: int = 100,
                  dask: bool = True,
                  metadata: Dict = {},
-                 filter_sample = False,
+                 sample_filter = PassFilter(),
                  name: str = 'HE_regression',
                  ):
         self.name = name
@@ -435,15 +650,14 @@ class HasemanElstonEstimator(Statistic):
         self.n_probe = n_probe
         self.dask = dask
         self.metadata = metadata
-        self.filter_sample = filter_sample
-        self.s_args = ['phenotypes', 'current_std_phenotypes', 'current_std_genotypes']
+        self.sample_filter = sample_filter
+        self.s_args = ['phenotypes', 'haplotypes']
         self.parser = Statistic.null_parser
 
     @xft.utils.profiled(level=2, message = "haseman elston estimator")
     def estimator(self, 
                   phenotypes,
-                  current_std_phenotypes,
-                  current_std_genotypes, ) -> Dict:
+                  haplotypes) -> Dict:
         ## look for "phenotype" components if component_index not provided
         if self.component_index is None:
             # pheno_cols= sim.phenotypes.component_name.values[sim.phenotypes.component_name.str.contains('phenotype')]
@@ -451,12 +665,10 @@ class HasemanElstonEstimator(Statistic):
             component_index = phenotypes.xft.get_component_indexer()[{'vorigin_relative':-1,'component_name':'phenotype'}]
         else:
             component_index = self.component_index
-        # if self.filter_sample:
-            # Y = sim.current_std_phenotypes_filtered.xft[None, component_index].xft.as_pd()
-            # G = sim.current_std_genotypes_filtered
-        # else:
-        Y = current_std_phenotypes.xft[None, component_index].xft.as_pd()
-        G = current_std_genotypes
+
+        subinds = self.sample_filter.filter(phenotypes)
+        Y = phenotypes.xft[None, component_index][subinds,:].xft.standardize().xft.as_pd()
+        G = haplotypes[subinds,:].xft.to_diploid_standardized()
         he_out = haseman_elston(G = G,
                                 Y = Y,
                                 n_probe = self.n_probe,
@@ -505,7 +717,7 @@ class HasemanElstonEstimatorSibship(Statistic):
                  n_probe: int = 100,
                  dask: bool = True,
                  metadata: Dict = {},
-                 filter_sample = False,
+                 sample_filter = PassFilter(),
                  name: str = 'HE_regression_sibship',
                  ):
         self.name = name
@@ -516,15 +728,15 @@ class HasemanElstonEstimatorSibship(Statistic):
         self.n_probe = n_probe
         self.dask = dask
         self.metadata = metadata
-        self.filter_sample = filter_sample
-        self.s_args = ['phenotypes', 'current_std_phenotypes', 'current_std_genotypes']
+        self.sample_filter = sample_filter
+        self.s_args = ['phenotypes', 'haplotypes']
         self.parser = Statistic.null_parser
 
     @xft.utils.profiled(level=2, message = "haseman elston estimator sibship")
     def estimator(self, 
                   phenotypes,
-                  current_std_phenotypes,
-                  current_std_genotypes, ) -> Dict:
+                  haplotypes,
+                  ) -> Dict:
         ## look for "phenotype" components if component_index not provided
         if self.component_index is None:
             # pheno_cols= sim.phenotypes.component_name.values[sim.phenotypes.component_name.str.contains('phenotype')]
@@ -536,12 +748,16 @@ class HasemanElstonEstimatorSibship(Statistic):
             # Y = sim.current_std_phenotypes_filtered.xft[None, component_index].xft.as_pd()
             # G = sim.current_std_genotypes_filtered
         # else:
-        Y = current_std_phenotypes.xft[None, component_index].xft.as_pd()
+
+        subinds = self.sample_filter.filter(phenotypes)
+        Y = phenotypes.xft[None, component_index][subinds,:].xft.standardize().xft.as_pd()
+        G = haplotypes[subinds,:].xft.to_diploid_standardized()
+
         Y = Y.iloc[0::2,:]-Y.iloc[1::2,:].values
         ys=xft.utils.standardize_array(Y)
         for i in range(ys.shape[1]):
             Y.iloc[:,i] = ys[:,i]
-        G = xft.utils.standardize_array(current_std_genotypes[0::2,:]-current_std_genotypes[1::2,:])
+        G = xft.utils.standardize_array(G[0::2,:]-G[1::2,:])
         he_out = haseman_elston(G = G,
                                 Y = Y,
                                 n_probe = self.n_probe,
@@ -743,6 +959,8 @@ def _mv_gwas_nb(X: NDArray,
 
 class GWAS_Estimator(Statistic):
     """
+
+    BROKEN
     Perform linear assocation studies for the given simulation.
 
     When called within a Simulation, will add to Simulation.results['GWAS']
@@ -761,7 +979,7 @@ class GWAS_Estimator(Statistic):
     def __init__(self,
                  component_index: xft.index.ComponentIndex = None,
                  metadata: Dict = {},
-                 filter_sample = False,
+                 sample_filter = PassFilter(),
                  std_X: bool = True,
                  std_Y: bool = True,
                  name: str = 'GWAS',
@@ -769,17 +987,15 @@ class GWAS_Estimator(Statistic):
         self.name = name
         self.component_index = component_index
         self.metadata = metadata
-        self.filter_sample = filter_sample
+        self.sample_filter = sample_filter
         self.std_X = std_X
         self.std_Y = std_Y
-        self.s_args = ['phenotypes', 'current_std_phenotypes', 'current_std_genotypes', 'haplotypes']
+        self.s_args = ['phenotypes', 'haplotypes']
         self.parser = Statistic.null_parser
     # self.numba = numba
 
     @xft.utils.profiled(level=2, message = "GWAS estimator")
     def estimator(self, phenotypes,
-                  current_std_phenotypes, 
-                  current_std_genotypes,
                   haplotypes,
                   ) -> Dict:
         ## look for "phenotype" components if component_index not provided
@@ -793,8 +1009,13 @@ class GWAS_Estimator(Statistic):
             # Y = sim.current_std_phenotypes.xft[None, component_index].data.astype(np.float32)
             # G = sim.current_std_genotypes
         # else:
-        Y = current_std_phenotypes_filtered.xft[None, component_index].data.astype(np.float32)
-        G = current_std_genotypes_filtered
+
+        subinds = self.sample_filter.filter(phenotypes)
+
+        Y = phenotypes.xft[None, component_index][subinds,:].xft.standardize()
+
+        G = haplotypes[subinds,:].xft.to_diploid_standardized()
+
         sum_stats = _mv_gwas_nb(G,Y, std_X=self.std_X, std_Y=self.std_Y)
         coord_dict = component_index.coord_dict.copy()
         coord_dict.update(haplotypes.xft.get_variant_indexer().to_diploid().coord_dict)
@@ -888,6 +1109,7 @@ class Pop_GWAS_Estimator(Statistic):
                  PGS_sub_divisions: int = 50,
                  training_fraction: float = .8,
                  name: str = 'pop_GWAS',
+                 sample_filter=SibpairAscertainmentFilter(nsub=100),
                  ):
         self.name = name
         self.component_index = component_index
@@ -897,9 +1119,11 @@ class Pop_GWAS_Estimator(Statistic):
         self.n_sub = n_sub
         self.PGS = PGS
         self.PGS_sub_divisions =PGS_sub_divisions
-        self.s_args = ['phenotypes', 'current_std_phenotypes', 'current_std_genotypes', 'haplotypes']
+        self.s_args = ['phenotypes', 'haplotypes']
         self.parser = Statistic.null_parser
         self.training_fraction = training_fraction
+        self.sample_filter = sample_filter
+
         if not assume_pairs:
             raise NotImplementedError()
         else:
@@ -908,27 +1132,20 @@ class Pop_GWAS_Estimator(Statistic):
     @xft.utils.profiled(level=2, message = "pop GWAS estimator")
     def estimator(self, 
                   phenotypes,
-                  current_std_phenotypes,
-                  current_std_genotypes,
                   haplotypes,
                   ) -> Dict:
-        ## look for "phenotype" components if component_index not provided
         if self.component_index is None:
-            # pheno_cols= sim.phenotypes.component_name.values[sim.phenotypes.component_name.str.contains('phenotype')]
-            # component_index = sim.phenotypes.xft.get_component_indexer()[dict(component_name=pheno_cols)]
             component_index = phenotypes.xft.get_component_indexer()[{'vorigin_relative':-1,'component_name':'phenotype'}]
         else:
             component_index = self.component_index
         n_sib = int(np.floor(phenotypes.shape[0]//2))
-        n_sub = int(np.floor(self.n_sub))
-
-        if n_sub > 0:
-            n_sub = np.min([n_sib, n_sub])
-        else:
-            n_sub = n_sib
+        # n_sub = np.min([self.sample_filter.nsub, n_sib])
+        n_sub = self.sample_filter.nsub
         NSUB = int(np.floor(self.training_fraction*n_sub))
-        subinds = np.sort(np.random.permutation(n_sib)[:NSUB])
-        subinds = 2*subinds +np.random.choice([0,1], NSUB)
+        self.sample_filter.nsub=NSUB
+
+        subinds = self.sample_filter.filter(phenotypes)
+
         Y = phenotypes.xft[None, component_index].data.astype(np.float32)[subinds, :]
         Y = np.ascontiguousarray(Y, dtype = np.float32)
         G = haplotypes.data[subinds,0::2] + haplotypes.data[subinds,1::2]
@@ -1000,10 +1217,12 @@ class Sib_GWAS_Estimator(Statistic):
                  PGS_sub_divisions: int = 50,
                  training_fraction: float = .8,
                  name: str = 'sib_GWAS',
+                 sample_filter = SibpairSampleFilter(nsub=0),
                  ):
         self.name = name
         self.component_index = component_index
         self.metadata = metadata
+        self.sample_filter = sample_filter
         self.std_X = std_X
         self.std_Y = std_Y
         self.n_sub = n_sub
@@ -1037,10 +1256,13 @@ class Sib_GWAS_Estimator(Statistic):
             n_sub = np.min([n_sib, n_sub])
         else:
             n_sub = n_sib
+        # NSUB = int(np.floor(self.training_fraction*n_sub))
+        # self.sample_filter.nsub=NSUB
+        n_sub = self.sample_filter.nsub
         NSUB = int(np.floor(self.training_fraction*n_sub))
-        subinds = np.sort(np.random.permutation(n_sib)[:NSUB])
+        self.sample_filter.nsub=NSUB
+        train_inds = self.sample_filter.filter(phenotypes)
 
-        train_inds = np.concatenate([np.array(x) for x in zip(2*subinds,2*np.array(subinds)+1)])
         Y = phenotypes.xft[None, component_index].data.astype(np.float32)[train_inds,:]
         Y = Y[0::2,:] - Y[1::2,:]
         Y = np.ascontiguousarray(Y, dtype = np.float32)
