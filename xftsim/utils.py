@@ -917,58 +917,10 @@ def print_tree(x, depth=0):
 
 
 
-def hierarchical_subsample_old(a1, a2, n1, n2):
-    """
-    Selects indices of random elements from a2 corresponding to random elements from a1.
-
-    Parameters:
-    a1 (list): A list of elements where each element can be repeated.
-    a2 (list): A list of elements of the same length as a1.
-    n1 (int): The number of unique random elements to select from a1.
-    n2 (int): The number of random elements to select from a2 for each selected element in a1.
-
-    Returns:
-    list: A list of indices from a2 corresponding to the randomly selected elements from a1.
-
-    Raises:
-    ValueError: If the lengths of a1 and a2 do not match.
-    ValueError: If n1 is greater than the number of unique elements in a1.
-    ValueError: If there are not enough elements in a2 corresponding to the selected elements in a1.
-
-    Example:
-    a1 = [1, 1, 2, 2, 2]
-    a2 = [1, 2, 1, 2, 3]
-    n1 = 2
-    n2 = 1
-    hierarchical_subsample(a1, a2, n1, n2) # might return [0, 4] or [1, 3] etc.
-    """
-    if len(a1) != len(a2):
-        raise ValueError("Arrays a1 and a2 must have the same length")
-    
-    # Get unique elements from a1 and their indices
-    unique_elements = list(set(a1))
-    
-    if len(unique_elements) < n1:
-        raise ValueError("n1 is larger than the number of unique elements in a1")
-    
-    # Select n1 unique elements from a1
-    selected_elements = np.sort(random.sample(unique_elements, n1))
-    
-    selected_indices = []
-    
-    # For each selected element, select n2 indices from a2
-    for element in selected_elements:
-        element_indices = [i for i, x in enumerate(a1) if x == element]
-        if len(element_indices) < n2:
-            raise ValueError(f"Not enough elements in a2 corresponding to element {element} in a1")
-        selected_indices.extend(np.sort(random.sample(element_indices, n2)))
-    
-    return np.array(selected_indices)
-
-
 def hierarchical_subsample(a1, a2, n1, n2):
     """
     Selects indices of random elements from a2 corresponding to random elements from a1.
+    TODO: remove a2 argument
 
     Parameters:
     a1 (np.ndarray): A numpy array of elements where each element can be repeated.
@@ -991,22 +943,29 @@ def hierarchical_subsample(a1, a2, n1, n2):
     n2 = 1
     hierarchical_subsample(a1, a2, n1, n2) # might return [0, 4] or [1, 3] etc.
     """
-    if len(a1) != len(a2):
-        raise ValueError("Arrays a1 and a2 must have the same length")
+    rng = np.random.default_rng()
+
+    # if len(a1) != len(a2):
+    #     raise ValueError("Arrays a1 and a2 must have the same length")
     
-    unique_elements = np.unique(a1)
+    u_elems,u_inds,u_counts = np.unique(a1, return_index=True, return_counts=True)
+    u_inds = u_inds[u_counts>=n2]
+    u_elems = u_elems[u_counts>=n2]
+    u_counts = u_counts[u_counts>=n2]
+
+    sub_inds = np.sort(rng.choice(u_inds.shape[0], n1, replace=False))
+    u_sub_inds = u_inds[sub_inds]
+    u_sub_elems = a1[u_sub_inds]
+
+    if np.all(u_counts==n2):
+        return np.where(np.isin(a1,u_sub_elems))[0]
+    else:
+        return np.repeat(u_sub_inds, n2) + np.tile(np.arange(n2), u_sub_inds.shape[0])
+        
+    # if len(unique_elements) < n1:
+    #     raise ValueError("n1 is larger than the number of unique elements in a1")
     
-    if len(unique_elements) < n1:
-        raise ValueError("n1 is larger than the number of unique elements in a1")
+    # selected_elements = rng.choice(a1, n1).sort()
+    # selected_indices = [np.random.random_sample(np.where(a1 == element)[0]) for element in selected_elements]
     
-    selected_elements = np.sort(random.sample(list(unique_elements), n1))
-    
-    selected_indices = []
-    
-    for element in selected_elements:
-        element_indices = np.where(a1 == element)[0]
-        if len(element_indices) < n2:
-            raise ValueError(f"Not enough elements in a2 corresponding to element {element} in a1")
-        selected_indices.extend(np.sort(random.sample(list(element_indices), n2)))
-    
-    return np.array(selected_indices)
+    # return np.concatenate(selected_indices).sort()
