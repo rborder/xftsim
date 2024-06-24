@@ -361,8 +361,8 @@ class SibpairAscertainmentFilter(AscertainmentFilter):
             s2 = pheno_sub[1::2,:] @ coef
             ss = np.hstack([s1.reshape((s1.shape[0],1)),s2.reshape((s2.shape[0],1))])
             ascertainment_score = np.min(ss,1)
-        ascertainment_score += np.random.randn(ascertainment_score.shape[0]) * self.coef_noise
-        return ascertainment_score
+        ascertainment_score = ascertainment_score/np.std(ascertainment_score) + np.random.randn(ascertainment_score.shape[0]) * self.coef_noise
+        return np.repeat(ascertainment_score,2)
 
     def filter(self, phenotypes):
         sind = phenotypes.xft.get_sample_indexer()
@@ -385,10 +385,9 @@ class SibpairAscertainmentFilter(AscertainmentFilter):
         pheno_sub = phenotypes[sib_inds, :].xft[None,component_index].data
 
         ascertainment_score = self.polarity*self.score(pheno_sub)
-        ascertained_inds0 = np.argsort(ascertainment_score)
-        ascertained_inds = sib_inds[2*np.repeat(ascertained_inds0,2) +np.tile([0,1],ascertained_inds0.shape[0])]
-        nsub_ascertained = np.min([nsub_ascertained, ascertained_inds.shape[0]])
-        subinds = ascertained_inds[:(nsub_ascertained*2)]
+        ascertained_inds = np.argsort(ascertainment_score)
+        nsub_ascertained = np.min([nsub_ascertained, 2*ascertained_inds.shape[0]])
+        subinds = np.sort(sib_inds[ascertained_inds[:(nsub_ascertained*2)]])
         return subinds
 
 
