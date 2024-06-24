@@ -104,7 +104,8 @@ class SampleStatistics(Statistic):
     means : bool
         If True, calculate and return the mean of each phenotype.
     variance_components : bool
-        If True, calculate and return the variance components of each phenotype.
+        If True, calculate and return the variance components of each phenotype. Overidden to FALSE if
+        component_index is `pheno`
     variances : bool
         If True, calculate and return the variances of each phenotype.
     vcov : bool
@@ -113,6 +114,10 @@ class SampleStatistics(Statistic):
         If True, calculate and return the correlation matrix.
     prettify : bool
         If True, prettify the output by converting it to a pandas DataFrame.
+    component_index: str, xft.index.ComponentIndex
+        If `all`, will compute statistics for all phenotype components
+        If `pheno`, will compute statistics for phenotypes only
+        If a ComponentIndex object, will compute statistics for specified components only
 
     Methods
     -------
@@ -129,11 +134,15 @@ class SampleStatistics(Statistic):
                  metadata: Dict = {},
                  sample_filter = xft.filters.PassFilter(),
                  name: str = 'sample_statistics',
+                 component_index: Union[str,xft.index.ComponentIndex] = 'all',
                  ):
         self.name = name
         self.means = means
         self.variances = variances
         self.variance_components = variance_components
+        if not isinstance(component_index, xft.index.ComponentIndex):
+            if component_index == 'pheno':
+                self.variance_components = False
         self.vcov = vcov
         self.corr = corr
         self.prettify = prettify
@@ -141,12 +150,21 @@ class SampleStatistics(Statistic):
         self.sample_filter = sample_filter
         self.s_args = ['phenotypes']
         self.parser = Statistic.null_parser
+        self.component_index = component_index
 
     @xft.utils.profiled(level=2, message = "sample statistics")
     def estimator(self, phenotypes: xr.DataArray) -> Dict:
+        if isinstance(self.component_index, xft.index.ComponentIndex):
+            component_index=self.component_index
+        elif self.component_index == 'pheno':
+            component_index = phenotypes.xft.get_component_indexer()[{'vorigin_relative':-1,'component_name':'phenotype'}]
+        elif self.component_index == 'all':
+            component_index = phenotypes.xft.get_component_indexer()
+        else:
+            raise RuntimeError('Invalid component indexer')
         output = dict()
-        pheno_df = phenotypes.xft.as_pd(prettify=self.prettify)
-        pheno_df = pheno_df.iloc[self.sample_filter.filter(phenotypes),:]
+        sind = self.sample_filter.filter(phenotypes)
+        pheno_df = phenotypes.xft[None, component_index].xft.as_pd(prettify=self.prettify).iloc[sind,:]
         h = [g.var(axis=1) for _, g in pheno_df.T.groupby(['phenotype_name','vorigin_relative'])]
         mm = [g.mean(axis=1) for _, g in pheno_df.T.groupby(['phenotype_name','vorigin_relative'])]
         if self.means:
