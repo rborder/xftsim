@@ -519,7 +519,7 @@ class HasemanElstonEstimatorSibship(Statistic):
                  n_probe: int = 100,
                  dask: bool = True,
                  metadata: Dict = {},
-                 sample_filter = xft.filters.PassFilter(),
+                 sample_filter = xft.filters.SibpairSampleFilter(),
                  name: str = 'HE_regression_sibship',
                  ):
         self.name = name
@@ -552,13 +552,15 @@ class HasemanElstonEstimatorSibship(Statistic):
         # else:
 
         subinds = self.sample_filter.filter(phenotypes)
-        Y = phenotypes.xft[None, component_index][subinds,:].xft.standardize().xft.as_pd()
-        G = haplotypes[subinds,:].xft.to_diploid_standardized()
+        Y0 = phenotypes.xft[None, component_index][subinds,:]
+        Y = Y0.xft.standardize().xft.as_pd()
+        G0 = haplotypes[subinds,:]
 
         Y = Y.iloc[0::2,:]-Y.iloc[1::2,:].values
         ys=xft.utils.standardize_array(Y)
         for i in range(ys.shape[1]):
             Y.iloc[:,i] = ys[:,i]
+        G = G0.xft.to_diploid_standardized()
         G = xft.utils.standardize_array(G[0::2,:]-G[1::2,:])
         he_out = haseman_elston(G = G,
                                 Y = Y,
@@ -569,6 +571,15 @@ class HasemanElstonEstimatorSibship(Statistic):
         output['cov_HE'] = pd.DataFrame(he_out, index = Y.columns, columns = Y.columns)
         if self.genetic_correlation:
             output['corr_HE'] = xft.utils.cov2cor(output['cov_HE'])
+        output['meta'] = dict(G_shape=G0.shape,
+                              G_ind=G0.xft.get_sample_indexer(),
+                              Y_shape=Y0.shape,
+                              Y_ind=Y0.xft.get_sample_indexer(),
+                              Y_mean=Y0.to_pandas().mean(),
+                              Y_corr=Y0.to_pandas().corr(),
+                              Ydiff_mean=Y.mean(),
+                              Ydiff_corr=Y.corr(),
+                              ) 
         return output
 
 
@@ -1054,8 +1065,8 @@ class Sib_GWAS_Estimator(Statistic):
         n_sib = int(np.floor(phenotypes.shape[0]//2))
         n_sub = int(np.floor(self.n_sub))
 
-        if n_sub > 0:
-            n_sub = np.min([n_sib, n_sub])
+        if n_sub == 0:
+            n_sub = n_sib
         else:
             n_sub = n_sib
         # NSUB = int(np.floor(self.training_fraction*n_sub))
