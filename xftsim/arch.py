@@ -848,6 +848,8 @@ class LinearVerticalComponent(LinearTransformationComponent):
     normalize : bool, optional
         If True, normalize the input by subtracting the mean and dividing by the standard deviation,
         by default True.
+    founder_means : Iterable, optional
+        Means of the founders, by default None.
     founder_variances : Iterable, optional
         Variances of the founders, by default None.
     founder_initialization : FounderInitialization, optional
@@ -870,6 +872,7 @@ class LinearVerticalComponent(LinearTransformationComponent):
                  output_cindex: xft.index.ComponentIndex = None,
                  coefficient_matrix: NDArray=None,
                  normalize: bool = True,
+                 founder_means: Iterable = None,
                  founder_variances: Iterable = None,
                  founder_initialization: FounderInitialization = None,
                  component_name: str ='linVert',
@@ -877,7 +880,10 @@ class LinearVerticalComponent(LinearTransformationComponent):
         assert (founder_variances is None) ^ (
             founder_initialization is None), "provide founder_initialization XOR founder_variances"
         if founder_initialization is None:
+            if founder_means is None:
+                founder_means = np.zeros_like(founder_variances)
             founder_initialization = GaussianFounderInitialization(input_cindex,
+                                                                   means=founder_means,
                                                                    variances=founder_variances)
         super().__init__(input_cindex=input_cindex,
                          output_cindex=output_cindex,
