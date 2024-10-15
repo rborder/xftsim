@@ -9,9 +9,9 @@ import os
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = 'xftsim'
-copyright = '2023, Richard Border'
+copyright = '2024, Richard Border'
 author = 'Richard Border'
-release = '0.1.2'
+release = '0.2.0'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -26,6 +26,7 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
+    "sphinx_rtd_theme",
     "sphinx.ext.autosectionlabel",
     "sphinx.ext.intersphinx",
     "myst_parser",
