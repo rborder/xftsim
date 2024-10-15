@@ -13,6 +13,7 @@ import functools
 from numpy.typing import ArrayLike
 from scipy import stats
 import funcy
+import random
 
 import xftsim as xft
 
@@ -914,4 +915,119 @@ def print_tree(x, depth=0):
             print("|"*int(depth>0)+"__"*depth + str(key)+': ' + str(x[key].__class__)*(not isinstance(x[key], dict)))
             print_tree(x[key], depth+1)
 
+
+
+@nb.njit
+def _hierarchical_subsample(a1, a2, n1, n2):
+    """
+    Selects indices of random elements from a2 corresponding to random elements from a1.
+    TODO: remove a2 argument
+
+    Parameters:
+    a1 (np.ndarray): A SORTED numpy array of elements where each element can be repeated.
+    a2 (np.ndarray): A numpy array of elements of the same length as a1.
+    n1 (int): The number of unique random elements to select from a1.
+    n2 (int): The number of random elements to select from a2 for each selected element in a1.
+
+    Returns:
+    np.ndarray: A numpy array of indices from a2 corresponding to the randomly selected elements from a1.
+
+    Raises:
+    ValueError: If the lengths of a1 and a2 do not match.
+    ValueError: If n1 is greater than the number of unique elements in a1.
+    ValueError: If there are not enough elements in a2 corresponding to the selected elements in a1.
+
+    Example:
+    a1 = np.array([1, 1, 2, 2, 2])
+    a2 = np.array([1, 2, 1, 2, 3])
+    n1 = 2
+    n2 = 1
+    hierarchical_subsample(a1, a2, n1, n2) # might return [0, 4] or [1, 3] etc.
+    """
+    
+    sind = np.arange(a1.shape[0])
+    sdiff=np.concatenate((np.ones(1,dtype=np.int64),np.diff(a1[sind])))
+    u_inds = np.where(sdiff!=0)[0]
+    u_counts =np.diff(np.concatenate((u_inds, np.array([a1.shape[0]]))))
+    u_elems = a1[u_inds]
+
+    valid_mask = u_counts >= n2
+    u_inds = u_inds[valid_mask]
+    u_elems = u_elems[valid_mask]
+    u_counts = u_counts[valid_mask]
+
+    if len(u_inds) < n1:
+        raise ValueError("n1 is larger than the number of valid unique elements in a1")
+
+    sub_inds = np.sort(np.random.choice(len(u_inds), n1, replace=False))
+    u_sub_inds = u_inds[sub_inds]
+    u_sub_elems = a1[u_sub_inds]
+
+    selected_indices = np.empty(n1 * n2, dtype=np.int64)
+
+    count = 0
+    for i in range(n1):
+        element = u_sub_elems[i]
+        element_indices = np.where(a1 == element)[0]
+        sampled_indices = np.random.choice(element_indices, n2, replace=False)
+        selected_indices[count:count + n2] = sampled_indices
+        count += n2
+
+    return np.sort(selected_indices)
+
+
+
+def hierarchical_subsample(a1, a2, n1, n2):
+    """
+    Selects indices of random elements from a2 corresponding to random elements from a1.
+    TODO: remove a2 argument
+
+    Parameters:
+    a1 (np.ndarray): A numpy array of elements where each element can be repeated.
+    a2 (np.ndarray): A numpy array of elements of the same length as a1.
+    n1 (int): The number of unique random elements to select from a1.
+    n2 (int): The number of random elements to select from a2 for each selected element in a1.
+
+    Returns:
+    np.ndarray: A numpy array of indices from a2 corresponding to the randomly selected elements from a1.
+
+    Raises:
+    ValueError: If the lengths of a1 and a2 do not match.
+    ValueError: If n1 is greater than the number of unique elements in a1.
+    ValueError: If there are not enough elements in a2 corresponding to the selected elements in a1.
+
+    Example:
+    a1 = np.array([1, 1, 2, 2, 2])
+    a2 = np.array([1, 2, 1, 2, 3])
+    n1 = 2
+    n2 = 1
+    hierarchical_subsample(a1, a2, n1, n2) # might return [0, 4] or [1, 3] etc.
+    """
+    return _hierarchical_subsample(a1.astype(int),a2.astype(int),int(n1),int(n2))
+#     rng = np.random.default_rng()
+
+#     # if len(a1) != len(a2):
+#     #     raise ValueError("Arrays a1 and a2 must have the same length")
+    
+#     u_elems,u_inds,u_counts = np.unique(a1, return_index=True, return_counts=True)
+#     u_inds = u_inds[u_counts>=n2]
+#     u_elems = u_elems[u_counts>=n2]
+#     u_counts = u_counts[u_counts>=n2]
+
+#     sub_inds = np.sort(rng.choice(u_inds.shape[0], n1, replace=False))
+#     u_sub_inds = u_inds[sub_inds]
+#     u_sub_elems = a1[u_sub_inds]
+
+#     if np.all(u_counts==n2):
+#         return np.where(np.isin(a1,u_sub_elems))[0]
+#     else:
+#         return np.repeat(u_sub_inds, n2) + np.tile(np.arange(n2), u_sub_inds.shape[0])
+        
+#     # if len(unique_elements) < n1:
+#     #     raise ValueError("n1 is larger than the number of unique elements in a1")
+    
+#     # selected_elements = rng.choice(a1, n1).sort()
+#     # selected_indices = [np.random.random_sample(np.where(a1 == element)[0]) for element in selected_elements]
+    
+#     # return np.concatenate(selected_indices).sort()
 

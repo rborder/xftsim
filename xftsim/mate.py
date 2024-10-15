@@ -373,27 +373,6 @@ class MateAssignment:
                           pheno_parental.data[self.maternal_integer_index],
                           pheno_parental.data[self.paternal_integer_index]])
 
-    # @property
-    # def reproducing_maternal_indexer(self):
-    #     return self.all_maternal_iids[self._expanded_indices]
-    # @property
-    # def reproducing_paternal_indexer(self):
-    #     return self.all_paternal_iids[self._expanded_indices]
-
-
-
-
-# ma = MateAssignment(0,
-#                     maternal_sample_index=xft.index.SampleIndex(['a','b','c','d','a','b']),
-#                     paternal_sample_index=xft.index.SampleIndex(['A','B','C','D','A','B']),
-#                     previous_generation_sample_index = xft.index.SampleIndex(['a','b','c','d','a','b','A','B','C','D','A','B']),
-#                     n_offspring_per_pair=[1,0,2,1,2,3],
-#                     n_females_per_pair=[1,0,0,1,1,2])
-
-
-# ## TODO
-# def mergeAssignments(assignments: Iterable = None):
-#     pass
 
 
 
@@ -999,6 +978,41 @@ class BatchedMatingRegime(MatingRegime):
                                              control)]
         return MateAssignment.reduce_merge(assignments)
 
+
+
+
+class FilteredMatingRegime(MatingRegime):
+    """
+    Applies filter to sample prior to commencing mating
+
+    Parameters
+    ----------
+    regime : MatingRegime
+        The mating regime to be filtered.
+    sample_filter : xft.filters.SampleFilter
+        The sample filter to apply
+
+    mate(haplotypes, phenotypes, control)
+        Generate mating assignments in batches.
+
+    """
+    def __init__(self, 
+                 regime: MatingRegime, 
+                 sample_filter: xft.filters.SampleFilter,
+                 ):
+        self.regime = regime
+        self.sample_filter = sample_filter
+
+
+    def mate(self,
+             haplotypes: xr.DataArray = None,
+             phenotypes: xr.DataArray = None,
+             control: dict = None,
+             ):
+        mate_inds = np.sort(self.sample_filter.filter(phenotypes))
+        return self.regime.mate(haplotypes[mate_inds,:],
+                                phenotypes[mate_inds,:],
+                                control)
 
 
 def _solve_qap_ls(Y, Z, R, nb_threads=6, time_limit=30, tolerance=.001, 
