@@ -26,7 +26,7 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
-    "sphinx_rtd_theme",
+    "sphinx.rtd.theme",
     "sphinx.ext.autosectionlabel",
     "sphinx.ext.intersphinx",
     "myst_parser",
