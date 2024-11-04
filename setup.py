@@ -5,6 +5,9 @@ setup(
     
     version='0.2.0',
     
+    long_description=open('README.md').read(),
+    long_description_content_type='text/markdown',
+
     author="Richard Border",
     
     author_email="border.richard@gmail.com",
