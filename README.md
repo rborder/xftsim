@@ -33,8 +33,7 @@ To enable full functionality (i.e., automatic generation of causal diagrams), yo
 `xftsim` has been tested on MacOS 13.4 and the following GNU/Linux distributions: Ubuntu 22.04, Ubuntu 24.04, PopOS 22.04, and RHEL 7 using Python version 3.9.6. 
 
 <details>
-<summary>`xftsim` depends on the following packages</summary>summary
-
+<summary>`xftsim` depends on the following packages...</summary>
 ```
 asciitree==0.3.3
 attrs==23.2.0
