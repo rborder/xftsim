@@ -11,7 +11,7 @@
 
 ## Installation
 
-`xftsim` is on PyPI. It can be installed using pip and conda:
+`xftsim` is on PyPI. It can be installed in a couple minutes using pip and conda:
 
 ```bash
 conda create --name xftsim python=3.9.6
@@ -131,7 +131,7 @@ zstandard==0.23.0
 
 To get started, [check out the documentation](https://xftsim.readthedocs.io)!
 
-For a minimal test simulation you can run one of the built in demos:
+For a minimal test simulation you can run one of the built in demos (runtime < 1min):
 ```python3
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
